@@ -6,6 +6,7 @@ sealed class Screen(val route: String) {
     object SignUp : Screen("signup")
     object Home : Screen("home")
     object Form : Screen("form")
+    object Menu : Screen("menu")
 }
 
 sealed class NavGraph(val route: String) {

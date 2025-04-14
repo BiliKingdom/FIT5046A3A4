@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     onNavigateToForm: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigateToMenu: () -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -24,6 +25,8 @@ fun HomeScreen(
         drawerState = drawerState,
         onNavigateToForm = onNavigateToForm,
         onLogout = onLogout
+
+
     ) {
         Scaffold(
             topBar = {
@@ -111,7 +114,8 @@ fun HomeScreen(
                     FeatureCard(
                         icon = Icons.Default.Restaurant,
                         title = "Browse Menu",
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                        modifier = Modifier.weight(1f).padding(end = 8.dp),
+                        onClick = onNavigateToMenu
                     )
                     FeatureCard(
                         icon = Icons.Default.Favorite,
@@ -183,10 +187,11 @@ private fun NavigationDrawer(
 private fun FeatureCard(
     icon: ImageVector,
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick:() ->Unit ={}
 ) {
     Card(
-        onClick = { /* TODO */ },
+        onClick = onClick,
         modifier = modifier
     ) {
         Column(

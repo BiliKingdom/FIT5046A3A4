@@ -54,6 +54,10 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             composable(Screen.Form.route) {
                 FormScreen(onNavigateBack = { navController.navigateUp() })
             }
+
+            composable(Screen.Menu.route) {
+                MenuScreen(onBack = { navController.navigateUp() })
+            }
         }
     }
 }
@@ -72,6 +76,9 @@ fun MainScaffold(navController: NavHostController, currentScreen: BottomNavItem)
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onNavigateToMenu = {
+                    navController.navigate(Screen.Menu.route)
                 }
             )
             is BottomNavItem.Order -> OrderScreen()
