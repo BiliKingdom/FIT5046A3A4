@@ -56,7 +56,24 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             }
 
             composable(Screen.Menu.route) {
-                MenuScreen(onBack = { navController.navigateUp() })
+                MenuScreen(
+                    navController = navController,
+                    onBack = { navController.navigateUp() }
+                )
+            }
+            composable(Screen.Cart.route) {
+                CartScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Screen.Payment.route) {
+                PaymentScreen(
+                    onBack = { navController.navigateUp() },
+                    onPay = {
+                        navController.popBackStack(Screen.Home.route, inclusive = false)
+                    }
+                )
             }
         }
     }

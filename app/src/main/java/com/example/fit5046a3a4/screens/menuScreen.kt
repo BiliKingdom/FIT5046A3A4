@@ -24,29 +24,42 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import com.example.fit5046a3a4.R
+import androidx.navigation.NavHostController
+import com.example.fit5046a3a4.navigation.Screen
+import androidx.compose.material.icons.filled.ShoppingCart
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
+    navController: NavHostController,
     onBack: () -> Unit = {}
 ) {
     val menuData = listOf(
-        MenuCategory("Main", listOf(
-            MenuItem("Hamburger", "$12.99", R.drawable.burrito),
-            MenuItem("SuperRice", "$9.99", R.drawable.taco)
-        )),
-        MenuCategory("Side", listOf(
-            MenuItem("Chips", "$3.50", R.drawable.chips),
-            MenuItem("Soup", "$4.00", R.drawable.soup)
-        )),
-        MenuCategory("Drink", listOf(
-            MenuItem("Coke", "$2.50", R.drawable.coke),
-            MenuItem("Coffee", "$2.80", R.drawable.coffee)
-        )),
-        MenuCategory("Dessert", listOf(
-            MenuItem("Cake", "$5.99", R.drawable.churros),
-            MenuItem("Ice Cream", "$4.50", R.drawable.icecream)
-        ))
+        MenuCategory(
+            "Main", listOf(
+                MenuItem("Hamburger", "$12.99", R.drawable.burrito),
+                MenuItem("SuperRice", "$9.99", R.drawable.taco)
+            )
+        ),
+        MenuCategory(
+            "Side", listOf(
+                MenuItem("Chips", "$3.50", R.drawable.chips),
+                MenuItem("Soup", "$4.00", R.drawable.soup)
+            )
+        ),
+        MenuCategory(
+            "Drink", listOf(
+                MenuItem("Coke", "$2.50", R.drawable.coke),
+                MenuItem("Coffee", "$2.80", R.drawable.coffee)
+            )
+        ),
+        MenuCategory(
+            "Dessert", listOf(
+                MenuItem("Cake", "$5.99", R.drawable.churros),
+                MenuItem("Ice Cream", "$4.50", R.drawable.icecream)
+            )
+        )
     )
 
     Scaffold(
@@ -78,42 +91,57 @@ fun MenuScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            stickyHeader {
-                Column(
-                    modifier = Modifier
-                        .background(Color.White) // 避免透明遮盖后面的内容
-                        .padding(bottom = 4.dp) // 给阴影留空
-                ) {
-                    PickupInfoCard()
-                    CategoryTabBar()
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 80.dp) // 给底部按钮留出空间
+            ) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .padding(bottom = 4.dp)
+                    ) {
+                        PickupInfoCard()
+                        CategoryTabBar()
+                    }
+                }
+
+                // 添加你的菜单分类内容
+                menuData.forEach { category ->
+                    item {
+                        Text(
+                            text = category.name,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+
+                    items(category.items) { item ->
+                        MenuItemRow(item)
+                    }
                 }
             }
 
-            // 接下来是你的 menu 内容
-            menuData.forEach { category ->
-                item {
-                    Text(
-                        text = category.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
-                items(category.items) { item ->
-                    MenuItemRow(item)
-                }
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.Cart.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
             }
         }
-
     }
 }
-
 @Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
