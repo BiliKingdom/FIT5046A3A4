@@ -40,6 +40,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.espresso.core)
+    val navVersion = "2.7.7"
+    val lifecycleVersion = "2.7.0"
+    val accompanistVersion = "0.34.0"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -49,6 +53,21 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    
+    // Navigation Compose
+    implementation("androidx.navigation:navigation-compose:$navVersion")
+    
+    // Material Icons
+    implementation("androidx.compose.material:material-icons-core:1.6.3")
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
+    
+    // Accompanist
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
