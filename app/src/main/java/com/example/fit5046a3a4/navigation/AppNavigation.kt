@@ -54,6 +54,27 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             composable(Screen.Form.route) {
                 FormScreen(onNavigateBack = { navController.navigateUp() })
             }
+
+            composable(Screen.Menu.route) {
+                MenuScreen(
+                    navController = navController,
+                    onBack = { navController.navigateUp() }
+                )
+            }
+            composable(Screen.Cart.route) {
+                CartScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Screen.Payment.route) {
+                PaymentScreen(
+                    onBack = { navController.navigateUp() },
+                    onPay = {
+                        navController.popBackStack(Screen.Home.route, inclusive = false)
+                    }
+                )
+            }
         }
     }
 }
@@ -72,6 +93,9 @@ fun MainScaffold(navController: NavHostController, currentScreen: BottomNavItem)
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
+                },
+                onNavigateToMenu = {
+                    navController.navigate(Screen.Menu.route)
                 }
             )
             is BottomNavItem.Order -> OrderScreen()
