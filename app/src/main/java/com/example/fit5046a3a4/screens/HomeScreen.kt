@@ -9,24 +9,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.TextStyle
+import androidx.navigation.NavHostController
+import com.example.fit5046a3a4.navigation.Screen
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
+    onNavigateToLocation: () -> Unit = {},
     onNavigateToForm: () -> Unit,
-    onLogout: () -> Unit,
-    onNavigateToMenu: () -> Unit
+    onLogout: () -> Unit
 ) {
+    var selectedLocation by remember { mutableStateOf<String?>(null) }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    /**
+     * 当返回栈发生变化时（例如 LocationScreen -> navigateUp），
+     * 自动检查 savedStateHandle 里有没有 "selectedLocation"，
+     * 有就取出来更新按钮文本，然后删掉，避免重复。
+     */
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            backStackEntry.savedStateHandle
+                .get<String>("selectedLocation")
+                ?.let { name ->
+                    selectedLocation = name           // 更新按钮文本
+                    backStackEntry.savedStateHandle.remove<String>("selectedLocation")
+                }
+        }
+    }
+
+
 
     NavigationDrawer(
         drawerState = drawerState,
         onNavigateToForm = onNavigateToForm,
         onLogout = onLogout
-
-
     ) {
         Scaffold(
             topBar = {
@@ -63,7 +87,39 @@ fun HomeScreen(
                             .padding(16.dp)
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    ) {//new info and selection func below
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Pick Up Only",
+                                style = MaterialTheme.typography.labelMedium.copy(fontSize = 20.sp),
+                                modifier = Modifier.offset(x = 16.dp)
+                            )
+                            Button(
+                                onClick = {
+                                    // 修改5：点击按钮后通过 navController 导航到 LocationScreen
+                                    navController.navigate(Screen.Location.route)
+                                },
+                                modifier = Modifier.padding(start = 8.dp)
+                                    .height(48.dp)
+                                    .width(170.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Select a location",
+                                    modifier = Modifier.padding(end = 10.dp)
+                                )
+                                Text(
+                                    text = selectedLocation ?: "Select a location",
+                                    style = TextStyle(fontSize = 15.sp)
+                                )
+                            }
+                        }
+                        // The above is the demarcation line for the new features.
+
                         Text(
                             text = "Welcome Back",
                             style = MaterialTheme.typography.headlineMedium
@@ -114,8 +170,7 @@ fun HomeScreen(
                     FeatureCard(
                         icon = Icons.Default.Restaurant,
                         title = "Browse Menu",
-                        modifier = Modifier.weight(1f).padding(end = 8.dp),
-                        onClick = onNavigateToMenu
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
                     )
                     FeatureCard(
                         icon = Icons.Default.Favorite,
@@ -187,11 +242,10 @@ private fun NavigationDrawer(
 private fun FeatureCard(
     icon: ImageVector,
     title: String,
-    modifier: Modifier = Modifier,
-    onClick:() ->Unit ={}
+    modifier: Modifier = Modifier
 ) {
     Card(
-        onClick = onClick,
+        onClick = { /* TODO */ },
         modifier = modifier
     ) {
         Column(

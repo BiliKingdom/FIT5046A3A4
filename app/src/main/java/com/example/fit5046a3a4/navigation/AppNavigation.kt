@@ -1,5 +1,7 @@
 package com.example.fit5046a3a4.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -11,6 +13,7 @@ import com.example.fit5046a3a4.components.BottomBar
 import androidx.compose.material3.Scaffold
 import androidx.navigation.navigation
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(
@@ -39,6 +42,16 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        // 新增部分：LocationSelectScreen 的路由添加
+        // 请确保在 Screen.kt 中已定义例如：
+        // object LocationSelect : Screen("locationSelect")
+        composable(Screen.Location.route) {
+            LocationScreen(
+                navController = navController,
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
+
         // 底部导航部分（主界面）
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
             composable(BottomNavItem.Home.route) {
@@ -54,27 +67,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             composable(Screen.Form.route) {
                 FormScreen(onNavigateBack = { navController.navigateUp() })
             }
-
-            composable(Screen.Menu.route) {
-                MenuScreen(
-                    navController = navController,
-                    onBack = { navController.navigateUp() }
-                )
-            }
-            composable(Screen.Cart.route) {
-                CartScreen(
-                    navController = navController
-                )
-            }
-
-            composable(Screen.Payment.route) {
-                PaymentScreen(
-                    onBack = { navController.navigateUp() },
-                    onPay = {
-                        navController.popBackStack(Screen.Home.route, inclusive = false)
-                    }
-                )
-            }
         }
     }
 }
@@ -86,6 +78,7 @@ fun MainScaffold(navController: NavHostController, currentScreen: BottomNavItem)
     ) { innerPadding ->
         when (currentScreen) {
             is BottomNavItem.Home -> HomeScreen(
+                navController = navController,  // 传入 navController 参数
                 onNavigateToForm = {
                     navController.navigate(Screen.Form.route)
                 },
@@ -93,9 +86,6 @@ fun MainScaffold(navController: NavHostController, currentScreen: BottomNavItem)
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
-                },
-                onNavigateToMenu = {
-                    navController.navigate(Screen.Menu.route)
                 }
             )
             is BottomNavItem.Order -> OrderScreen()
