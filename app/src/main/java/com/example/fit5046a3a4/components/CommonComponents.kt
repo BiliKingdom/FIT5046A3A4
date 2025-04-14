@@ -125,7 +125,7 @@ fun BrandLogo(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "GuzmanyGomez",
+            text = "Monash Restaurants",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold

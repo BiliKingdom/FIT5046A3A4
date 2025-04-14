@@ -1,22 +1,32 @@
 package com.example.fit5046a3a4.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a3a4.screens.*
-import com.example.fit5046a3a4.components.BottomBar
-import androidx.compose.material3.Scaffold
-import androidx.navigation.navigation
+
+sealed class Screen(val route: String) {
+    object Login : Screen("login")
+    object SignUp : Screen("signup")
+    object Home : Screen("home")
+    object Order : Screen("order")
+    object Profile : Screen("profile")
+    object OrderHistory : Screen("order_history")
+    object Menu : Screen("menu")
+    object Cart : Screen("cart")
+    object Payment : Screen("payment")
+
+
+}
 
 @Composable
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.Login.route
-    ) {
+    NavHost(navController = navController, startDestination = Screen.Login.route) {
+
+        // 登录页
         composable(Screen.Login.route) {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
@@ -27,6 +37,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 }
             )
         }
+
 
         composable(Screen.SignUp.route) {
             SignUpScreen(
@@ -39,43 +50,55 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // 底部导航部分（主界面）
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
+
             composable(BottomNavItem.Home.route) {
-                MainScaffold(navController, currentScreen = BottomNavItem.Home)
-            }
-            composable(BottomNavItem.Order.route) {
-                MainScaffold(navController, currentScreen = BottomNavItem.Order)
-            }
-            composable(BottomNavItem.Profile.route) {
-                MainScaffold(navController, currentScreen = BottomNavItem.Profile)
-            }
-
-            composable(Screen.Form.route) {
-                FormScreen(onNavigateBack = { navController.navigateUp() })
-            }
-        }
-    }
-}
-
-@Composable
-fun MainScaffold(navController: NavHostController, currentScreen: BottomNavItem) {
-    Scaffold(
-        bottomBar = { BottomBar(navController) }
-    ) { innerPadding ->
-        when (currentScreen) {
-            is BottomNavItem.Home -> HomeScreen(
-                onNavigateToForm = {
-                    navController.navigate(Screen.Form.route)
-                },
-                onLogout = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(0) { inclusive = true }
+                HomeScreen(
+                    navController = navController,
+                    onLogout = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
                     }
-                }
-            )
-            is BottomNavItem.Order -> OrderScreen()
-            is BottomNavItem.Profile -> ProfileScreen()
+                )
+            }
+
+            composable(BottomNavItem.Order.route) {
+                OrderScreen(navController = navController)
+            }
+
+            composable(BottomNavItem.Profile.route) {
+                ProfileScreen(navController = navController)
+            }
+
+
+            composable(Screen.OrderHistory.route) {
+                OrderHistoryScreen(navController = navController)
+            }
+
+
+
+            composable(Screen.Menu.route) {
+                MenuScreen(
+                    navController = navController,
+                    onBack = { navController.navigateUp() }
+                )
+            }
+            composable(Screen.Cart.route) {
+                CartScreen(
+                    navController = navController
+                )
+            }
+
+            composable(Screen.Payment.route) {
+                PaymentScreen(
+                    onBack = { navController.navigateUp() },
+                    onPay = {
+                        navController.popBackStack(Screen.Home.route, inclusive = false)
+                    }
+                )
+            }
+
         }
     }
 }

@@ -3,13 +3,12 @@ package com.example.fit5046a3a4.components
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fit5046a3a4.navigation.BottomNavItem
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(navController: NavController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Order,

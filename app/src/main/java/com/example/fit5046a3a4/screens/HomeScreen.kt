@@ -1,207 +1,108 @@
 package com.example.fit5046a3a4.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.fit5046a3a4.components.BottomBar
+import com.example.fit5046a3a4.data.DummyData
+import com.example.fit5046a3a4.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToForm: () -> Unit,
+    navController: NavController,
     onLogout: () -> Unit
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    NavigationDrawer(
-        drawerState = drawerState,
-        onNavigateToForm = onNavigateToForm,
-        onLogout = onLogout
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("GuzmanyGomez") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                drawerState.open()
-                            }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Welcome Back",
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "What would you like to eat today?",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-
-                // Quick Action Buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = onNavigateToForm,
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.Edit,
-                            contentDescription = "Form",
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Text("Fill Form")
-                    }
-
-                    Button(
-                        onClick = { /* TODO */ },
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
-                    ) {
-                        Icon(
-                            Icons.Default.List,
-                            contentDescription = "Orders",
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                        Text("My Orders")
-                    }
-                }
-
-                // Feature Cards Grid
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    FeatureCard(
-                        icon = Icons.Default.Restaurant,
-                        title = "Browse Menu",
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
-                    )
-                    FeatureCard(
-                        icon = Icons.Default.Favorite,
-                        title = "Favorites",
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    FeatureCard(
-                        icon = Icons.Default.LocationOn,
-                        title = "Store Locations",
-                        modifier = Modifier.weight(1f).padding(end = 8.dp)
-                    )
-                    FeatureCard(
-                        icon = Icons.Default.Person,
-                        title = "Profile",
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
-                    )
-                }
-            }
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Welcome") })
+        },
+        bottomBar = {
+            BottomBar(navController = navController)
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun NavigationDrawer(
-    drawerState: DrawerState,
-    onNavigateToForm: () -> Unit,
-    onLogout: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Spacer(modifier = Modifier.height(16.dp))
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                    label = { Text("Home") },
-                    selected = true,
-                    onClick = { }
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                    label = { Text("Fill Form") },
-                    selected = false,
-                    onClick = onNavigateToForm
-                )
-                NavigationDrawerItem(
-                    icon = { Icon(Icons.Default.ExitToApp, contentDescription = null) },
-                    label = { Text("Logout") },
-                    selected = false,
-                    onClick = onLogout
-                )
-            }
-        }
-    ) {
-        content()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun FeatureCard(
-    icon: ImageVector,
-    title: String,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = { /* TODO */ },
-        modifier = modifier
-    ) {
+    ) { padding ->
         Column(
             modifier = Modifier
+                .padding(padding)
                 .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = title)
+
+            Text("HELLO, TIM 👋", style = MaterialTheme.typography.headlineSmall)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text("⭐ Monash Points: 29", color = MaterialTheme.colorScheme.primary)
+            Text("💵 Monash Dollars: $54.30", color = MaterialTheme.colorScheme.secondary)
+
+            Spacer(Modifier.height(24.dp))
+
+            // Recent Orders  + View All
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("🛍️ Recent Orders", style = MaterialTheme.typography.titleMedium)
+                TextButton(onClick = {
+                    navController.navigate(Screen.OrderHistory.route)
+                }) {
+                    Text("View All")
+                }
+            }
+
+            // Recent Orders
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(DummyData.recentOrders) { order ->
+                    Card(
+                        modifier = Modifier
+                            .width(260.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        elevation = CardDefaults.cardElevation(6.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text("Order #${order.id}", style = MaterialTheme.typography.titleSmall)
+                            Text("📅 ${order.date} | 🕒 ${order.time}", style = MaterialTheme.typography.bodySmall)
+                            Text("🍽️ ${order.summary}", style = MaterialTheme.typography.bodyMedium)
+                            Text("💰 ${order.amount}", color = MaterialTheme.colorScheme.primary)
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = { /* TODO: Reorder */ },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Reorder")
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(32.dp))
+            Text("🎉 Promotions", style = MaterialTheme.typography.titleMedium)
+
+            // Promotions 列表
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(DummyData.promotions) { promo ->
+                    Card(
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(150.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = promo.imageRes),
+                            contentDescription = "Promotion",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
+            }
         }
     }
 }

@@ -1,18 +1,29 @@
 package com.example.fit5046a3a4.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.fit5046a3a4.components.BottomBar
+import com.example.fit5046a3a4.navigation.Screen
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
+    var isEditing by remember { mutableStateOf(false) }
+    var username by remember { mutableStateOf("TIM") }
+    var email by remember { mutableStateOf("example@domain.com") }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -25,6 +36,12 @@ fun ProfileScreen() {
                     )
                 }
             )
+        },
+        bottomBar = {
+            BottomBar(navController = navController)
+        },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
         }
     ) { innerPadding ->
         Column(
@@ -33,20 +50,60 @@ fun ProfileScreen() {
                 .padding(innerPadding)
                 .padding(24.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Text("Username: Qingtian", fontSize = 18.sp)
-            Text("Email: example@domain.com", fontSize = 18.sp)
-            Text("GYG Points: 29", fontSize = 18.sp)
-            Text("Total Spent: $54.30", fontSize = 18.sp)
 
-            Spacer(modifier = Modifier.height(32.dp))
+
+            if (isEditing) {
+                OutlinedTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = { Text("Username") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                Text("👤 Username: $username", fontSize = 18.sp)
+                Text("📧 Email: $email", fontSize = 18.sp)
+                Text("⭐ Monash Points: 29", fontSize = 18.sp)
+                Text("\uD83D\uDCB5 Monash Dollars: \$54.30", fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
 
             Button(
-                onClick = { /* TODO: logout or edit */ },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                onClick = {
+                    if (isEditing) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("✅ Profile updated!")
+                        }
+                    }
+                    isEditing = !isEditing
+                },
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Edit Profile")
+                Text(if (isEditing) "Save Changes" else "Edit Profile")
+            }
+
+            OutlinedButton(
+                onClick = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar("👋 Logged out successfully!")
+                    }
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text("Logout")
             }
         }
     }
