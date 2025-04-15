@@ -32,6 +32,9 @@ import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.data.DummyData
 import com.example.fit5046a3a4.navigation.BottomNavItem
 import com.example.fit5046a3a4.navigation.Screen
+import androidx.compose.material.icons.filled.Search
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
