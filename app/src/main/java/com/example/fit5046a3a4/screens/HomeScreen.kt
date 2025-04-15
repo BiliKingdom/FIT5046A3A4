@@ -14,6 +14,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.data.DummyData
 import com.example.fit5046a3a4.navigation.Screen
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.TopAppBarDefaults
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,11 +28,17 @@ fun HomeScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Welcome") })
+            TopAppBar(
+                title = { Text("Welcome") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
         },
         bottomBar = {
             BottomBar(navController = navController)
-        }
+        },
+                containerColor = Color.Transparent
     ) { padding ->
         Column(
             modifier = Modifier
@@ -47,7 +58,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("🛍️ Recent Orders", style = MaterialTheme.typography.titleMedium)
+                Text(" Recent Orders", style = MaterialTheme.typography.titleMedium)
                 TextButton(onClick = {
                     navController.navigate(Screen.OrderHistory.route)
                 }) {
@@ -66,9 +77,9 @@ fun HomeScreen(
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("Order #${order.id}", style = MaterialTheme.typography.titleSmall)
-                            Text("📅 ${order.date} | 🕒 ${order.time}", style = MaterialTheme.typography.bodySmall)
-                            Text("🍽️ ${order.summary}", style = MaterialTheme.typography.bodyMedium)
-                            Text("💰 ${order.amount}", color = MaterialTheme.colorScheme.primary)
+                            Text("${order.date} | ${order.time}", style = MaterialTheme.typography.bodySmall)
+                            Text("${order.summary}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${order.amount}", color = MaterialTheme.colorScheme.primary)
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
@@ -98,7 +109,8 @@ fun HomeScreen(
                         Image(
                             painter = painterResource(id = promo.imageRes),
                             contentDescription = "Promotion",
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop  // ✅ 关键代码：裁剪填满
                         )
                     }
                 }
