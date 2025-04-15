@@ -35,10 +35,10 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
 
-            Text("HELLO, TIM 👋", style = MaterialTheme.typography.headlineSmall)
+            Text("HELLO, TIM ", style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("⭐ Monash Points: 29", color = MaterialTheme.colorScheme.primary)
-            Text("💵 Monash Dollars: $54.30", color = MaterialTheme.colorScheme.secondary)
+            Text("Monash Points: 29", color = MaterialTheme.colorScheme.primary)
+            Text("Monash Dollars: $54.30", color = MaterialTheme.colorScheme.secondary)
 
             Spacer(Modifier.height(24.dp))
 

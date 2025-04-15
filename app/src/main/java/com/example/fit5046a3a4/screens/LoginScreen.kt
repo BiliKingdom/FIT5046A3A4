@@ -1,5 +1,7 @@
 package com.example.fit5046a3a4.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -8,9 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,76 +37,111 @@ fun LoginScreen(
         return !isUsernameError && !isPasswordError
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        BrandLogo(modifier = Modifier.padding(bottom = 32.dp))
-
-        Text(
-            text = "Welcome Back",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 背景图
+        Image(
+            painter = painterResource(id = R.drawable.loginbackground),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
         )
 
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-                isUsernameError = false
-            },
-            label = { Text("Username") },
-            isError = isUsernameError,
+        // 半透明遮罩层
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+                .fillMaxSize()
+                .background(Color.White.copy(alpha = 0.5f))
         )
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                isPasswordError = false
-            },
-            label = { Text("Password") },
-            isError = isPasswordError,
-            visualTransformation = if (passwordVisible) VisualTransformation.None
-            else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(
-                        imageVector = if (passwordVisible) Icons.Default.VisibilityOff
-                        else Icons.Default.Visibility,
-                        contentDescription = "Toggle password visibility"
-                    )
-                }
-            },
+        // 登录内容
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        )
-
-        Button(
-            onClick = {
-                if (validateInputs()) {
-                    onNavigateToHome()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
+                .fillMaxSize()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Login")
-        }
+            BrandLogo(modifier = Modifier.padding(bottom = 32.dp))
 
-        TextButton(
-            onClick = onNavigateToSignUp,
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            Text("Don't have an account? Sign Up")
+            Text(
+                text = "Welcome Back",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 24.dp),
+                color = Color.Black
+            )
+
+            // 用户名输入框（白色背景）
+            OutlinedTextField(
+                value = username,
+                onValueChange = {
+                    username = it
+                    isUsernameError = false
+                },
+                label = { Text("Username") },
+                isError = isUsernameError,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    errorContainerColor = Color.White
+                )
+            )
+
+            // 密码输入框（白色背景）
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                    isPasswordError = false
+                },
+                label = { Text("Password") },
+                isError = isPasswordError,
+                visualTransformation = if (passwordVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = "Toggle password visibility"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    errorContainerColor = Color.White
+                )
+            )
+
+            // 登录按钮
+            Button(
+                onClick = {
+                    if (validateInputs()) {
+                        onNavigateToHome()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text("Login")
+            }
+
+            TextButton(
+                onClick = onNavigateToSignUp,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text("Don't have an account? Sign Up", color = Color.Black)
+            }
         }
     }
 }
+
+
+
