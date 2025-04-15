@@ -89,7 +89,19 @@ fun MenuScreen(
                     }
                 }
             )
-        }
+        },
+
+        // ✅ 将按钮移到这里
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Screen.Cart.route) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            ) {
+                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -99,7 +111,7 @@ fun MenuScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 80.dp) // 给底部按钮留出空间
+                    //.padding(bottom = 80.dp)
             ) {
                 stickyHeader {
                     Column(
@@ -112,7 +124,6 @@ fun MenuScreen(
                     }
                 }
 
-                // 添加你的菜单分类内容
                 menuData.forEach { category ->
                     item {
                         Text(
@@ -128,20 +139,10 @@ fun MenuScreen(
                     }
                 }
             }
-
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.Cart.route) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
-            }
         }
     }
 }
+
 @Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
