@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.components.BackButton
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,8 +24,9 @@ fun CartScreen(
             TopAppBar(
                 title = { Text("Your Cart") },
                 navigationIcon = {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                    BackButton(navController)
                 }
+
             )
         }
     ) { paddingValues ->
