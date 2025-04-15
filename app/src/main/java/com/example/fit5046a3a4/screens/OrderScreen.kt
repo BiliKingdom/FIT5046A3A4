@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,13 +40,23 @@ fun OrderScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nearby Restaurants", style = MaterialTheme.typography.titleLarge) },
+                title = { Text("Select a Restaurant", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
+                    // 搜索按钮
+                    IconButton(onClick = {
+                        navController.navigate(Screen.Search.route)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search"
+                        )
+                    }
+                    //主页
                     IconButton(onClick = {
                         navController.navigate(BottomNavItem.Home.route) {
                             popUpTo("main") { inclusive = false }

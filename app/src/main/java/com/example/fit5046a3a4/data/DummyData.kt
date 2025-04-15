@@ -37,8 +37,11 @@ object DummyData {
     )
 
     val restaurants = listOf(
-        Restaurant("BILI Noodle", 0.4, "LTB Ground Floor"),
-        Restaurant("GYG", 0.7, "Monash campus"),
-        Restaurant("Boost", 1.5, "Monash campus")
+        Restaurant("Campus Central Café", 0.1, "Building 10, Campus Central, Clayton Campus"),
+        Restaurant("LTB Café", 0.3, "Learning & Teaching Building (LTB), Ground Floor"),
+        Restaurant("The Grind Espresso Bar", 0.4, "Building 12, West Wing, Clayton Campus"),
+        Restaurant("Holt Café", 0.5, "Holt Building, Level 1, Clayton Campus"),
+        Restaurant("Food Court Clayton", 0.6, "Building C2, Clayton Campus"),
+        Restaurant("Asian Express", 0.7, "Building 18, East Wing, Clayton Campus")
     )
 }

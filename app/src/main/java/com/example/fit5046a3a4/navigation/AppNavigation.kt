@@ -20,8 +20,7 @@ sealed class Screen(val route: String) {
     object Menu : Screen("menu")
     object Cart : Screen("cart")
     object Payment : Screen("payment")
-
-
+    object Search : Screen("search")
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,6 +52,10 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
+
+
+
+
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
 
             composable(BottomNavItem.Home.route) {
@@ -79,6 +82,10 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 OrderHistoryScreen(navController = navController)
             }
 
+
+            composable(Screen.Search.route) {
+                SearchScreen(navController = navController)
+            }
 
 
             composable(Screen.Menu.route) {
