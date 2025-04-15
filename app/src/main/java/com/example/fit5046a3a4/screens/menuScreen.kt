@@ -27,7 +27,7 @@ import com.example.fit5046a3a4.R
 import androidx.navigation.NavHostController
 import com.example.fit5046a3a4.navigation.Screen
 import androidx.compose.material.icons.filled.ShoppingCart
-
+import com.example.fit5046a3a4.components.WithBackground
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -62,85 +62,90 @@ fun MenuScreen(
         )
     )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Guzman y Gomez",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "Map",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
+    WithBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Guzman y Gomez",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "Map",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { navController.navigate(Screen.Cart.route) },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
                 }
-            )
-        },
-
-
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.Cart.route) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            ) {
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
-            }
-        },
-        floatingActionButtonPosition = FabPosition.End
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            LazyColumn(
+            },
+            floatingActionButtonPosition = FabPosition.End,
+            containerColor = Color.Transparent
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(innerPadding)
             ) {
-                stickyHeader {
-                    Column(
-                        modifier = Modifier
-                            .background(Color.White)
-                            .padding(bottom = 4.dp)
-                    ) {
-                        PickupInfoCard()
-                        CategoryTabBar()
-                    }
-                }
-
-                menuData.forEach { category ->
-                    item {
-                        Text(
-                            text = category.name,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    stickyHeader {
+                        Column(
+                            modifier = Modifier
+                                .background(Color.White)
+                                .padding(bottom = 4.dp)
+                        ) {
+                            PickupInfoCard()
+                            CategoryTabBar()
+                        }
                     }
 
-                    items(category.items) { item ->
-                        MenuItemRow(item)
+                    menuData.forEach { category ->
+                        item {
+                            Text(
+                                text = category.name,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+
+                        items(category.items) { item ->
+                            MenuItemRow(item)
+                        }
                     }
                 }
             }
         }
     }
 }
+
 @Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
@@ -241,7 +246,6 @@ fun CategoryTabBar() {
         }
     }
 }
-
 
 
 data class MenuItem(

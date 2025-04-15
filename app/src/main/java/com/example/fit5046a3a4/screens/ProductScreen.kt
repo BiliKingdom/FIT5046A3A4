@@ -1,4 +1,5 @@
 package com.example.fit5046a3a4.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,80 +19,82 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.layout.ContentScale
 import com.example.fit5046a3a4.R
-
+import com.example.fit5046a3a4.components.WithBackground
 
 @Composable
 fun ProductScreen() {
-    Scaffold(
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .padding(16.dp)
-            ) {
-                Button(
-                    onClick = { /* TODO */ },
+    WithBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    ),
-                    border = BorderStroke(1.dp, Color.Black)
+                        .background(Color.White.copy(alpha = 0.8f))  // 半透明白底
+                        .padding(16.dp)
                 ) {
-                    Text("Add to Order")
+                    Button(
+                        onClick = { /* TODO */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black
+                        ),
+                        border = BorderStroke(1.dp, Color.Black)
+                    ) {
+                        Text("Add to Order")
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            // 商品图片
-            Image(
-                painter = painterResource(id = R.drawable.burrito), // 你自己的图片资源
-                contentDescription = "Product Image",
+        ) { innerPadding ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 商品名称和价格
-            Text("Hamburger", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "$8.20",
-                style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 简要介绍
-            Text(
-                text = "A delicious breakfast Hamburger made with scrambled eggs, bacon, cheese, and salsa wrapped in a warm tortilla.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // 数量选择器
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterStart
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                QuantitySelector()
+                // 商品图片
+                Image(
+                    painter = painterResource(id = R.drawable.burrito),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 商品名称和价格
+                Text("Hamburger", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "$8.20",
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 简要介绍
+                Text(
+                    text = "A delicious breakfast Hamburger made with scrambled eggs, bacon, cheese, and salsa wrapped in a warm tortilla.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 数量选择器
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    QuantitySelector()
+                }
             }
         }
     }
@@ -131,4 +134,3 @@ fun QuantitySelector() {
         }
     }
 }
-

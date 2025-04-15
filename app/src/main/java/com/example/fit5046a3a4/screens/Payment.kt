@@ -17,12 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import com.example.fit5046a3a4.components.WithBackground
+import kotlinx.coroutines.delay
 
-
-
-// 数据类用于传递订单项
+// 数据类
 data class CartItem(val name: String, val quantity: Int, val unitPrice: Double)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,46 +35,52 @@ fun PaymentScreen(
     onBack: () -> Unit = {},
     onPay: () -> Unit = {}
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Payment") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(24.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    WithBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Payment") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    )
+                )
+            },
+            containerColor = Color.Transparent
+        ) { innerPadding ->
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(24.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Order Summary", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                items.forEach { item ->
-                    val total = item.unitPrice * item.quantity
-                    Text("- ${item.name} x${item.quantity}: $${"%.2f".format(total)}")
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text("Order Summary", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    items.forEach { item ->
+                        val total = item.unitPrice * item.quantity
+                        Text("- ${item.name} x${item.quantity}: $${"%.2f".format(total)}")
+                    }
+                    val totalAmount = items.sumOf { it.unitPrice * it.quantity }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("Total Amount: $${"%.2f".format(totalAmount)}", fontSize = 18.sp, color = Color.DarkGray)
                 }
-                val totalAmount = items.sumOf { it.unitPrice * it.quantity }
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Total Amount: $${"%.2f".format(totalAmount)}", fontSize = 18.sp, color = Color.DarkGray)
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                SlideToProceedButton(onComplete = onPay)
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            SlideToProceedButton(onComplete = onPay)
         }
     }
 }

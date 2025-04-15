@@ -17,6 +17,7 @@ import androidx.core.view.WindowCompat
 import com.example.fit5046a3a4.navigation.AppNavigation
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.example.fit5046a3a4.components.WithBackground
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -40,9 +41,11 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = Color.Transparent
                 ) {
-                    AppNavigation()
+                    WithBackground {
+                        AppNavigation()
+                    }
                 }
             }
         }
