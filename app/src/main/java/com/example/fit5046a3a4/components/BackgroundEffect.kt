@@ -37,7 +37,6 @@ fun AnimatedBackground(
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             rotate(angle) {
-                // 绘制渐变背景圆形
                 drawCircle(
                     color = primary.copy(alpha = 0.1f),
                     radius = size.maxDimension * 0.7f,

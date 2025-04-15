@@ -133,6 +133,32 @@ fun LoginScreen(
                 Text("Login")
             }
 
+            Button(
+                onClick = {
+                    // TODO: Add google login(firebse)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = Color.Black
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .height(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.googlelogin),
+                    contentDescription = "Google Logo",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Sign in with Google")
+            }
+
+
+
             TextButton(
                 onClick = onNavigateToSignUp,
                 modifier = Modifier.padding(top = 16.dp)
@@ -142,6 +168,3 @@ fun LoginScreen(
         }
     }
 }
-
-
-
