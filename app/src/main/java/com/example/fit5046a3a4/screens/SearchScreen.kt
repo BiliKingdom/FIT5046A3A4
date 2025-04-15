@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,8 +27,7 @@ fun SearchScreen(navController: NavController) {
     val filteredList = remember(query, hasFiltered) {
         if (!hasFiltered) emptyList()
         else {
-            val restaurants = DummyData.restaurants
-            restaurants.filter {
+            DummyData.restaurants.filter {
                 it.name.contains(query, ignoreCase = true) ||
                         it.address.contains(query, ignoreCase = true)
             }
@@ -40,7 +38,9 @@ fun SearchScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Search Restaurants", style = MaterialTheme.typography.titleLarge) },
+                    title = {
+                        Text("Search Restaurants", style = MaterialTheme.typography.titleLarge)
+                    },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -77,67 +77,79 @@ fun SearchScreen(navController: NavController) {
                     OutlinedTextField(
                         value = query,
                         onValueChange = { query = it },
-                        label = { Text("Search") },
+                        label = { Text("Search", style = MaterialTheme.typography.bodyMedium) },
                         modifier = Modifier.weight(1f)
                     )
                     Button(onClick = { hasFiltered = true }) {
-                        Text("Filter")
+                        Text("Filter", style = MaterialTheme.typography.labelLarge)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if (!hasFiltered) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No search has been conducted.", style = MaterialTheme.typography.bodyMedium)
+                when {
+                    !hasFiltered -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No search has been conducted.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
-                } else if (filteredList.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("No matching results were found.", style = MaterialTheme.typography.bodyMedium)
+
+                    filteredList.isEmpty() -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "No matching results were found.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
-                } else {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        items(filteredList) { restaurant ->
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(4.dp),
-                                shape = MaterialTheme.shapes.large
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+
+                    else -> {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(filteredList) { restaurant ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    elevation = CardDefaults.cardElevation(4.dp),
+                                    shape = MaterialTheme.shapes.large
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = restaurant.name,
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                        Spacer(Modifier.height(4.dp))
-                                        Text(
-                                            "📍 ${restaurant.address}",
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                        Text(
-                                            "🕑 Distance: ${restaurant.distanceKm} km",
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-                                    Button(onClick = {
-                                        navController.navigate(Screen.Menu.route)
-                                    }) {
-                                        Text("Order Here")
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = restaurant.name,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                            Spacer(Modifier.height(4.dp))
+                                            Text(
+                                                "📍 ${restaurant.address}",
+                                                style = MaterialTheme.typography.bodyMedium
+                                            )
+                                            Text(
+                                                "🕑 Distance: ${restaurant.distanceKm} km",
+                                                style = MaterialTheme.typography.bodySmall
+                                            )
+                                        }
+                                        Button(onClick = {
+                                            navController.navigate(Screen.Menu.route)
+                                        }) {
+                                            Text("Order Here", style = MaterialTheme.typography.labelLarge)
+                                        }
                                     }
                                 }
                             }

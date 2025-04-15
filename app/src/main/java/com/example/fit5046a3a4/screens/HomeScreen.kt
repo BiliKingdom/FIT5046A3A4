@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.TopAppBarDefaults
 
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -29,7 +28,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Welcome") },
+                title = {
+                    Text(
+                        "Welcome",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 )
@@ -38,7 +42,7 @@ fun HomeScreen(
         bottomBar = {
             BottomBar(navController = navController)
         },
-                containerColor = Color.Transparent
+        containerColor = Color.Transparent
     ) { padding ->
         Column(
             modifier = Modifier
@@ -46,47 +50,79 @@ fun HomeScreen(
                 .padding(16.dp)
         ) {
 
-            Text("HELLO, TIM ", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                "HELLO, TIM",
+                style = MaterialTheme.typography.headlineSmall
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Monash Points: 29", color = MaterialTheme.colorScheme.primary)
-            Text("Monash Dollars: $54.30", color = MaterialTheme.colorScheme.secondary)
+            Text(
+                "Monash Points: 29",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                "Monash Dollars: $54.30",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
 
             Spacer(Modifier.height(24.dp))
 
-            // Recent Orders  + View All
+            // Recent Orders + View All
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(" Recent Orders", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Recent Orders",
+                    style = MaterialTheme.typography.titleMedium
+                )
                 TextButton(onClick = {
                     navController.navigate(Screen.OrderHistory.route)
                 }) {
-                    Text("View All")
+                    Text(
+                        "View All",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
             }
 
-            // Recent Orders
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(DummyData.recentOrders) { order ->
                     Card(
-                        modifier = Modifier
-                            .width(260.dp),
+                        modifier = Modifier.width(260.dp),
                         shape = MaterialTheme.shapes.medium,
                         elevation = CardDefaults.cardElevation(6.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Order #${order.id}", style = MaterialTheme.typography.titleSmall)
-                            Text("${order.date} | ${order.time}", style = MaterialTheme.typography.bodySmall)
-                            Text("${order.summary}", style = MaterialTheme.typography.bodyMedium)
-                            Text("${order.amount}", color = MaterialTheme.colorScheme.primary)
+                            Text(
+                                "Order #${order.id}",
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                "${order.date} | ${order.time}",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                            Text(
+                                "${order.summary}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                "${order.amount}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
                                 onClick = { /* TODO: Reorder */ },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text("Reorder")
+                                Text(
+                                    "Reorder",
+                                    style = MaterialTheme.typography.labelLarge
+                                )
                             }
                         }
                     }
@@ -94,9 +130,11 @@ fun HomeScreen(
             }
 
             Spacer(Modifier.height(32.dp))
-            Text("🎉 Promotions", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "🎉 Promotions",
+                style = MaterialTheme.typography.titleMedium
+            )
 
-            // Promotions 列表
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(DummyData.promotions) { promo ->
                     Card(
@@ -110,7 +148,7 @@ fun HomeScreen(
                             painter = painterResource(id = promo.imageRes),
                             contentDescription = "Promotion",
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop  // ✅ 关键代码：裁剪填满
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }

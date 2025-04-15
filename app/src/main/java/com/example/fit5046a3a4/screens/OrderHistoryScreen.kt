@@ -24,7 +24,10 @@ fun OrderHistoryScreen(navController: NavController) {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text("Your Order History", style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = "Your Order History",
+                            style = MaterialTheme.typography.titleLarge
+                        )
                     },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
@@ -45,8 +48,9 @@ fun OrderHistoryScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        " You haven't placed any orders yet",
-                        style = MaterialTheme.typography.bodyLarge
+                        text = "You haven't placed any orders yet",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             } else {
@@ -74,11 +78,11 @@ fun OrderHistoryScreen(navController: NavController) {
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text = " Items: ${order.summary}",
+                                    text = "Items: ${order.summary}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text = " Total: ${order.amount}",
+                                    text = "Total: ${order.amount}",
                                     style = MaterialTheme.typography.bodyMedium.copy(
                                         color = MaterialTheme.colorScheme.primary
                                     )

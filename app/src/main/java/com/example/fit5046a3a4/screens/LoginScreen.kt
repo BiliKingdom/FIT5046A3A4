@@ -67,17 +67,19 @@ fun LoginScreen(
                 text = "Welcome Back",
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 24.dp),
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            // 用户名输入框（白色背景）
+            // 用户名输入框
             OutlinedTextField(
                 value = username,
                 onValueChange = {
                     username = it
                     isUsernameError = false
                 },
-                label = { Text("Username") },
+                label = {
+                    Text("Username", style = MaterialTheme.typography.bodyLarge)
+                },
                 isError = isUsernameError,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,26 +87,28 @@ fun LoginScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White,
-                    errorContainerColor = Color.White
+                    errorContainerColor = Color.White,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    errorLabelColor = MaterialTheme.colorScheme.error
                 )
             )
 
-            // 密码输入框（白色背景）
+            // 密码输入框
             OutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
                     isPasswordError = false
                 },
-                label = { Text("Password") },
+                label = {
+                    Text("Password", style = MaterialTheme.typography.bodyLarge)
+                },
                 isError = isPasswordError,
-                visualTransformation = if (passwordVisible) VisualTransformation.None
-                else PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff
-                            else Icons.Default.Visibility,
+                            imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                             contentDescription = "Toggle password visibility"
                         )
                     }
@@ -115,7 +119,9 @@ fun LoginScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White,
-                    errorContainerColor = Color.White
+                    errorContainerColor = Color.White,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    errorLabelColor = MaterialTheme.colorScheme.error
                 )
             )
 
@@ -130,7 +136,10 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text("Login")
+                Text(
+                    text = "Login",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
 
             Button(
@@ -163,7 +172,11 @@ fun LoginScreen(
                 onClick = onNavigateToSignUp,
                 modifier = Modifier.padding(top = 16.dp)
             ) {
-                Text("Don't have an account? Sign Up", color = Color.Black)
+                Text(
+                    text = "Don't have an account? Sign Up",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }

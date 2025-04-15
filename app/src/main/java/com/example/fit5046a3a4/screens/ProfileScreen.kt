@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
@@ -31,7 +30,9 @@ fun ProfileScreen(navController: NavController) {
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text("Profile") },
+                    title = {
+                        Text("Profile", style = MaterialTheme.typography.titleLarge)
+                    },
                     navigationIcon = {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
@@ -73,10 +74,10 @@ fun ProfileScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text("Username: $username", fontSize = 18.sp)
-                    Text("Email: $email", fontSize = 18.sp)
-                    Text("Monash Points: 29", fontSize = 18.sp)
-                    Text("\uD83D\uDCB5 Monash Dollars: \$54.30", fontSize = 18.sp)
+                    Text("Username: $username", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: $email", style = MaterialTheme.typography.bodyLarge)
+                    Text("Monash Points: 29", style = MaterialTheme.typography.bodyLarge)
+                    Text("💵 Monash Dollars: \$54.30", style = MaterialTheme.typography.bodyLarge)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -92,7 +93,10 @@ fun ProfileScreen(navController: NavController) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(if (isEditing) "Save Changes" else "Edit Profile")
+                    Text(
+                        if (isEditing) "Save Changes" else "Edit Profile",
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
 
                 OutlinedButton(
@@ -106,7 +110,7 @@ fun ProfileScreen(navController: NavController) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Logout")
+                    Text("Logout", style = MaterialTheme.typography.labelLarge)
                 }
             }
         }

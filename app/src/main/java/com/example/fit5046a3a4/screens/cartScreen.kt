@@ -39,7 +39,12 @@ fun CartScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Your Cart") },
+                    title = {
+                        Text(
+                            text = "Your Cart",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = {
                             navController.navigate(Screen.Order.route)
@@ -55,9 +60,7 @@ fun CartScreen(navController: NavController) {
                     )
                 )
             },
-            bottomBar = {
-                BottomBar(navController)
-            },
+            bottomBar = { BottomBar(navController) },
             containerColor = Color.Transparent
         ) { padding ->
             Column(
@@ -76,7 +79,11 @@ fun CartScreen(navController: NavController) {
                     modifier = Modifier.align(Alignment.End)
                 )
 
-                Text("Choose your order type:", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Choose your order type:",
+                    style = MaterialTheme.typography.titleMedium
+                )
+
                 val options = listOf("Dine In", "Pick Up")
                 Row {
                     options.forEach { option ->
@@ -94,7 +101,10 @@ fun CartScreen(navController: NavController) {
                                 selected = (option == orderType),
                                 onClick = { orderType = option }
                             )
-                            Text(option)
+                            Text(
+                                text = option,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                     }
                 }
@@ -103,7 +113,7 @@ fun CartScreen(navController: NavController) {
                     OutlinedTextField(
                         value = selectedDate.format(DateTimeFormatter.ISO_DATE),
                         onValueChange = {},
-                        label = { Text("Pick Up Date") },
+                        label = { Text("Pick Up Date", style = MaterialTheme.typography.bodyLarge) },
                         readOnly = true,
                         trailingIcon = {
                             IconButton(onClick = { showDatePicker = true }) {
@@ -121,7 +131,7 @@ fun CartScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Time:")
+                        Text("Time:", style = MaterialTheme.typography.bodyLarge)
                         DropdownMenuSelector("Hour", (0..23).toList(), selectedHour) { selectedHour = it }
                         DropdownMenuSelector("Minute", listOf(0, 15, 30, 45), selectedMinute) { selectedMinute = it }
                     }
@@ -129,7 +139,7 @@ fun CartScreen(navController: NavController) {
                     Text(
                         text = "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -141,7 +151,10 @@ fun CartScreen(navController: NavController) {
                         .fillMaxWidth()
                         .height(48.dp)
                 ) {
-                    Text("Pay with Google Pay")
+                    Text(
+                        text = "Pay with Google Pay",
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
             }
 
@@ -193,10 +206,20 @@ fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String) {
                     .padding(end = 16.dp)
             )
             Column(modifier = Modifier.weight(1f)) {
-                Text(item, fontWeight = FontWeight.Bold)
-                Text("x$quantity", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = item,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = "x$quantity",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
-            Text(price, color = MaterialTheme.colorScheme.primary)
+            Text(
+                text = price,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
@@ -212,7 +235,7 @@ fun DropdownMenuSelector(
 
     Box {
         OutlinedButton(onClick = { expanded = true }) {
-            Text("$label: ${"%02d".format(selected)}")
+            Text("$label: ${"%02d".format(selected)}", style = MaterialTheme.typography.bodyLarge)
         }
 
         DropdownMenu(
@@ -221,7 +244,9 @@ fun DropdownMenuSelector(
         ) {
             options.forEach { value ->
                 DropdownMenuItem(
-                    text = { Text("%02d".format(value)) },
+                    text = {
+                        Text("%02d".format(value), style = MaterialTheme.typography.bodyLarge)
+                    },
                     onClick = {
                         onSelected(value)
                         expanded = false

@@ -14,7 +14,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.fit5046a3a4.components.*
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
@@ -28,13 +27,11 @@ fun SignUpScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
-    // Error states
     var isUsernameError by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
     var isConfirmPasswordError by remember { mutableStateOf(false) }
 
-    // Validation logic
     fun validateInputs(): Boolean {
         isUsernameError = username.isBlank()
         isEmailError = email.isBlank() || !email.contains("@")
@@ -63,20 +60,14 @@ fun SignUpScreen(
                     .padding(vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Brand logo
-                BrandLogo(
-                    modifier = Modifier
-                        .padding(bottom = 24.dp)
-                )
+                BrandLogo(modifier = Modifier.padding(bottom = 24.dp))
 
-                // Sign up title
                 Text(
                     text = "Create Account",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Username field
                 StyledTextField(
                     value = username,
                     onValueChange = {
@@ -89,7 +80,6 @@ fun SignUpScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Email field
                 StyledTextField(
                     value = email,
                     onValueChange = {
@@ -104,7 +94,6 @@ fun SignUpScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Password field
                 StyledTextField(
                     value = password,
                     onValueChange = {
@@ -126,13 +115,11 @@ fun SignUpScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Password strength indicator
                 PasswordStrengthIndicator(
                     strength = calculatePasswordStrength(password),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                // Password requirements
                 Text(
                     text = "Password requirements:\n" +
                             "• At least 8 characters\n" +
@@ -144,7 +131,6 @@ fun SignUpScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Confirm password field
                 StyledTextField(
                     value = confirmPassword,
                     onValueChange = {
@@ -167,7 +153,6 @@ fun SignUpScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Register button
                 GradientButton(
                     text = "Sign Up",
                     onClick = {
@@ -182,7 +167,6 @@ fun SignUpScreen(
                             confirmPassword.isNotBlank()
                 )
 
-                // Login link
                 TextButton(
                     onClick = onNavigateToLogin,
                     modifier = Modifier.padding(top = 16.dp)

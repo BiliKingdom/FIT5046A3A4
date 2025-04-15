@@ -30,7 +30,7 @@ fun ProductScreen() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White.copy(alpha = 0.8f))  // 半透明白底
+                        .background(Color.White.copy(alpha = 0.8f))
                         .padding(16.dp)
                 ) {
                     Button(
@@ -40,11 +40,11 @@ fun ProductScreen() {
                             .height(48.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
-                            contentColor = Color.Black
+                            contentColor = MaterialTheme.colorScheme.onSurface
                         ),
-                        border = BorderStroke(1.dp, Color.Black)
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                     ) {
-                        Text("Add to Order")
+                        Text("Add to Order", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
@@ -57,7 +57,6 @@ fun ProductScreen() {
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 商品图片
                 Image(
                     painter = painterResource(id = R.drawable.burrito),
                     contentDescription = "Product Image",
@@ -70,9 +69,13 @@ fun ProductScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 商品名称和价格
-                Text("Hamburger", style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    "Hamburger",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Text(
                     text = "$8.20",
                     style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary)
@@ -80,7 +83,6 @@ fun ProductScreen() {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 简要介绍
                 Text(
                     text = "A delicious breakfast Hamburger made with scrambled eggs, bacon, cheese, and salsa wrapped in a warm tortilla.",
                     style = MaterialTheme.typography.bodyMedium
@@ -88,7 +90,6 @@ fun ProductScreen() {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 数量选择器
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterStart
@@ -107,12 +108,16 @@ fun QuantitySelector() {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Number:", modifier = Modifier.padding(end = 8.dp))
+        Text(
+            "Number:",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(end = 8.dp)
+        )
 
         IconButton(
             onClick = { if (quantity > 1) quantity-- },
             modifier = Modifier
-                .border(1.dp, Color.Gray, CircleShape)
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 .size(36.dp)
         ) {
             Text("-", style = MaterialTheme.typography.bodyLarge)
@@ -127,7 +132,7 @@ fun QuantitySelector() {
         IconButton(
             onClick = { quantity++ },
             modifier = Modifier
-                .border(1.dp, Color.Gray, CircleShape)
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 .size(36.dp)
         ) {
             Text("+", style = MaterialTheme.typography.bodyLarge)

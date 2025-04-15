@@ -20,42 +20,31 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LocationScreen(
-    onNavigateBack: () -> Unit,  // 可选：返回按钮点击时调用
+    onNavigateBack: () -> Unit,
     navController: NavHostController
 ) {
     data class Store(val name: String, val address: String)
     var selectedStoreName by remember { mutableStateOf<String?>(null) }
     val stores = listOf(
-        Store(
-            name = "Glen Waverley Store",
-            address = "Shop 12, 45 High Street, Glen Waverley VIC 3150, Australia"
-        ),
-        Store(
-            name = "Burwood Mall",
-            address = "Unit 8, 100 Burwood Highway, Burwood VIC 3125, Australia"
-        ),
-        Store(
-            name = "Mulgrave Market",
-            address = "Store 3, 15 Centre Road, Mulgrave VIC 3170, Australia"
-        ),
-        Store(
-            name = "Mitcham Hub",
-            address = "Shop 4, 50 Burwood Road, Mitcham VIC 3132, Australia"
-        ),
-        Store(
-            name = "Wheelers Hill Centre",
-            address = "Outlet 5, 200 Queens Road, Wheelers Hill VIC 3150, Australia"
-        )
+        Store("Glen Waverley Store", "Shop 12, 45 High Street, Glen Waverley VIC 3150, Australia"),
+        Store("Burwood Mall", "Unit 8, 100 Burwood Highway, Burwood VIC 3125, Australia"),
+        Store("Mulgrave Market", "Store 3, 15 Centre Road, Mulgrave VIC 3170, Australia"),
+        Store("Mitcham Hub", "Shop 4, 50 Burwood Road, Mitcham VIC 3132, Australia"),
+        Store("Wheelers Hill Centre", "Outlet 5, 200 Queens Road, Wheelers Hill VIC 3150, Australia")
     )
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Select Location") },
+                title = {
+                    Text(
+                        "Select Location",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.navigateUp()
@@ -76,7 +65,7 @@ fun LocationScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(items =stores) { store ->
+            items(items = stores) { store ->
                 val isSelected = (store.name == selectedStoreName)
 
                 Card(
@@ -90,7 +79,6 @@ fun LocationScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // 显示门店信息：门店名和具体地址
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = store.name,
@@ -99,21 +87,19 @@ fun LocationScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = store.address,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        // "Order here" 按钮，占位实现选择返回功能
+
                         Button(
                             onClick = {
-                                // 存储选中的门店到 SavedStateHandle，以便回到 HomeScreen 后能读取
                                 navController.previousBackStackEntry
                                     ?.savedStateHandle
                                     ?.set("selectedLocation", store.name)
 
-                                // 仅更新本地 isSelected 状态，不立即 navigateUp()
                                 selectedStoreName = store.name
                             },
-                            // 如果要在视觉上区分选中，可改变按钮颜色
                             colors = if (isSelected) {
                                 ButtonDefaults.buttonColors(
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer
@@ -122,7 +108,10 @@ fun LocationScreen(
                                 ButtonDefaults.buttonColors()
                             }
                         ) {
-                            Text("Order here")
+                            Text(
+                                text = "Order here",
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                     }
                 }
@@ -131,13 +120,10 @@ fun LocationScreen(
     }
 }
 
-
-
 @Preview(showBackground = true)
 @Composable
 fun LocationScreenPreview() {
     FIT5046A3A4Theme {
-        // 创建一个临时的 NavHostController 用于预览
         val navController = rememberNavController()
         LocationScreen(
             navController = navController,

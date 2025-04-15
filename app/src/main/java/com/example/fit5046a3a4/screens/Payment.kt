@@ -15,14 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.example.fit5046a3a4.components.WithBackground
 import kotlinx.coroutines.delay
 
-// 数据类
 data class CartItem(val name: String, val quantity: Int, val unitPrice: Double)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +37,12 @@ fun PaymentScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Payment") },
+                    title = {
+                        Text(
+                            "Payment",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
@@ -65,16 +68,37 @@ fun PaymentScreen(
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalAlignment = Alignment.Start
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Order Summary", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Order Summary",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+
                     items.forEach { item ->
                         val total = item.unitPrice * item.quantity
-                        Text("- ${item.name} x${item.quantity}: $${"%.2f".format(total)}")
+                        Text(
+                            "- ${item.name} x${item.quantity}: $${"%.2f".format(total)}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
                     }
+
                     val totalAmount = items.sumOf { it.unitPrice * it.quantity }
+
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text("Total Amount: $${"%.2f".format(totalAmount)}", fontSize = 18.sp, color = Color.DarkGray)
+
+                    Text(
+                        "Total Amount: $${"%.2f".format(totalAmount)}",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 8.dp),
+                        textAlign = TextAlign.End
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -99,7 +123,7 @@ fun SlideToProceedButton(
             .fillMaxWidth()
             .height(56.dp)
             .background(
-                color = if (isComplete) Color(0xFF4CAF50) else Color.LightGray,
+                color = if (isComplete) MaterialTheme.colorScheme.primary else Color.LightGray,
                 shape = RoundedCornerShape(50)
             )
             .padding(horizontal = 4.dp),
@@ -107,7 +131,7 @@ fun SlideToProceedButton(
     ) {
         Text(
             text = if (isComplete) "✔ Proceed" else "Slide to Proceed",
-            color = Color.White,
+            style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
             modifier = Modifier.align(Alignment.Center)
         )
 
