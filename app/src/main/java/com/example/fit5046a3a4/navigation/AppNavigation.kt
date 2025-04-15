@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a3a4.screens.*
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
