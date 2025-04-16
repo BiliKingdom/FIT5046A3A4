@@ -57,7 +57,8 @@ fun HomeScreen(
             Text(
                 "HELLO, TIM",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color(0xFFDDDDDD)
+                color = Color.Black,
+                modifier = Modifier.offset(y = (-16).dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -65,14 +66,14 @@ fun HomeScreen(
                 "Clayton Points: 29",
 
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFDDDDDD)
+                color = Color.Black
             )
             Text(
 
                 "Clayton Dollars: $54.30",
 
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFDDDDDD)
+                color = Color.Black
             )
 
 
@@ -82,7 +83,7 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = Color.White
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 shape = MaterialTheme.shapes.medium
@@ -98,7 +99,8 @@ fun HomeScreen(
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(36.dp)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp)
+                        )
                     Column {
                         Text(
                             text = "Rain expected in Clayton",

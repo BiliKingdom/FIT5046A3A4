@@ -90,7 +90,7 @@ fun MenuScreen(
                     stickyHeader {
                         Column(
                             modifier = Modifier
-                                .background(Color.White)
+                                .background(Color.Transparent)
                                 .padding(bottom = 4.dp)
                         ) {
                             PickupInfoCard()
@@ -124,7 +124,8 @@ fun MenuItemRow(item: MenuItem) {
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -185,7 +186,7 @@ fun CategoryTabBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(Color.Transparent)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
