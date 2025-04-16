@@ -65,14 +65,14 @@ fun HomeScreen(
                 "Clayton Points: 29",
 
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
+                color = Color(0xFFDDDDDD)
             )
             Text(
 
                 "Clayton Dollars: $54.30",
 
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary
+                color = Color(0xFFDDDDDD)
             )
 
 
@@ -139,7 +139,10 @@ fun HomeScreen(
                     Card(
                         modifier = Modifier.width(260.dp),
                         shape = MaterialTheme.shapes.medium,
-                        elevation = CardDefaults.cardElevation(6.dp)
+                        elevation = CardDefaults.cardElevation(6.dp),
+                                colors = CardDefaults.cardColors(
+                                containerColor = Color.White // 或 Color(0xFFE08E45)，橙色系
+                                )
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
