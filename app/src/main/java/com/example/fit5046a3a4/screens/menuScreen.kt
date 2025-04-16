@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -116,7 +117,6 @@ fun MenuScreen(
         }
     }
 }
-
 @Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
@@ -140,7 +140,11 @@ fun MenuItemRow(item: MenuItem) {
                 contentScale = ContentScale.Crop
             )
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 12.dp)
+            ) {
                 Text(
                     text = item.name,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
@@ -151,9 +155,15 @@ fun MenuItemRow(item: MenuItem) {
                     color = MaterialTheme.colorScheme.primary
                 )
             }
+
+            // ✅ 添加一个只显示的按钮，不处理点击逻辑
+            IconButton(onClick = {}) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
         }
     }
 }
+
 
 @Composable
 fun PickupInfoCard() {
@@ -162,7 +172,7 @@ fun PickupInfoCard() {
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
