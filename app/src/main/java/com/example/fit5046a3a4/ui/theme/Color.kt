@@ -2,9 +2,9 @@
 package com.example.fit5046a3a4.ui.theme
 
 import androidx.compose.ui.graphics.Color
-
+//val md_theme_light_primary = Color(0xFF006C4C)
 // Light Theme Colors
-val md_theme_light_primary = Color(0xFF006C4C)
+val md_theme_light_primary = Color(0xFF28B00B)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
 val md_theme_light_primaryContainer = Color(0xFF89F8C7)
 val md_theme_light_onPrimaryContainer = Color(0xFF002114)
