@@ -56,7 +56,8 @@ fun HomeScreen(
 
             Text(
                 "HELLO, TIM",
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color(0xFFDDDDDD)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -64,7 +65,7 @@ fun HomeScreen(
                 "Clayton Points: 29",
 
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.White
             )
             Text(
 
@@ -176,7 +177,7 @@ fun HomeScreen(
 
             Spacer(Modifier.height(32.dp))
             Text(
-                "🎉 Promotions",
+                " Promotions",
                 style = MaterialTheme.typography.titleMedium
             )
 
