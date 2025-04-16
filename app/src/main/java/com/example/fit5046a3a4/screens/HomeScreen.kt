@@ -170,6 +170,7 @@ fun HomeScreen(
                 "🎉 Promotions",
                 style = MaterialTheme.typography.titleMedium
             )
+            Spacer(modifier = Modifier.height(12.dp))
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(DummyData.promotions) { promo ->
