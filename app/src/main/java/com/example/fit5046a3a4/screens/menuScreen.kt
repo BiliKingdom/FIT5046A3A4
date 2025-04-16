@@ -2,19 +2,15 @@
 
 package com.example.fit5046a3a4.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,10 +18,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.Screen
-import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -49,8 +46,23 @@ fun MenuScreen(
         MenuCategory("Dessert", listOf(
             MenuItem("Cake", "$5.99", R.drawable.churros),
             MenuItem("Ice Cream", "$4.50", R.drawable.icecream)
-        ))
+        )),
+
     )
+
+    val listState = rememberLazyListState()
+    val selectedCategory = remember { mutableStateOf("MAIN") }
+    val coroutineScope = rememberCoroutineScope()
+
+    val categoryIndexMap = remember {
+        mutableMapOf<String, Int>().apply {
+            var index = 1 // Only CategoryTabBar is stickyHeader
+            menuData.forEach { category ->
+                put(category.name.uppercase(), index)
+                index += category.items.size + 1
+            }
+        }
+    }
 
     WithBackground {
         Scaffold(
@@ -82,23 +94,38 @@ fun MenuScreen(
             floatingActionButtonPosition = FabPosition.End,
             containerColor = Color.Transparent
         ) { innerPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    stickyHeader {
-                        Column(
-                            modifier = Modifier
-                                .background(Color.Transparent)
-                                .padding(bottom = 4.dp)
-                        ) {
-                            PickupInfoCard()
-                            CategoryTabBar()
-                        }
-                    }
+                PickupInfoCard()
 
+                Surface(
+                    tonalElevation = 4.dp,
+                    shadowElevation = 4.dp,
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    CategoryTabBar(
+                        categories = menuData.map { it.name.uppercase() },
+                        selectedCategory = selectedCategory.value,
+                        onCategorySelected = { category ->
+                            selectedCategory.value = category
+                            categoryIndexMap[category]?.let { targetIndex ->
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(targetIndex)
+                                }
+                            }
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = listState
+                ) {
                     menuData.forEach { category ->
                         item {
                             Text(
@@ -107,7 +134,6 @@ fun MenuScreen(
                                 modifier = Modifier.padding(16.dp)
                             )
                         }
-
                         items(category.items) { item ->
                             MenuItemRow(item)
                         }
@@ -117,6 +143,44 @@ fun MenuScreen(
         }
     }
 }
+
+@Composable
+fun CategoryTabBar(
+    categories: List<String>,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    val scrollState = rememberScrollState()
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .horizontalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            categories.forEach { label ->
+                val isSelected = label == selectedCategory
+                Button(
+                    onClick = { onCategorySelected(label) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.LightGray,
+                        contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface
+                    ),
+                    shape = MaterialTheme.shapes.medium,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
@@ -156,14 +220,12 @@ fun MenuItemRow(item: MenuItem) {
                 )
             }
 
-            // ✅ 添加一个只显示的按钮，不处理点击逻辑
             IconButton(onClick = {}) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
     }
 }
-
 
 @Composable
 fun PickupInfoCard() {
@@ -186,26 +248,6 @@ fun PickupInfoCard() {
                 text = "Pickup time: 8:30 – 6:30 pm",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
-
-@Composable
-fun CategoryTabBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Transparent)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        listOf("MAINS", "SIDES", "DRINK", "DESSERT").forEach { label ->
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
     }
