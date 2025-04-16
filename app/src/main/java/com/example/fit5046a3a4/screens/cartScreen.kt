@@ -8,7 +8,10 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarToday
+
 import androidx.compose.material.icons.filled.Delete
+
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,13 +22,20 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+
+
+import com.example.fit5046a3a4.R
+
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.Screen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -39,9 +49,12 @@ fun CartScreen(navController: NavController) {
         var selectedHour by remember { mutableStateOf(12) }
         var selectedMinute by remember { mutableStateOf(0) }
 
+
         val viewModel: CartViewModel = viewModel()   // ← 不用 hiltViewModel
         val items by viewModel.cartItems.collectAsState(initial = emptyList())
         //val total = items.sumOf { it.price * it.quantity }
+
+
 
         Scaffold(
             topBar = {
@@ -77,6 +90,7 @@ fun CartScreen(navController: NavController) {
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+
                 items.forEach { cart ->                         // ← NEW
                     CartItemRow(                                // ← NEW
                         item      = cart.name,                  // ← NEW
@@ -90,6 +104,7 @@ fun CartScreen(navController: NavController) {
                 val total = items.sumOf { it.price * it.quantity }      // ← NEW
                 Text(                                                   // ← CHANGED
                     text = "Summary: $${"%.2f".format(total)}",         // ← CHANGED
+
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.End)
                 )
@@ -205,6 +220,8 @@ fun CartScreen(navController: NavController) {
 
 @Composable
 fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String,onRemove: () -> Unit) {
+
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -221,8 +238,10 @@ fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String,onRemo
                     .padding(end = 16.dp)
             )
             Column(modifier = Modifier.weight(1f)) {
+
                 Text(item, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold))
                 Text("x$quantity", style = MaterialTheme.typography.bodyMedium)
+
             }
             Text(
                 text = price,
@@ -230,10 +249,12 @@ fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String,onRemo
                 color = MaterialTheme.colorScheme.primary
             )
 
+
             /* 删除按钮 */
             IconButton(onClick = onRemove) {                     // ← 新增
                 Icon(Icons.Default.Delete, contentDescription = "Remove")  // ← 新增
             }
+
         }
     }
 }
