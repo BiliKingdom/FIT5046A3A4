@@ -1,25 +1,18 @@
 package com.example.fit5046a3a4.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fit5046a3a4.components.WithBackground
-import kotlinx.coroutines.delay
 
 data class CartItem(val name: String, val quantity: Int, val unitPrice: Double)
 
@@ -103,64 +96,31 @@ fun PaymentScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                SlideToProceedButton(onComplete = onPay)
+                ProceedButton(onClick = onPay)
             }
         }
     }
 }
 
 @Composable
-fun SlideToProceedButton(
+fun ProceedButton(
     modifier: Modifier = Modifier,
-    onComplete: () -> Unit
+    onClick: () -> Unit
 ) {
-    var offsetX by remember { mutableStateOf(0f) }
-    val maxOffset = 220f
-    val isComplete = offsetX > maxOffset * 0.85f
-
-    Box(
+    Button(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp)
-            .background(
-                color = if (isComplete) MaterialTheme.colorScheme.primary else Color.LightGray,
-                shape = RoundedCornerShape(50)
-            )
-            .padding(horizontal = 4.dp),
-        contentAlignment = Alignment.CenterStart
+            .height(56.dp),
+        shape = RoundedCornerShape(50),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = Color.White
+        )
     ) {
         Text(
-            text = if (isComplete) "✔ Proceed" else "Slide to Proceed",
-            style = MaterialTheme.typography.bodyMedium.copy(color = Color.White),
-            modifier = Modifier.align(Alignment.Center)
+            text = "Proceed to Pay",
+            style = MaterialTheme.typography.bodyLarge
         )
-
-        Surface(
-            modifier = Modifier
-                .offset(x = offsetX.dp)
-                .size(48.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        change.consume()
-                        offsetX = (offsetX + dragAmount.x).coerceIn(0f, maxOffset)
-                    }
-                },
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Slide",
-                tint = Color.White,
-                modifier = Modifier.padding(12.dp)
-            )
-        }
-    }
-
-    if (isComplete) {
-        LaunchedEffect(true) {
-            delay(400)
-            onComplete()
-        }
     }
 }
