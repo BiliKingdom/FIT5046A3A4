@@ -1,0 +1,141 @@
+package com.example.fit5046a3a4.screens
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.layout.ContentScale
+import com.example.fit5046a3a4.R
+import com.example.fit5046a3a4.components.WithBackground
+
+@Composable
+fun ProductScreen() {
+    WithBackground {
+        Scaffold(
+            containerColor = Color.Transparent,
+            bottomBar = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .padding(16.dp)
+                ) {
+                    Button(
+                        onClick = { /* TODO */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    ) {
+                        Text("Add to Order", style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.burrito),
+                    contentDescription = "Product Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    "Hamburger",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "$8.20",
+                    style = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.primary)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "A delicious breakfast Hamburger made with scrambled eggs, bacon, cheese, and salsa wrapped in a warm tortilla.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    QuantitySelector()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun QuantitySelector() {
+    var quantity by remember { mutableStateOf(1) }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            "Number:",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(end = 8.dp)
+        )
+
+        IconButton(
+            onClick = { if (quantity > 1) quantity-- },
+            modifier = Modifier
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                .size(36.dp)
+        ) {
+            Text("-", style = MaterialTheme.typography.bodyLarge)
+        }
+
+        Text(
+            text = quantity.toString(),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
+
+        IconButton(
+            onClick = { quantity++ },
+            modifier = Modifier
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                .size(36.dp)
+        ) {
+            Text("+", style = MaterialTheme.typography.bodyLarge)
+        }
+    }
+}
