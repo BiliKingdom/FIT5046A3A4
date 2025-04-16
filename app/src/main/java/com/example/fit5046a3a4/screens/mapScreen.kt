@@ -53,7 +53,7 @@ fun mapScreen(
                     .padding(16.dp)
                     .height(52.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF4A300),
+                    containerColor = Color(0xFF28B00B),
                     contentColor = Color.Black
                 )
             ) {
@@ -107,7 +107,7 @@ fun mapScreen(
                     onClick = {},
                     label = { Text("Open") },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color(0xFF4CAF50),
+                        containerColor = Color(0xFFBD1920),
                         labelColor = Color.White
                     )
                 )
