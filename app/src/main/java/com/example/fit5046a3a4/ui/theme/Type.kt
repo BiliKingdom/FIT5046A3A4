@@ -121,7 +121,7 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     ),
     
-    // 小号标签文本
+
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
