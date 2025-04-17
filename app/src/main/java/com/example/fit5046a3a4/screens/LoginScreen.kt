@@ -50,7 +50,7 @@ fun LoginScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White.copy(alpha = 0.5f))
+                .background(Color.White.copy(alpha = 0.6f))
         )
 
         // 登录内容
@@ -173,9 +173,9 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 16.dp)
             ) {
                 Text(
-                    text = "Don't have an account? Sign Up",
+                    text = "Don't have an account? Sign Up!",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color(0xFF070707)
                 )
             }
         }
