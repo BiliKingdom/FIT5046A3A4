@@ -52,7 +52,6 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadLastUserFromDatabase() {
         viewModelScope.launch {
-            // 假设你希望只加载第一个用户作为登录用户（开发测试适用）
             val userList = userDao.getAllUsers().firstOrNull()
             _userState.value = userList?.firstOrNull()
         }
