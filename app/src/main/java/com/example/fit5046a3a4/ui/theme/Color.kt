@@ -66,7 +66,7 @@ val md_theme_dark_outlineVariant = Color(0xFF404943)
 val md_theme_dark_scrim = Color(0xFF000000)
 
 // Custom Brand Colors
-val brand_primary = Color(0xFF2E7D32) // 深绿色
-val brand_secondary = Color(0xFFFFC107) // 金黄色
-val brand_accent = Color(0xFFFF5722) // 橙红色
+val brand_primary = Color(0xFF2E7D32)
+val brand_secondary = Color(0xFFFFC107)
+val brand_accent = Color(0xFFFF5722)
 val test_color = Color(0xB52BDE73)
