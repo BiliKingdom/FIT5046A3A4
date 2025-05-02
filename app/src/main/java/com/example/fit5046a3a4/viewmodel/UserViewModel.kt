@@ -25,14 +25,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addUser(user: UserEntity) {
         viewModelScope.launch {
-            userDao.insertUser(user)  // ✅ 修正函数名
+            userDao.insertUser(user)
             _userState.value = user
         }
     }
 
     fun updateUser(updatedUser: UserEntity) {
         viewModelScope.launch {
-            userDao.updateUser(updatedUser)  // ✅ 确保 DAO 中有对应方法
+            userDao.updateUser(updatedUser)
             _userState.value = updatedUser
         }
     }
