@@ -26,7 +26,8 @@ fun ProfileScreen(navController: NavController) {
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
 
-        if (user == null) {
+        // 👉 Null check with early return
+        val safeUser = user ?: run {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -50,16 +51,14 @@ fun ProfileScreen(navController: NavController) {
         }
 
         var isEditing by remember { mutableStateOf(false) }
-        var username by remember { mutableStateOf(user!!.username) }
-        var email by remember { mutableStateOf(user!!.email) }
+        var username by remember { mutableStateOf(safeUser.username) }
+        var email by remember { mutableStateOf(safeUser.email) }
 
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text("Profile", style = MaterialTheme.typography.titleLarge)
-                    },
+                    title = { Text("Profile", style = MaterialTheme.typography.titleLarge) },
                     navigationIcon = {
                         Icon(
                             imageVector = Icons.Default.AccountCircle,
@@ -67,9 +66,7 @@ fun ProfileScreen(navController: NavController) {
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
-                    )
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                 )
             },
             bottomBar = {
@@ -101,8 +98,8 @@ fun ProfileScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text("Username: ${user!!.username}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Email: ${user!!.email}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Username: ${safeUser.username}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: ${safeUser.email}", style = MaterialTheme.typography.bodyLarge)
                     Text("Monash Points: 29", style = MaterialTheme.typography.bodyLarge)
                     Text("💵 Monash Dollars: \$54.30", style = MaterialTheme.typography.bodyLarge)
                 }
@@ -113,7 +110,7 @@ fun ProfileScreen(navController: NavController) {
                     onClick = {
                         if (isEditing) {
                             scope.launch {
-                                userViewModel.updateUser(user!!.copy(username = username, email = email))
+                                userViewModel.updateUser(safeUser.copy(username = username, email = email))
                                 snackbarHostState.showSnackbar("✅ Profile updated!")
                             }
                         }

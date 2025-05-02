@@ -8,6 +8,7 @@ import com.example.fit5046a3a4.data.UserEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
@@ -48,5 +49,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun setUser(user: UserEntity) {
         _userState.value = user
     }
+
+    fun loadLastUserFromDatabase() {
+        viewModelScope.launch {
+            // 假设你希望只加载第一个用户作为登录用户（开发测试适用）
+            val userList = userDao.getAllUsers().firstOrNull()
+            _userState.value = userList?.firstOrNull()
+        }
+    }
+
 
 }
