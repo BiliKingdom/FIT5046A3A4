@@ -21,13 +21,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
+import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +40,14 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val auth = Firebase.auth
+    val userViewModel: UserViewModel = viewModel()
+    val scope = rememberCoroutineScope()
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var isEmailError by remember { mutableStateOf(false) }
+    var isPasswordError by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -56,29 +67,21 @@ fun LoginScreen(
             } catch (e: ApiException) {
                 Log.w("LoginScreen", "Google sign in failed: ${e.statusCode}")
             }
-        } else {
-            Log.i("LoginScreen", "User cancelled Google Sign-In")
         }
     }
 
     val googleSignInClient = remember {
         val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com") // Replace this with your actual Web client ID from Firebase
+            .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com")
             .requestEmail()
             .build()
         GoogleSignIn.getClient(context, options)
     }
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var isUsernameError by remember { mutableStateOf(false) }
-    var isPasswordError by remember { mutableStateOf(false) }
-
     fun validateInputs(): Boolean {
-        isUsernameError = username.isBlank()
+        isEmailError = email.isBlank()
         isPasswordError = password.isBlank()
-        return !isUsernameError && !isPasswordError
+        return !isEmailError && !isPasswordError
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -103,18 +106,13 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             BrandLogo(modifier = Modifier.padding(bottom = 32.dp))
-
-            Text(
-                "Welcome Back",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
+            Text("Welcome Back", style = MaterialTheme.typography.headlineMedium)
 
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it; isUsernameError = false },
-                label = { Text("Username") },
-                isError = isUsernameError,
+                value = email,
+                onValueChange = { email = it; isEmailError = false },
+                label = { Text("Email") },
+                isError = isEmailError,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -150,7 +148,16 @@ fun LoginScreen(
             Button(
                 onClick = {
                     if (validateInputs()) {
-                        onNavigateToHome()
+                        scope.launch {
+                            val user = userViewModel.getUserNow(email)
+                            if (user != null && user.password == password) {
+                                userViewModel.setUser(user)
+                                onNavigateToHome()
+                            } else {
+                                isPasswordError = true
+                                isEmailError = true
+                            }
+                        }
                     }
                 },
                 modifier = Modifier
@@ -182,10 +189,7 @@ fun LoginScreen(
                 Text("Sign in with Google", color = Color.Black)
             }
 
-            TextButton(
-                onClick = onNavigateToSignUp,
-                modifier = Modifier.padding(top = 16.dp)
-            ) {
+            TextButton(onClick = onNavigateToSignUp, modifier = Modifier.padding(top = 16.dp)) {
                 Text("Don't have an account? Sign Up!", color = Color.Black)
             }
         }

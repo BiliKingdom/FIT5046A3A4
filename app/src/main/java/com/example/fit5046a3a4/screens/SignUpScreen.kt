@@ -13,13 +13,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.components.*
+import com.example.fit5046a3a4.data.UserEntity
+import com.example.fit5046a3a4.viewmodel.UserViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onSignUpComplete: () -> Unit
 ) {
+    val userViewModel: UserViewModel = viewModel()
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -40,103 +46,60 @@ fun SignUpScreen(
         return !isUsernameError && !isEmailError && !isPasswordError && !isConfirmPasswordError
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Surface(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(0.9f).padding(16.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-            tonalElevation = 1.dp,
-            shadowElevation = 4.dp
+            tonalElevation = 1.dp
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 32.dp)
-                    .padding(vertical = 32.dp),
+                    .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                BrandLogo(modifier = Modifier.padding(bottom = 24.dp))
-
-                Text(
-                    text = "Create Account",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                BrandLogo(Modifier.padding(bottom = 24.dp))
+                Text("Create Account", style = MaterialTheme.typography.headlineMedium)
 
                 StyledTextField(
                     value = username,
-                    onValueChange = {
-                        username = it
-                        isUsernameError = false
-                    },
+                    onValueChange = { username = it; isUsernameError = false },
                     label = "Username",
                     isError = isUsernameError,
-                    errorMessage = if (isUsernameError) "Please enter a username" else null,
+                    errorMessage = if (isUsernameError) "Enter username" else null,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 StyledTextField(
                     value = email,
-                    onValueChange = {
-                        email = it
-                        isEmailError = false
-                    },
+                    onValueChange = { email = it; isEmailError = false },
                     label = "Email",
                     isError = isEmailError,
-                    errorMessage = if (isEmailError) {
-                        if (email.isBlank()) "Please enter your email" else "Please enter a valid email"
-                    } else null,
+                    errorMessage = if (isEmailError) "Invalid email" else null,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 StyledTextField(
                     value = password,
-                    onValueChange = {
-                        password = it
-                        isPasswordError = false
-                    },
+                    onValueChange = { password = it; isPasswordError = false },
                     label = "Password",
                     isError = isPasswordError,
-                    errorMessage = if (isPasswordError) "Password must be at least 8 characters" else null,
+                    errorMessage = if (isPasswordError) "Too short" else null,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                contentDescription = "Toggle"
                             )
                         }
                     },
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                PasswordStrengthIndicator(
-                    strength = calculatePasswordStrength(password),
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                Text(
-                    text = "Password requirements:\n" +
-                            "• At least 8 characters\n" +
-                            "• Uppercase and lowercase letters\n" +
-                            "• At least one digit\n" +
-                            "• At least one special character",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
                 StyledTextField(
                     value = confirmPassword,
-                    onValueChange = {
-                        confirmPassword = it
-                        isConfirmPasswordError = false
-                    },
+                    onValueChange = { confirmPassword = it; isConfirmPasswordError = false },
                     label = "Confirm Password",
                     isError = isConfirmPasswordError,
                     errorMessage = if (isConfirmPasswordError) "Passwords do not match" else null,
@@ -145,48 +108,36 @@ fun SignUpScreen(
                         IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
                             Icon(
                                 imageVector = if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password"
+                                contentDescription = "Toggle"
                             )
                         }
                     }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(Modifier.height(24.dp))
 
                 GradientButton(
                     text = "Sign Up",
                     onClick = {
                         if (validateInputs()) {
+                            userViewModel.addUser(
+                                UserEntity(
+                                    username = username,
+                                    email = email,
+                                    password = password
+                                )
+                            )
                             onSignUpComplete()
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = username.isNotBlank() &&
-                            email.isNotBlank() &&
-                            password.isNotBlank() &&
-                            confirmPassword.isNotBlank()
+                    enabled = validateInputs()
                 )
 
-                TextButton(
-                    onClick = onNavigateToLogin,
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text(
-                        text = "Already have an account? Log In",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                TextButton(onClick = onNavigateToLogin) {
+                    Text("Already have an account? Log In")
                 }
             }
         }
     }
-}
-
-private fun calculatePasswordStrength(password: String): Float {
-    var strength = 0f
-    if (password.length >= 8) strength += 0.25f
-    if (password.any { it.isUpperCase() } && password.any { it.isLowerCase() }) strength += 0.25f
-    if (password.any { it.isDigit() }) strength += 0.25f
-    if (password.any { !it.isLetterOrDigit() }) strength += 0.25f
-    return strength
 }

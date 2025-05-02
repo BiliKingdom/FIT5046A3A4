@@ -9,22 +9,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.viewmodel.UserViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController) {
     WithBackground {
-        var isEditing by remember { mutableStateOf(false) }
-        var username by remember { mutableStateOf("TIM") }
-        var email by remember { mutableStateOf("example@domain.com") }
-
+        val userViewModel: UserViewModel = viewModel()
+        val user by userViewModel.userState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
+
+        if (user == null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("No user logged in", style = MaterialTheme.typography.bodyLarge)
+                Button(
+                    onClick = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Back to Login")
+                }
+            }
+            return@WithBackground
+        }
+
+        var isEditing by remember { mutableStateOf(false) }
+        var username by remember { mutableStateOf(user!!.username) }
+        var email by remember { mutableStateOf(user!!.email) }
 
         Scaffold(
             containerColor = Color.Transparent,
@@ -74,8 +101,8 @@ fun ProfileScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text("Username: $username", style = MaterialTheme.typography.bodyLarge)
-                    Text("Email: $email", style = MaterialTheme.typography.bodyLarge)
+                    Text("Username: ${user!!.username}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: ${user!!.email}", style = MaterialTheme.typography.bodyLarge)
                     Text("Monash Points: 29", style = MaterialTheme.typography.bodyLarge)
                     Text("💵 Monash Dollars: \$54.30", style = MaterialTheme.typography.bodyLarge)
                 }
@@ -86,6 +113,7 @@ fun ProfileScreen(navController: NavController) {
                     onClick = {
                         if (isEditing) {
                             scope.launch {
+                                userViewModel.updateUser(user!!.copy(username = username, email = email))
                                 snackbarHostState.showSnackbar("✅ Profile updated!")
                             }
                         }
@@ -93,15 +121,13 @@ fun ProfileScreen(navController: NavController) {
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        if (isEditing) "Save Changes" else "Edit Profile",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Text(if (isEditing) "Save Changes" else "Edit Profile")
                 }
 
                 OutlinedButton(
                     onClick = {
                         scope.launch {
+                            userViewModel.clearUser()
                             snackbarHostState.showSnackbar("👋 Logged out successfully!")
                         }
                         navController.navigate(Screen.Login.route) {
