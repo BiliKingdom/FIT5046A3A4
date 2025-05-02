@@ -1,6 +1,7 @@
 package com.example.fit5046a3a4.screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
 import com.google.android.gms.auth.api.signin.*
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -35,22 +37,33 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val auth = Firebase.auth
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            val account = task.result
-            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            auth.signInWithCredential(credential).addOnCompleteListener { authResult ->
-                if (authResult.isSuccessful) {
-                    onNavigateToHome()
+            try {
+                val account = task.getResult(ApiException::class.java)
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                auth.signInWithCredential(credential).addOnCompleteListener { authResult ->
+                    if (authResult.isSuccessful) {
+                        onNavigateToHome()
+                    } else {
+                        Log.e("LoginScreen", "Firebase Auth failed: ${authResult.exception}")
+                    }
                 }
+            } catch (e: ApiException) {
+                Log.w("LoginScreen", "Google sign in failed: ${e.statusCode}")
             }
+        } else {
+            Log.i("LoginScreen", "User cancelled Google Sign-In")
         }
     }
 
     val googleSignInClient = remember {
         val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("YOUR_WEB_CLIENT_ID") // replace with your actual web client ID from Firebase
+            .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com") // Replace this with your actual Web client ID from Firebase
             .requestEmail()
             .build()
         GoogleSignIn.getClient(context, options)
@@ -75,6 +88,7 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,14 +103,21 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             BrandLogo(modifier = Modifier.padding(bottom = 32.dp))
-            Text("Welcome Back", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 24.dp))
+
+            Text(
+                "Welcome Back",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it; isUsernameError = false },
                 label = { Text("Username") },
                 isError = isUsernameError,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White
@@ -117,7 +138,9 @@ fun LoginScreen(
                         )
                     }
                 },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedContainerColor = Color.White,
                     focusedContainerColor = Color.White
@@ -130,7 +153,9 @@ fun LoginScreen(
                         onNavigateToHome()
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(48.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
             ) {
                 Text("Login")
             }
@@ -141,7 +166,10 @@ fun LoginScreen(
                     launcher.launch(signInIntent)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).height(48.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .height(48.dp),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
             ) {
                 Icon(
@@ -154,7 +182,10 @@ fun LoginScreen(
                 Text("Sign in with Google", color = Color.Black)
             }
 
-            TextButton(onClick = onNavigateToSignUp, modifier = Modifier.padding(top = 16.dp)) {
+            TextButton(
+                onClick = onNavigateToSignUp,
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
                 Text("Don't have an account? Sign Up!", color = Color.Black)
             }
         }
