@@ -18,8 +18,6 @@ import com.example.fit5046a3a4.navigation.AppNavigation
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.example.fit5046a3a4.components.WithBackground
-import com.example.fit5046a3a4.screens.ProductScreen
-import com.example.fit5046a3a4.screens.mapScreen
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -43,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Transparent
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     WithBackground {
                         AppNavigation()

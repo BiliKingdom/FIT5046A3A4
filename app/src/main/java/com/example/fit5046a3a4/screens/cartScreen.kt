@@ -52,7 +52,6 @@ fun CartScreen(navController: NavController) {
             var selectedHour by remember { mutableStateOf(12) }
             var selectedMinute by remember { mutableStateOf(0) }
 
-            // ✅ 使用 remember 存储默认购物车内容
             val items = remember {
                 mutableStateListOf(
                     CartItem("Hamburger", 1, 12.99, R.drawable.burrito),
