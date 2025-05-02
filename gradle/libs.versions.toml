@@ -16,7 +16,7 @@ firebaseAuth = "22.3.1"
 googlePlayServicesAuth = "20.7.0"
 accompanistSystemUiController = "0.36.0"
 googleServices = "4.4.1"
-composeUiTestJunit4 = "1.6.3" # ✅ 补上缺失的版本
+composeUiTestJunit4 = "1.6.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
