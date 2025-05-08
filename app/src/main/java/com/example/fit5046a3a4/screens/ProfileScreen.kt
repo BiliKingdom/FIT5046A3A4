@@ -26,18 +26,14 @@ fun ProfileScreen(navController: NavController) {
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
 
-        // ❗️明确保存 user 引用，避免 Smart Cast 报错
         val currentUser = user
 
         var isEditing by remember { mutableStateOf(false) }
         var username by remember { mutableStateOf(currentUser?.username ?: "") }
-        var email by remember { mutableStateOf(currentUser?.email ?: "") }
 
-        // 同步 user 变化时更新输入框值
         LaunchedEffect(currentUser) {
             currentUser?.let {
                 username = it.username
-                email = it.email
             }
         }
 
@@ -78,15 +74,9 @@ fun ProfileScreen(navController: NavController) {
                         label = { Text("Username") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
                 } else {
-                    Text("Username: $username", style = MaterialTheme.typography.bodyLarge)
-                    Text("Email: $email", style = MaterialTheme.typography.bodyLarge)
+                    Text("Username: ${currentUser?.username ?: ""}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: ${currentUser?.email ?: ""}", style = MaterialTheme.typography.bodyLarge)
                     Text("Monash Points: 29", style = MaterialTheme.typography.bodyLarge)
                     Text("💵 Monash Dollars: \$54.30", style = MaterialTheme.typography.bodyLarge)
                 }
@@ -98,16 +88,16 @@ fun ProfileScreen(navController: NavController) {
                         if (isEditing && currentUser != null) {
                             scope.launch {
                                 userViewModel.updateUser(
-                                    currentUser.copy(username = username, email = email)
+                                    currentUser.copy(username = username)
                                 )
-                                snackbarHostState.showSnackbar("✅ Profile updated!")
+                                snackbarHostState.showSnackbar("✅ Username updated!")
                             }
                         }
                         isEditing = !isEditing
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(if (isEditing) "Save Changes" else "Edit Profile")
+                    Text(if (isEditing) "Save Username" else "Edit Username")
                 }
 
                 OutlinedButton(
