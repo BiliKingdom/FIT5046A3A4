@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
@@ -21,38 +21,25 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProfileScreen(navController: NavController) {
     WithBackground {
-        val userViewModel: UserViewModel = viewModel()
+        val userViewModel: UserViewModel = hiltViewModel()
         val user by userViewModel.userState.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
 
-        // 👉 Null check with early return
-        val safeUser = user ?: run {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("No user logged in", style = MaterialTheme.typography.bodyLarge)
-                Button(
-                    onClick = {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(0) { inclusive = true }
-                        }
-                    },
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text("Back to Login")
-                }
-            }
-            return@WithBackground
-        }
+        // ❗️明确保存 user 引用，避免 Smart Cast 报错
+        val currentUser = user
 
         var isEditing by remember { mutableStateOf(false) }
-        var username by remember { mutableStateOf(safeUser.username) }
-        var email by remember { mutableStateOf(safeUser.email) }
+        var username by remember { mutableStateOf(currentUser?.username ?: "") }
+        var email by remember { mutableStateOf(currentUser?.email ?: "") }
+
+        // 同步 user 变化时更新输入框值
+        LaunchedEffect(currentUser) {
+            currentUser?.let {
+                username = it.username
+                email = it.email
+            }
+        }
 
         Scaffold(
             containerColor = Color.Transparent,
@@ -98,8 +85,8 @@ fun ProfileScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text("Username: ${safeUser.username}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Email: ${safeUser.email}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Username: $username", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: $email", style = MaterialTheme.typography.bodyLarge)
                     Text("Monash Points: 29", style = MaterialTheme.typography.bodyLarge)
                     Text("💵 Monash Dollars: \$54.30", style = MaterialTheme.typography.bodyLarge)
                 }
@@ -108,9 +95,11 @@ fun ProfileScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        if (isEditing) {
+                        if (isEditing && currentUser != null) {
                             scope.launch {
-                                userViewModel.updateUser(safeUser.copy(username = username, email = email))
+                                userViewModel.updateUser(
+                                    currentUser.copy(username = username, email = email)
+                                )
                                 snackbarHostState.showSnackbar("✅ Profile updated!")
                             }
                         }

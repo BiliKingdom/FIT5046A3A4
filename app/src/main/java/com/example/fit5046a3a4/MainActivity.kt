@@ -14,12 +14,15 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
+import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.AppNavigation
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.example.fit5046a3a4.components.WithBackground
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint // ✅ 关键注解，允许在此注入 Hilt ViewModel
 class MainActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

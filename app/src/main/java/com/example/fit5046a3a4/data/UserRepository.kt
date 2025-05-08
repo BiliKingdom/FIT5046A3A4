@@ -7,5 +7,6 @@ class UserRepository(private val dao: UserDao) {
     suspend fun deleteUser(user: UserEntity) = dao.deleteUser(user)
     suspend fun clearUsers() = dao.clearUsers()
     suspend fun getUserByEmail(email: String) = dao.getUserByEmail(email)
+    suspend fun updateUser(user: UserEntity) = dao.updateUser(user) // ✅ 添加这个方法
 }
 

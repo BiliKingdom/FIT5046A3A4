@@ -1,5 +1,6 @@
 package com.example.fit5046a3a4.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,13 +11,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fit5046a3a4.components.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.fit5046a3a4.components.BrandLogo
+import com.example.fit5046a3a4.components.GradientButton
+import com.example.fit5046a3a4.components.StyledTextField
 import com.example.fit5046a3a4.data.UserEntity
 import com.example.fit5046a3a4.viewmodel.UserViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,12 +29,15 @@ fun SignUpScreen(
     onNavigateToLogin: () -> Unit,
     onSignUpComplete: () -> Unit
 ) {
-    val userViewModel: UserViewModel = viewModel()
+    val userViewModel: UserViewModel = hiltViewModel()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
@@ -37,6 +45,8 @@ fun SignUpScreen(
     var isEmailError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
     var isConfirmPasswordError by remember { mutableStateOf(false) }
+
+    var isSubmitting by remember { mutableStateOf(false) }
 
     fun validateInputs(): Boolean {
         isUsernameError = username.isBlank()
@@ -46,9 +56,18 @@ fun SignUpScreen(
         return !isUsernameError && !isEmailError && !isPasswordError && !isConfirmPasswordError
     }
 
+    fun saveLoggedInEmail(context: Context, email: String) {
+        context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putString("logged_in_email", email)
+            .apply()
+    }
+
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Surface(
-            modifier = Modifier.fillMaxWidth(0.9f).padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(16.dp),
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
             tonalElevation = 1.dp
         ) {
@@ -84,13 +103,13 @@ fun SignUpScreen(
                     onValueChange = { password = it; isPasswordError = false },
                     label = "Password",
                     isError = isPasswordError,
-                    errorMessage = if (isPasswordError) "Too short" else null,
+                    errorMessage = if (isPasswordError) "Too short (min 8 chars)" else null,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
                                 imageVector = if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle"
+                                contentDescription = "Toggle password"
                             )
                         }
                     },
@@ -108,7 +127,7 @@ fun SignUpScreen(
                         IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
                             Icon(
                                 imageVector = if (confirmPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                                contentDescription = "Toggle"
+                                contentDescription = "Toggle confirm password"
                             )
                         }
                     }
@@ -117,21 +136,26 @@ fun SignUpScreen(
                 Spacer(Modifier.height(24.dp))
 
                 GradientButton(
-                    text = "Sign Up",
+                    text = if (isSubmitting) "Registering..." else "Sign Up",
                     onClick = {
                         if (validateInputs()) {
-                            userViewModel.addUser(
-                                UserEntity(
-                                    username = username,
-                                    email = email,
-                                    password = password
-                                )
+                            isSubmitting = true
+                            val newUser = UserEntity(
+                                username = username,
+                                email = email,
+                                password = password
                             )
-                            onSignUpComplete()
+                            scope.launch {
+                                userViewModel.addUser(newUser)
+                                userViewModel.setUser(newUser)
+                                saveLoggedInEmail(context, email)
+                                isSubmitting = false
+                                onSignUpComplete()
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = validateInputs()
+                    enabled = validateInputs() && !isSubmitting
                 )
 
                 TextButton(onClick = onNavigateToLogin) {
