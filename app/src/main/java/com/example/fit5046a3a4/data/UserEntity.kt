@@ -9,7 +9,7 @@ data class UserEntity(
     val username: String,
     val email: String,
     val password: String,
-    val phone: String? = null
+    val phone: String? = null,
+    val dollars: Double = 0.0,
+    val points: Int = 0
 )
-
-
