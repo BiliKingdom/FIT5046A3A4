@@ -6,35 +6,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
 import com.example.fit5046a3a4.data.AppDatabase
+import com.example.fit5046a3a4.data.UserEntity
 import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -58,7 +36,6 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,18 +65,24 @@ fun LoginScreen(
                 auth.signInWithCredential(credential).addOnCompleteListener { authResult ->
                     if (authResult.isSuccessful) {
                         val emailFromGoogle = auth.currentUser?.email
+                        val nameFromGoogle = account.displayName ?: "GoogleUser"
                         if (emailFromGoogle != null) {
                             scope.launch {
                                 val db = AppDatabase.get(context)
-                                val user = db.userDao().getUserByEmail(emailFromGoogle)
+                                var user = db.userDao().getUserByEmail(emailFromGoogle)
+                                if (user == null) {
+                                    // 👇 自动注册一个新用户
+                                    user = UserEntity(
+                                        username = nameFromGoogle,
+                                        email = emailFromGoogle,
+                                        password = "" // optional: Google-only users不需要本地密码
+                                    )
+                                    userViewModel.addUser(user)
+                                    Log.d("LoginScreen", "✅ New user created for Google account: $emailFromGoogle")
+                                }
                                 withContext(Dispatchers.Main) {
-                                    if (user != null) {
-                                        userViewModel.setUser(user)
-                                        onNavigateToHome()
-                                    } else {
-                                        Log.e("LoginScreen", "⚠️ No local user found for Google account.")
-                                        // TODO: Redirect to onboarding or registration if needed
-                                    }
+                                    userViewModel.setUser(user)
+                                    onNavigateToHome()
                                 }
                             }
                         }
@@ -115,7 +98,7 @@ fun LoginScreen(
 
     val googleSignInClient = remember {
         val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com") // Replace with your actual Web Client ID
+            .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com")
             .requestEmail()
             .build()
         GoogleSignIn.getClient(context, options)
