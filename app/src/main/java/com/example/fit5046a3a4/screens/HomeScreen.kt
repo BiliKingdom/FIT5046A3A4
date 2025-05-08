@@ -63,8 +63,8 @@ fun HomeScreen(
             )
 
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Clayton Points: 29", style = MaterialTheme.typography.bodyLarge)
-            Text("Clayton Dollars: $54.30", style = MaterialTheme.typography.bodyLarge)
+            Text("Clayton Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
+            Text("Clayton Dollars:  \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
 
             // ☁️ Weather card
             Card(
