@@ -79,6 +79,7 @@ fun ProfileScreen(navController: NavController) {
                     Text("Email: ${currentUser?.email ?: ""}", style = MaterialTheme.typography.bodyLarge)
                     Text("Monash Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
                     Text("💵 Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
+
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
