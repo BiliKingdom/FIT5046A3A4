@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,14 +31,15 @@ fun HomeScreen(
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
 
+    val campuses = listOf("Clayton", "Caulfield", "Peninsula", "Parkville")
+    var selectedCampus by remember { mutableStateOf("Clayton") }
+    var expanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Welcome",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Text("Welcome", style = MaterialTheme.typography.titleLarge)
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
@@ -54,19 +56,18 @@ fun HomeScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-
             Text(
-                "HELLO, ${user?.username ?: "User"}", // ⭐ 动态绑定用户名
+                "HELLO, ${user?.username ?: "User"}",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.Black,
                 modifier = Modifier.offset(y = (-16).dp)
             )
 
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Clayton Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
-            Text("Clayton Dollars:  \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
+            Text("Monash Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
+            Text("Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
 
-            // ☁️ Weather card
+            // ☁️ Weather card + Dropdown
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -75,24 +76,57 @@ fun HomeScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Cloud,
-                        contentDescription = "Weather Icon",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(36.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
-                        Text("Rain expected in Clayton", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "Bring your umbrella and be careful as the road is slippery.!",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Cloud,
+                            contentDescription = "Weather Icon",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(36.dp)
                         )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text("Rain expected in $selectedCampus", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "Bring your umbrella and be careful as the road is slippery!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Current Campus: $selectedCampus")
+                        IconButton(onClick = { expanded = true }) {
+                            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Change Location")
+                        }
+
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            campuses.forEach { campus ->
+                                DropdownMenuItem(
+                                    text = { Text(campus) },
+                                    onClick = {
+                                        selectedCampus = campus
+                                        expanded = false
+                                        // ⭐ 预留地图API逻辑：你可以在这里调用地图更新方法
+                                        // updateMapLocation(campus)
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
