@@ -31,7 +31,7 @@ fun HomeScreen(
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
 
-    val campuses = listOf("Clayton", "Caulfield", "Peninsula", "Parkville")
+    val campuses = listOf("Clayton", "Caulfield")
     var selectedCampus by remember { mutableStateOf("Clayton") }
     var expanded by remember { mutableStateOf(false) }
 
