@@ -21,6 +21,10 @@ sealed class Screen(val route: String) {
     object Cart : Screen("cart")
     object Payment : Screen("payment")
     object Search : Screen("search")
+
+    object Product : Screen("product/{restaurantId}") {
+        fun createRoute(restaurantId: Long) = "product/$restaurantId"
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
