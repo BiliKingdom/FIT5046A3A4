@@ -6,15 +6,25 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [CartItemEntity::class, UserEntity::class],
-    version = 3, //
+    entities = [
+        CartItemEntity::class,
+        UserEntity::class,
+        CampusEntity::class,
+        RestaurantEntity::class,
+        FoodCategoryEntity::class,
+        FoodItemEntity::class
+    ],
+    version = 4,
     exportSchema = false
 )
-
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun cartDao(): CartItemDao
     abstract fun userDao(): UserDao
+
+
+    abstract fun campusDao(): CampusDao
+    abstract fun restaurantDao(): RestaurantDao
+    abstract fun foodDao(): FoodDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -31,3 +41,4 @@ abstract class AppDatabase : RoomDatabase() {
             }
     }
 }
+

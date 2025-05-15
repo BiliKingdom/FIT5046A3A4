@@ -8,32 +8,37 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
-import com.example.fit5046a3a4.data.DummyData
 import com.example.fit5046a3a4.navigation.BottomNavItem
 import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.viewmodel.OrderViewModel
 import androidx.compose.ui.graphics.Color
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(navController: NavController) {
+    val viewModel: OrderViewModel = viewModel()
+    val restaurants by viewModel.restaurantList.collectAsState()
+    val campuses = listOf("Clayton", "Caulfield")
+    var selectedCampus by remember { mutableStateOf("Clayton") }
+    var expanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedCampus) {
+        viewModel.loadRestaurantsForCampus(selectedCampus)
+    }
+
     WithBackground {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text(
-                            text = "Select a Restaurant",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    },
+                    title = { Text("Select a Restaurant", style = MaterialTheme.typography.titleLarge) },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigateUp() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -54,9 +59,7 @@ fun OrderScreen(navController: NavController) {
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                 )
             },
-            bottomBar = {
-                BottomBar(navController = navController)
-            },
+            bottomBar = { BottomBar(navController = navController) },
             containerColor = Color.Transparent
         ) { padding ->
             Column(
@@ -65,50 +68,59 @@ fun OrderScreen(navController: NavController) {
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                Text(
-                    text = "Choose a nearby Monash restaurant to place your order:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
 
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    items(DummyData.restaurants) { res ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.large,
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color.White
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text("Current Campus:", style = MaterialTheme.typography.bodyLarge)
+                    Button(onClick = { expanded = true }) {
+                        Text(selectedCampus)
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        campuses.forEach { campus ->
+                            DropdownMenuItem(
+                                text = { Text(campus) },
+                                onClick = {
+                                    selectedCampus = campus
+                                    expanded = false
+                                }
                             )
-                        ) {
-                            Column(modifier = Modifier.padding(20.dp)) {
-                                Text(
-                                    text = res.name,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = res.address,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Distance: ${res.distanceKm} km",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
+                        }
+                    }
+                }
 
-                                Button(
-                                    onClick = {
-                                        navController.navigate(Screen.Menu.route)
-                                    },
-                                    modifier = Modifier
-                                        .padding(top = 12.dp)
-                                        .fillMaxWidth(),
-                                    shape = MaterialTheme.shapes.medium
-                                ) {
-                                    Text(
-                                        text = "Order Here",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (restaurants.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("No restaurants available.", style = MaterialTheme.typography.bodyMedium)
+                    }
+                } else {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        items(restaurants) { res ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MaterialTheme.shapes.large,
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.White)
+                            ) {
+                                Column(modifier = Modifier.padding(20.dp)) {
+                                    Text(res.name, style = MaterialTheme.typography.titleMedium)
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(res.address, style = MaterialTheme.typography.bodyMedium)
+
+                                    Button(
+                                        onClick = {
+                                            navController.navigate(Screen.Menu.route)
+                                        },
+                                        modifier = Modifier
+                                            .padding(top = 12.dp)
+                                            .fillMaxWidth(),
+                                        shape = MaterialTheme.shapes.medium
+                                    ) {
+                                        Text("Order Here", style = MaterialTheme.typography.bodyMedium)
+                                    }
                                 }
                             }
                         }

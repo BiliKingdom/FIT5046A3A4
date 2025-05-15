@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-
     @Query("SELECT * FROM users")
     fun getAllUsers(): Flow<List<UserEntity>>
 

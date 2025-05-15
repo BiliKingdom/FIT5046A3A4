@@ -20,12 +20,16 @@ import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint // ✅ 关键注解，允许在此注入 Hilt ViewModel
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ 添加这一行（初始化 Campus 和 Restaurant 数据）
+        com.example.fit5046a3a4.data.CampusSeeder.seed(applicationContext)
+
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -54,3 +58,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
