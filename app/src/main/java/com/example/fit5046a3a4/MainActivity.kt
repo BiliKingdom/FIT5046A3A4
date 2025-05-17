@@ -19,6 +19,10 @@ import com.example.fit5046a3a4.navigation.AppNavigation
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import com.example.fit5046a3a4.data.AppDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -27,8 +31,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ 添加这一行（初始化 Campus 和 Restaurant 数据）
+        // ✅ 初始化 Campus 和 Restaurant 菜单数据
         com.example.fit5046a3a4.data.CampusSeeder.seed(applicationContext)
+
+        // ✅ ⚠测试时使用：启动时清空用户数据库（上线前请注释掉）
+
+        // CoroutineScope(Dispatchers.IO).launch {
+        //   AppDatabase.get(applicationContext).userDao().clearUsers()
+        // }
+
 
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -58,4 +69,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

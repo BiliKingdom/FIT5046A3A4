@@ -37,6 +37,8 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.google.firebase.auth.ktx.auth
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +53,8 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isSubmitting by remember { mutableStateOf(false) }
+
     var passwordVisible by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
@@ -179,19 +183,44 @@ fun LoginScreen(
             Button(
                 onClick = {
                     if (validateInputs()) {
-                        scope.launch {
-                            val user = userViewModel.getUserNow(email)
-                            if (user != null && user.password == password) {
-                                UserInitializer.initializeFirestoreUserIfNew(email, user.username)
+                        isEmailError = false
+                        isPasswordError = false
+                        isSubmitting = true
 
-                                userViewModel.setUser(user)
-                                onNavigateToHome()
-                            } else {
-                                isPasswordError = true
-                                isEmailError = true
+                        Firebase.auth.signInWithEmailAndPassword(email, password)
+                            .addOnSuccessListener {
+                                val user = Firebase.auth.currentUser
+                                val username = email.substringBefore("@")
+
+                                UserInitializer.initializeFirestoreUserIfNew(email, username)
+
+                                scope.launch {
+                                    val db = AppDatabase.get(context)
+                                    val localUser = db.userDao().getUserByEmail(email)
+
+                                    if (localUser == null) {
+                                        val newUser = UserEntity(
+                                            username = username,
+                                            email = email,
+                                            password = password
+                                        )
+                                        userViewModel.addUser(newUser)
+                                        userViewModel.setUser(newUser)
+                                    } else {
+                                        userViewModel.setUser(localUser)
+                                    }
+
+                                    onNavigateToHome()
+                                }
                             }
-                        }
+                            .addOnFailureListener { e ->
+                                Log.e("LoginScreen", " login failed: ${e.message}")
+                                isEmailError = true
+                                isPasswordError = true
+                                isSubmitting = false
+                            }
                     }
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
