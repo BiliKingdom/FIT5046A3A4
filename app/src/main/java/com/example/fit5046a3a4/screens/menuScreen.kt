@@ -24,10 +24,17 @@ import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.Screen
 import kotlinx.coroutines.launch
 
+import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a3a4.data.CartItemEntity
+
+
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
     navController: NavHostController,
+    cartViewModel: CartViewModel = viewModel(), // ⭐️ 加入ViewModel参数
     onBack: () -> Unit = {}
 ) {
     val menuData = listOf(
@@ -135,7 +142,16 @@ fun MenuScreen(
                             )
                         }
                         items(category.items) { item ->
-                            MenuItemRow(item)
+                            MenuItemRow(item = item, onAdd = {
+                                cartViewModel.add(
+                                    CartItemEntity(
+                                        name = item.name,
+                                        quantity = 1,
+                                        imageRes = item.imageRes,
+                                        price = item.price.removePrefix("$").toDouble()
+                                    )
+                                )
+                            })
                         }
                     }
                 }
@@ -182,7 +198,8 @@ fun CategoryTabBar(
 }
 
 @Composable
-fun MenuItemRow(item: MenuItem) {
+fun MenuItemRow(item: MenuItem,
+                onAdd: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,7 +237,7 @@ fun MenuItemRow(item: MenuItem) {
                 )
             }
 
-            IconButton(onClick = {}) {
+            IconButton(onClick = onAdd) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
