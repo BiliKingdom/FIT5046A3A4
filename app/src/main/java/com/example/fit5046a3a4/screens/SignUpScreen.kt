@@ -1,6 +1,7 @@
 package com.example.fit5046a3a4.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,8 +21,13 @@ import com.example.fit5046a3a4.components.BrandLogo
 import com.example.fit5046a3a4.components.GradientButton
 import com.example.fit5046a3a4.components.StyledTextField
 import com.example.fit5046a3a4.data.UserEntity
+import com.example.fit5046a3a4.data.UserInitializer
 import com.example.fit5046a3a4.viewmodel.UserViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
+import com.google.firebase.auth.ktx.auth
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,24 +143,38 @@ fun SignUpScreen(
 
                 GradientButton(
                     text = if (isSubmitting) "Registering..." else "Sign Up",
-                    onClick = {
-                        if (validateInputs()) {
-                            isSubmitting = true
-                            val newUser = UserEntity(
-                                username = username,
-                                email = email,
-                                password = password
-                            )
-                            scope.launch {
-                                userViewModel.addUser(newUser)
-                                userViewModel.setUser(newUser)
-                                saveLoggedInEmail(context, email)
-                                isSubmitting = false
-                                onSignUpComplete()
+                        onClick = {
+                            if (validateInputs()) {
+                                isSubmitting = true
+
+                                scope.launch {
+                                    Firebase.auth.createUserWithEmailAndPassword(email, password)
+                                        .addOnSuccessListener {
+                                            val usernameToUse = username.ifBlank { email.substringBefore("@") }
+
+                                            UserInitializer.initializeFirestoreUserIfNew(email, usernameToUse)
+
+                                            val newUser = UserEntity(
+                                                username = usernameToUse,
+                                                email = email,
+                                                password = password
+                                            )
+                                            userViewModel.addUser(newUser)
+                                            userViewModel.setUser(newUser)
+                                            saveLoggedInEmail(context, email)
+
+                                            isSubmitting = false
+                                            onSignUpComplete()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("SignUpScreen", "Firebase signup failed: ${e.message}")
+                                            isSubmitting = false
+                                        }
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
+                        },
+
+                        modifier = Modifier.fillMaxWidth(),
                     enabled = validateInputs() && !isSubmitting
                 )
 

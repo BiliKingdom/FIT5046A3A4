@@ -26,6 +26,7 @@ import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
 import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.data.UserEntity
+import com.example.fit5046a3a4.data.UserInitializer
 import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -68,24 +69,28 @@ fun LoginScreen(
                         val nameFromGoogle = account.displayName ?: "GoogleUser"
                         if (emailFromGoogle != null) {
                             scope.launch {
+
                                 val db = AppDatabase.get(context)
                                 var user = db.userDao().getUserByEmail(emailFromGoogle)
                                 if (user == null) {
-                                    // 👇 自动注册一个新用户
                                     user = UserEntity(
                                         username = nameFromGoogle,
                                         email = emailFromGoogle,
-                                        password = "" // optional: Google-only users不需要本地密码
+                                        password = ""
                                     )
                                     userViewModel.addUser(user)
-                                    Log.d("LoginScreen", "✅ New user created for Google account: $emailFromGoogle")
+                                    Log.d("LoginScreen", " New user created for Google account: $emailFromGoogle")
                                 }
+
+                                UserInitializer.initializeFirestoreUserIfNew(emailFromGoogle, nameFromGoogle)
+
                                 withContext(Dispatchers.Main) {
                                     userViewModel.setUser(user)
                                     onNavigateToHome()
                                 }
                             }
                         }
+
                     } else {
                         Log.e("LoginScreen", "Firebase Auth failed: ${authResult.exception}")
                     }
@@ -177,6 +182,8 @@ fun LoginScreen(
                         scope.launch {
                             val user = userViewModel.getUserNow(email)
                             if (user != null && user.password == password) {
+                                UserInitializer.initializeFirestoreUserIfNew(email, user.username)
+
                                 userViewModel.setUser(user)
                                 onNavigateToHome()
                             } else {

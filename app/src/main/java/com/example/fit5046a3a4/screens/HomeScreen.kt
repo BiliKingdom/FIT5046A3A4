@@ -21,6 +21,8 @@ import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.data.DummyData
 import com.example.fit5046a3a4.navigation.Screen
 import com.example.fit5046a3a4.viewmodel.UserViewModel
+import com.example.fit5046a3a4.data.UserInitializer
+import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +32,15 @@ fun HomeScreen(
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
+    var cloudCredit by remember { mutableStateOf(0.0) }
+
+    LaunchedEffect(Unit) {
+        UserInitializer.fetchUserCredits(
+            onSuccess = { cloudCredit = it },
+            onFailure = { e -> Log.e("HomeScreen", "Failed to fetch credit: ${e.message}") }
+        )
+    }
+
 
     val campuses = listOf("Clayton", "Caulfield")
     var selectedCampus by remember { mutableStateOf("Clayton") }
@@ -65,7 +76,8 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(4.dp))
             Text("Monash Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
-            Text("Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
+            Text("Monash Dollars: \$${"%.2f".format(cloudCredit)}", style = MaterialTheme.typography.bodyLarge)
+
 
             // ☁️ Weather card + Dropdown
             Card(
