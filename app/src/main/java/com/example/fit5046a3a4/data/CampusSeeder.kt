@@ -32,6 +32,7 @@ object CampusSeeder {
                     campusId = claytonId
                 )
             )
+
             restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "LTB Café",
@@ -62,6 +63,36 @@ object CampusSeeder {
 
             restaurantDao.insertRestaurant(
                 RestaurantEntity(
+                    name = "PappaRich Monash",
+                    address = "Shop G15/21 Chancellors Walk, Clayton Campus",
+                    latitude = -37.91152,
+                    longitude = 145.13399,
+                    campusId = claytonId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "Wholefoods",
+                    address = "Level1/21Chancellors Walk,, Clayton Campus",
+                    latitude = -37.91177,
+                    longitude = 145.13290,
+                    campusId = claytonId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "PAPA'S Korean Chicken Restaurant",
+                    address = "199 Clayton Rd, Clayton Campus",
+                    latitude = -37.91470,
+                    longitude = 145.12229,
+                    campusId = claytonId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
                     name = "Caulfield Kitchen",
                     address = "Level 2, Building H, Caulfield",
                     latitude = -37.8765,
@@ -69,6 +100,7 @@ object CampusSeeder {
                     campusId = caulfieldId
                 )
             )
+
             restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "The Common Ground",
@@ -78,6 +110,7 @@ object CampusSeeder {
                     campusId = caulfieldId
                 )
             )
+
             restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "Korean Express",
@@ -87,12 +120,43 @@ object CampusSeeder {
                     campusId = caulfieldId
                 )
             )
+
             restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "Bento & Sushi",
                     address = "Level 1, Building A, Caulfield",
                     latitude = -37.8768,
                     longitude = 145.0435,
+                    campusId = caulfieldId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "Ziweiyuan",
+                    address = "903 Princes Hwy Service Rd, Caulfield East",
+                    latitude = -37.87584,
+                    longitude = 145.04643,
+                    campusId = caulfieldId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "Seng Hing Gourmet",
+                    address = "1 Derby Rd, Caulfield East",
+                    latitude = -37.87611,
+                    longitude = 145.04159,
+                    campusId = caulfieldId
+                )
+            )
+
+            restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "The Glasshouse Caulfield",
+                    address = "31 Station St, Caulfield East",
+                    latitude = -37.87701,
+                    longitude = 145.04007,
                     campusId = caulfieldId
                 )
             )
