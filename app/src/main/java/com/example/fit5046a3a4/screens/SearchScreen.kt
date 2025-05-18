@@ -146,7 +146,7 @@ fun SearchScreen(navController: NavController) {
                                             )
                                         }
                                         Button(onClick = {
-                                            navController.navigate(Screen.Menu.route)
+                                            navController.navigate(Screen.Menu.createRoute(restaurant.id))
                                         }) {
                                             Text("Order Here", style = MaterialTheme.typography.labelLarge)
                                         }

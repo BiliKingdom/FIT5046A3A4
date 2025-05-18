@@ -88,6 +88,7 @@ dependencies {
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
+
     // ✅ Hilt Core
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)

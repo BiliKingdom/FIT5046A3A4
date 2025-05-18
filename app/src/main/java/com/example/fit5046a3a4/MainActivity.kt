@@ -41,9 +41,9 @@ class MainActivity : ComponentActivity() {
 
         // ✅ ⚠测试时使用：启动时清空用户数据库（上线前请注释掉）
 
-        // CoroutineScope(Dispatchers.IO).launch {
-        //   AppDatabase.get(applicationContext).userDao().clearUsers()
-        // }
+//         CoroutineScope(Dispatchers.IO).launch {
+//          AppDatabase.get(applicationContext).userDao().clearUsers()
+//         }
 
         // ✅ 安排每天午夜自动上传Room数据到Firebase
         scheduleUploadWorker(applicationContext)

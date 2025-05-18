@@ -9,6 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.fit5046a3a4.screens.*
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -17,7 +20,8 @@ sealed class Screen(val route: String) {
     object Order : Screen("order")
     object Profile : Screen("profile")
     object OrderHistory : Screen("order_history")
-    object Menu : Screen("menu")
+    object Menu : Screen("menu/{restaurantId}") {
+        fun createRoute(restaurantId: Long) = "menu/$restaurantId" }
     object Cart : Screen("cart")
     object Payment : Screen("payment")
     object Search : Screen("search")
@@ -93,18 +97,20 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
 
 
             composable(
-                route = Screen.Menu.route
+                route = Screen.Menu.route,
+                arguments = listOf(navArgument("restaurantId") {
+                    type = NavType.LongType
+                })
             ) { backStackEntry ->
-                val restaurantId = backStackEntry.arguments?.getString("restaurantId")?.toLongOrNull()
-                if (restaurantId != null) {
-                    MenuScreen(
-                        navController = navController,
-                        restaurantId = restaurantId,
-                        onBack = { navController.navigateUp() }
-                    )
-                }
+                val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
+                MenuScreen(
+                    navController = navController,
+                    restaurantId = restaurantId,
+                    onBack = { navController.navigateUp() }
+                )
             }
-            
+
+
             composable(Screen.Cart.route) {
                 CartScreen(
                     navController = navController

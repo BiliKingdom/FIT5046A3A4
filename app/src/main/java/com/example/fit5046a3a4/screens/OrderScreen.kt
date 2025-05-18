@@ -112,7 +112,7 @@ fun OrderScreen(navController: NavController) {
 
                                     Button(
                                         onClick = {
-                                            navController.navigate(Screen.Menu.route)
+                                            navController.navigate(Screen.Menu.createRoute(res.id))
                                         },
                                         modifier = Modifier
                                             .padding(top = 12.dp)
@@ -121,6 +121,7 @@ fun OrderScreen(navController: NavController) {
                                     ) {
                                         Text("Order Here", style = MaterialTheme.typography.bodyMedium)
                                     }
+
                                 }
                             }
                         }
