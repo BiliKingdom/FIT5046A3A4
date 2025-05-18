@@ -1,0 +1,79 @@
+[33m23471a0[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m navigate fix
+[33m900e558[m dynamic rest name display
+[33mf6d669e[m update menu debug
+[33mf852174[m update navigation
+[33m4d290db[m Merge remote-tracking branch 'origin/master'
+[33mf40a937[m Firebase worker manager(Untested)
+[33m16171c4[m navigate edit
+[33mf5ee8ae[m change menu logic(test version)
+[33m74ec83a[m change menu logic(test version)
+[33md5fdb86[m Add the function that the cart hardcoded changes with the operation, and the Room is updated in real time
+[33ma908c9c[m edit firebase login
+[33mb866023[m restaurants Room edit
+[33m740c0b9[m add firebase to login function
+[33m5986363[m update themodel
+[33m82c1d08[m add the restaurant database and add data in database
+[33m107706c[m add the campus
+[33ma819662[m can change the campus in homepage
+[33m4f57065[m link the monash point and monash dollar with database(update in homepage)
+[33m9f18570[m link the monash point and monash dollar with database
+[33m1929759[m link the monash point and monash dollat with database
+[33m5abf42b[m update the database:add monash point and monash dollar
+[33m34bdd8a[m Update the username in homepage
+[33mee4574c[m add detail for user login by google authercation
+[33m192202b[m profile file change edit username in database
+[33me1096b2[m Fixed profile file
+[33mdc6ad34[m Fixed profile file
+[33m1198e6e[m Fixed profile file
+[33m20c891a[m add test account in app
+[33m1c6359b[m Fixed database for sign up
+[33m60e1299[m add database for basic user detail
+[33m4c6b6b4[m google login
+[33m24f125e[m google login
+[33ma1ef7c7[m google login
+[33mc042ddc[m google login
+[33mdf1d473[m google login
+[33m4642735[m google login
+[33m10a654f[m fix login ui
+[33m4a32df6[m fix product and map ui
+[33m5e2a992[m fix menu
+[33mbef34e9[m update background and front also icon in menu
+[33m15513c5[m UPDATE home menu order
+[33m8ebdb60[m 11
+[33m226d17f[m UPDATE BACKGROUND
+[33m813546c[m jpg
+[33m288fb6e[m Merge branch 'master' of https://github.com/BiliKingdom/FIT5046A3A4
+[33m765ef8d[m update background of home page
+[33m3d69a2c[m Update UI design in promotions title and image
+[33mbde62fd[m update background of order screen
+[33mb2f84dc[m Store Shopping Cart Item using Room
+[33mc694ec6[m Store Shopping CartItem using Room
+[33m644d50d[m Update UI design in promotions title and image
+[33m5185051[m google login
+[33mb7b69bc[m add map screen
+[33m37bc8ff[m update front size and alignment
+[33m163b096[m google login
+[33m2f6f998[m update background
+[33mb3195b3[m Merge remote-tracking branch 'origin/master'
+[33mb8d2b17[m search screen and filter feature
+[33mf9f12fc[m update background
+[33m9a3c422[m update background
+[33mf2e68f0[m add inter background
+[33m7205bf7[m change Login Ui and add promotion image
+[33m79ec87d[m update and rollback
+[33m0c208a4[m Merge pull request #1 from BiliKingdom/Beta_newest
+[33m4e23300[m[33m ([m[1;31morigin/Beta_newest[m[33m)[m update payment and cart
+[33mcdcbb67[m Merge Beta_newest to master with override
+[33meab919f[m[33m ([m[1;32mBeta_newest[m[33m)[m ready to merge
+[33m06a52c2[m icon change
+[33medd153e[m[33m ([m[1;32mmain[m[33m)[m icon change
+[33m395bdca[m Add pickup info and select locations screen
+[33m843f448[m Merge remote-tracking branch 'origin/master'
+[33mc580e04[m The step required for merge
+[33mb084a6b[m 111
+[33m18652af[m Add Cart navigation and fix icon import conflict
+[33med78872[m Ui for productdetail and menu
+[33med92c1d[m[33m ([m[1;31morigin/main[m[33m)[m 111
+[33m1a343f3[m[33m ([m[1;31morigin/Branch-work[m[33m)[m Add README.md show each participant work
+[33md9a178e[m Create README.md
+[33m8d4827e[m Initial commit

@@ -12,6 +12,9 @@ interface RestaurantDao {
     @Query("SELECT * FROM restaurants WHERE id = :restaurantId")
     suspend fun getRestaurantById(restaurantId: Long): RestaurantEntity?
 
+    @Query("SELECT * FROM restaurants WHERE id = :restaurantId")
+    fun getRestaurantByIdFlow(restaurantId: Long): Flow<RestaurantEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRestaurant(restaurant: RestaurantEntity): Long
 

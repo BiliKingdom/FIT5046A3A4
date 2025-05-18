@@ -37,12 +37,18 @@ fun MenuScreen(
     restaurantId: Long,
     onBack: () -> Unit = {}
 ) {
-    val viewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(AppDatabase.get(LocalContext.current).foodDao()))
-    val menuData by viewModel.menuData.collectAsState()
+    val context = LocalContext.current
+    val db = AppDatabase.get(context)
+    val viewModel: MenuViewModel = viewModel(
+        factory = MenuViewModelFactory(db.foodDao(), db.restaurantDao())
+    )
 
-    LaunchedEffect(restaurantId) {
-        viewModel.loadMenuByRestaurant(restaurantId)
-    }
+    val menuData by viewModel.loadMenuByRestaurant(restaurantId).collectAsState()
+
+    val restaurantName by viewModel.getRestaurantName(restaurantId).collectAsState()
+
+
+
 
     val listState = rememberLazyListState()
     val selectedCategory = remember { mutableStateOf(menuData.firstOrNull()?.name?.uppercase() ?: "") }
@@ -65,7 +71,7 @@ fun MenuScreen(
                 TopAppBar(
                     title = {
                         Text(
-                            text = "Guzman y Gomez",
+                            text = restaurantName,
                             style = MaterialTheme.typography.titleLarge
                         )
                     },
