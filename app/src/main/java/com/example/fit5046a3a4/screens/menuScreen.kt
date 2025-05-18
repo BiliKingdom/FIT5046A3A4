@@ -42,8 +42,10 @@ fun MenuScreen(
     val viewModel: MenuViewModel = viewModel(
         factory = MenuViewModelFactory(db.foodDao(), db.restaurantDao())
     )
-
-    val menuData by viewModel.loadMenuByRestaurant(restaurantId).collectAsState()
+    val menuFlow = remember(restaurantId) {
+        viewModel.loadMenuByRestaurant(restaurantId)
+    }
+    val menuData by menuFlow.collectAsState()
 
     val restaurantName by viewModel.getRestaurantName(restaurantId).collectAsState()
 
