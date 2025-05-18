@@ -1,6 +1,5 @@
 package com.example.fit5046a3a4.worker
 
-import UploadToFirebaseWorker
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -19,9 +18,11 @@ fun scheduleUploadWorker(context: Context) {
 
     val initialDelay = midnight.timeInMillis - now.timeInMillis
 
-    val request = PeriodicWorkRequestBuilder<UploadToFirebaseWorker>(24, TimeUnit.HOURS)
-        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+    val request = PeriodicWorkRequestBuilder<UploadToFirebaseWorker>(15, TimeUnit.MINUTES)
+        //.setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)  normal
+        .setInitialDelay(0, TimeUnit.MILLISECONDS) // 立即测试
         .build()
+
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
         "upload_to_firebase",

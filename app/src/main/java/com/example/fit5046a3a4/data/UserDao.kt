@@ -2,6 +2,8 @@ package com.example.fit5046a3a4.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Dao
+import androidx.room.Query
 
 @Dao
 interface UserDao {
@@ -22,4 +24,7 @@ interface UserDao {
 
     @Query("DELETE FROM users")
     suspend fun clearUsers()
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllOnce(): List<UserEntity>
 }

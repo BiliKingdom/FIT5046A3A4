@@ -2,6 +2,8 @@ package com.example.fit5046a3a4.data
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import androidx.room.Dao
+import androidx.room.Query
 
 @Dao
 interface RestaurantDao {
@@ -20,4 +22,7 @@ interface RestaurantDao {
 
     @Query("DELETE FROM restaurants")
     suspend fun clearAll()
+
+    @Query("SELECT * FROM restaurants")
+    suspend fun getAllOnce(): List<RestaurantEntity>
 }
