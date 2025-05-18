@@ -92,12 +92,19 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             }
 
 
-            composable(Screen.Menu.route) {
-                MenuScreen(
-                    navController = navController,
-                    onBack = { navController.navigateUp() }
-                )
+            composable(
+                route = Screen.Menu.route
+            ) { backStackEntry ->
+                val restaurantId = backStackEntry.arguments?.getString("restaurantId")?.toLongOrNull()
+                if (restaurantId != null) {
+                    MenuScreen(
+                        navController = navController,
+                        restaurantId = restaurantId,
+                        onBack = { navController.navigateUp() }
+                    )
+                }
             }
+            
             composable(Screen.Cart.route) {
                 CartScreen(
                     navController = navController

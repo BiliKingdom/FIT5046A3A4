@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenuScreen(
     navController: NavHostController,
-    restaurantId: Long,  
+    restaurantId: Long,
     onBack: () -> Unit = {}
 ) {
     val viewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(AppDatabase.get(LocalContext.current).foodDao()))
