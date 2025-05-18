@@ -43,9 +43,11 @@ data class CartItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(navController: NavController,
-               cartViewModel: CartViewModel = viewModel()
-               ) {
+fun CartScreen(
+    navController: NavController,
+    restaurantId: Long,
+    cartViewModel: CartViewModel = viewModel()
+) {
     WithBackground {
         Box(
             modifier = Modifier
@@ -58,7 +60,6 @@ fun CartScreen(navController: NavController,
             var selectedHour by remember { mutableStateOf(12) }
             var selectedMinute by remember { mutableStateOf(0) }
 
-            // ⭐️ 1. 用数据库驱动的 items
             val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
 
             Scaffold(
@@ -67,9 +68,13 @@ fun CartScreen(navController: NavController,
                         title = { Text("Your Cart", style = MaterialTheme.typography.titleLarge) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                navController.navigate(Screen.Order.route)
+                                // 返回菜单页而不是 Order！
+                                navController.popBackStack(
+                                    route = Screen.Menu.createRoute(restaurantId),
+                                    inclusive = false
+                                )
                             }) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Back to Order")
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Back to Menu")
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -85,14 +90,13 @@ fun CartScreen(navController: NavController,
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    // ⭐️ 2. 遍历数据库中的条目
                     items.forEach { cart ->
                         CartItemRow(
                             item = cart.name,
                             quantity = cart.quantity,
                             imageRes = cart.imageRes,
                             price = "$${"%.2f".format(cart.price)}",
-                            onRemove = { cartViewModel.remove(cart) } // ⭐️ 通过 ViewModel 删除
+                            onRemove = { cartViewModel.remove(cart) }
                         )
                     }
 
@@ -207,6 +211,7 @@ fun CartScreen(navController: NavController,
         }
     }
 }
+
 
 @Composable
 fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String, onRemove: () -> Unit) {

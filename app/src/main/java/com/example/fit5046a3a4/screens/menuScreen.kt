@@ -35,7 +35,8 @@ import kotlinx.coroutines.launch
 fun MenuScreen(
     navController: NavHostController,
     restaurantId: Long,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onGoToCart: () -> Unit
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
@@ -87,7 +88,7 @@ fun MenuScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { navController.navigate(Screen.Cart.route) },
+                    onClick = { navController.navigate(Screen.Cart.createRoute(restaurantId)) },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
                 ) {

@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
-
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object SignUp : Screen("signup")
@@ -21,11 +20,13 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object OrderHistory : Screen("order_history")
     object Menu : Screen("menu/{restaurantId}") {
-        fun createRoute(restaurantId: Long) = "menu/$restaurantId" }
-    object Cart : Screen("cart")
+        fun createRoute(restaurantId: Long) = "menu/$restaurantId"
+    }
+    object Cart : Screen("cart/{restaurantId}") {           // 购物车加参数
+        fun createRoute(restaurantId: Long) = "cart/$restaurantId"
+    }
     object Payment : Screen("payment")
     object Search : Screen("search")
-
     object Product : Screen("product/{restaurantId}") {
         fun createRoute(restaurantId: Long) = "product/$restaurantId"
     }
@@ -48,7 +49,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
-
+        // 注册页
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onNavigateToLogin = { navController.navigateUp() },
@@ -60,10 +61,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
-
-
-
-
+        // 主导航（带 BottomNav）
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
 
             composable(BottomNavItem.Home.route) {
@@ -85,38 +83,42 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 ProfileScreen(navController = navController)
             }
 
-
             composable(Screen.OrderHistory.route) {
                 OrderHistoryScreen(navController = navController)
             }
-
 
             composable(Screen.Search.route) {
                 SearchScreen(navController = navController)
             }
 
-
+            // 菜单页，带 restaurantId 参数
             composable(
                 route = Screen.Menu.route,
-                arguments = listOf(navArgument("restaurantId") {
-                    type = NavType.LongType
-                })
+                arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
             ) { backStackEntry ->
                 val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
                 MenuScreen(
                     navController = navController,
                     restaurantId = restaurantId,
-                    onBack = { navController.navigateUp() }
+                    onBack = { navController.navigateUp() },
+                    // 例如跳转购物车时要用
+                    onGoToCart = { navController.navigate(Screen.Cart.createRoute(restaurantId)) }
                 )
             }
 
-
-            composable(Screen.Cart.route) {
+            // 购物车页，带 restaurantId 参数
+            composable(
+                route = Screen.Cart.route,
+                arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
                 CartScreen(
-                    navController = navController
+                    navController = navController,
+                    restaurantId = restaurantId
                 )
             }
 
+            // 支付页面（如需参数可扩展）
             composable(Screen.Payment.route) {
                 PaymentScreen(
                     onBack = { navController.navigateUp() },
@@ -125,7 +127,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                     }
                 )
             }
-
         }
     }
 }
