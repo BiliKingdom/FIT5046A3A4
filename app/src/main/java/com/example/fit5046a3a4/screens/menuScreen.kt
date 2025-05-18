@@ -15,54 +15,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.WithBackground
+import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.viewmodel.MenuViewModel
+import com.example.fit5046a3a4.viewmodel.MenuViewModelFactory
 import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
     navController: NavHostController,
+    restaurantId: Long,  // 传入餐厅 ID
     onBack: () -> Unit = {}
 ) {
-    val menuData = listOf(
-        MenuCategory("Main", listOf(
-            MenuItem("Hamburger", "$12.99", R.drawable.burrito),
-            MenuItem("SuperRice", "$9.99", R.drawable.taco)
-        )),
-        MenuCategory("Side", listOf(
-            MenuItem("Chips", "$3.50", R.drawable.chips),
-            MenuItem("Soup", "$4.00", R.drawable.soup)
-        )),
-        MenuCategory("Drink", listOf(
-            MenuItem("Coke", "$2.50", R.drawable.coke),
-            MenuItem("Coffee", "$2.80", R.drawable.coffee)
-        )),
-        MenuCategory("Dessert", listOf(
-            MenuItem("Cake", "$5.99", R.drawable.churros),
-            MenuItem("Ice Cream", "$4.50", R.drawable.icecream)
-        )),
-
-    )
+    val viewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(AppDatabase.get(LocalContext.current).foodDao()))
+    val menuData by viewModel.loadMenuByRestaurant(restaurantId).collectAsState()
 
     val listState = rememberLazyListState()
-    val selectedCategory = remember { mutableStateOf("MAIN") }
+    val selectedCategory = remember { mutableStateOf(menuData.firstOrNull()?.name?.uppercase() ?: "") }
     val coroutineScope = rememberCoroutineScope()
 
-    val categoryIndexMap = remember {
+    val categoryIndexMap = remember(menuData) {
         mutableMapOf<String, Int>().apply {
-            var index = 1 // Only CategoryTabBar is stickyHeader
+            var index = 1
             menuData.forEach { category ->
                 put(category.name.uppercase(), index)
                 index += category.items.size + 1
             }
         }
     }
+
 
     WithBackground {
         Scaffold(
