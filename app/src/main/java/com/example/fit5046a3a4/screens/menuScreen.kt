@@ -38,7 +38,11 @@ fun MenuScreen(
     onBack: () -> Unit = {}
 ) {
     val viewModel: MenuViewModel = viewModel(factory = MenuViewModelFactory(AppDatabase.get(LocalContext.current).foodDao()))
-    val menuData by viewModel.loadMenuByRestaurant(restaurantId).collectAsState()
+    val menuData by viewModel.menuData.collectAsState()
+
+    LaunchedEffect(restaurantId) {
+        viewModel.loadMenuByRestaurant(restaurantId)
+    }
 
     val listState = rememberLazyListState()
     val selectedCategory = remember { mutableStateOf(menuData.firstOrNull()?.name?.uppercase() ?: "") }

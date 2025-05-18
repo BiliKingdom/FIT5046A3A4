@@ -10,28 +10,33 @@ import kotlinx.coroutines.launch
 
 class MenuViewModel(private val foodDao: FoodDao) : ViewModel() {
 
-    fun loadMenuByRestaurant(restaurantId: Long): StateFlow<List<MenuCategory>> {
-        return foodDao.getCategoriesByRestaurant(restaurantId)
-            .flatMapLatest { categories ->
-                combine(
-                    categories.map { category ->
-                        foodDao.getItemsByCategory(category.id).map { items ->
-                            MenuCategory(
-                                name = category.name,
-                                items = items.map {
-                                    MenuItem(
-                                        name = it.name,
-                                        price = "$${"%.2f".format(it.price)}",
-                                        imageRes = it.imageRes
-                                    )
-                                }
-                            )
+    private val _menuData = MutableStateFlow<List<MenuCategory>>(emptyList())
+    val menuData: StateFlow<List<MenuCategory>> = _menuData
+
+    fun loadMenuByRestaurant(restaurantId: Long) {
+        viewModelScope.launch {
+            foodDao.getCategoriesByRestaurant(restaurantId)
+                .flatMapLatest { categories ->
+                    combine(
+                        categories.map { category ->
+                            foodDao.getItemsByCategory(category.id).map { items ->
+                                MenuCategory(
+                                    name = category.name,
+                                    items = items.map {
+                                        MenuItem(
+                                            name = it.name,
+                                            price = "$${"%.2f".format(it.price)}",
+                                            imageRes = it.imageRes
+                                        )
+                                    }
+                                )
+                            }
                         }
-                    }
-                ) { it.toList() }
-            }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+                    ) { it.toList() }
+                }
+                .collect { result ->
+                    _menuData.value = result
+                }
+        }
     }
 }
-
-
