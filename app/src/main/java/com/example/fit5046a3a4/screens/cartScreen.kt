@@ -27,6 +27,10 @@ import com.example.fit5046a3a4.navigation.Screen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
+import com.example.fit5046a3a4.data.CartItemEntity
+
 
 // ✅ 自定义 CartItem 数据类
 data class CartItem(
@@ -39,7 +43,9 @@ data class CartItem(
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(navController: NavController) {
+fun CartScreen(navController: NavController,
+               cartViewModel: CartViewModel = viewModel()
+               ) {
     WithBackground {
         Box(
             modifier = Modifier
@@ -52,12 +58,8 @@ fun CartScreen(navController: NavController) {
             var selectedHour by remember { mutableStateOf(12) }
             var selectedMinute by remember { mutableStateOf(0) }
 
-            val items = remember {
-                mutableStateListOf(
-                    CartItem("Hamburger", 1, 12.99, R.drawable.burrito),
-                    CartItem("Coke", 2, 2.50, R.drawable.coke)
-                )
-            }
+            // ⭐️ 1. 用数据库驱动的 items
+            val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
 
             Scaffold(
                 topBar = {
@@ -83,13 +85,14 @@ fun CartScreen(navController: NavController) {
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
+                    // ⭐️ 2. 遍历数据库中的条目
                     items.forEach { cart ->
                         CartItemRow(
                             item = cart.name,
                             quantity = cart.quantity,
                             imageRes = cart.imageRes,
                             price = "$${"%.2f".format(cart.price)}",
-                            onRemove = { items.remove(cart) } // ✅ 删除逻辑
+                            onRemove = { cartViewModel.remove(cart) } // ⭐️ 通过 ViewModel 删除
                         )
                     }
 
