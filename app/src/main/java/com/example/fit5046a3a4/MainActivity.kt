@@ -23,6 +23,8 @@ import com.example.fit5046a3a4.data.AppDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.fit5046a3a4.worker.scheduleUploadWorker
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,6 +32,9 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ 安排每天午夜自动上传Room数据到Firebase
+        scheduleUploadWorker(applicationContext)
 
         // ✅ 初始化 Campus 和 Restaurant 菜单数据
         com.example.fit5046a3a4.data.CampusSeeder.seed(applicationContext)
@@ -40,6 +45,8 @@ class MainActivity : ComponentActivity() {
         //   AppDatabase.get(applicationContext).userDao().clearUsers()
         // }
 
+        // ✅ 安排每天午夜自动上传Room数据到Firebase
+        scheduleUploadWorker(applicationContext)
 
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)

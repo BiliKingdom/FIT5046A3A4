@@ -20,4 +20,9 @@ interface CartItemDao {
     // 清空购物车：返回删除的总行数（Int）
     @Query("DELETE FROM cart_items")
     suspend fun clearAll(): Int
+
+    //增加同步方法（一次性获取数据，而不是 Flow）
+    @Query("SELECT * FROM cart_items")
+    suspend fun getAllOnce(): List<CartItemEntity>
+
 }
