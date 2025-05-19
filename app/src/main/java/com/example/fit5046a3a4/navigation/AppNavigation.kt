@@ -98,7 +98,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             ) { backStackEntry ->
                 val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
                 MenuScreen(
-                    navController = navController,
+                    //navController = navController,
                     restaurantId = restaurantId,
                     onBack = { navController.navigateUp() },
                     // 例如跳转购物车时要用

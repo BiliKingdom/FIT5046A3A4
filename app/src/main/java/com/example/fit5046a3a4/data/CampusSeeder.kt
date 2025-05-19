@@ -153,7 +153,7 @@ object CampusSeeder {
                     name = "Polenta CHips",
                     description = "Crispy polenta chips with gorgonzola dip",
                     price = 12.0,
-                    imageRes = -1,
+                    imageRes = R.drawable.icecream,
                     categoryId = categoryIds["Side"]!!,
                     restaurantId = GEBId
                 )
@@ -163,7 +163,7 @@ object CampusSeeder {
                     name = "Chicken",
                     description = "Roast spatchcock chicken with vegans",
                     price = 42.0,
-                    imageRes = -1,
+                    imageRes = R.drawable.icecream,
                     categoryId = categoryIds["Main"]!!,
                     restaurantId = GEBId
                 )
@@ -174,7 +174,7 @@ object CampusSeeder {
                     name = "Beef Rice",
                     description = "Sichuan Beef with vegans and rice",
                     price = 18.8,
-                    imageRes = -1,
+                    imageRes = R.drawable.icecream,
                     categoryId = categoryIds["Main"]!!,
                     restaurantId = CkitchenId
                 )

@@ -2,15 +2,50 @@
 
 package com.example.fit5046a3a4.screens
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,33 +55,44 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
-import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.viewmodel.CartViewModel
+import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.viewmodel.MenuViewModel
 import com.example.fit5046a3a4.viewmodel.MenuViewModelFactory
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
-    navController: NavHostController,
     restaurantId: Long,
     onBack: () -> Unit = {},
     onGoToCart: () -> Unit
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
-    val viewModel: MenuViewModel = viewModel(
+
+    // ① 拿到 CartViewModel，用于 addToCart
+    val cartViewModel: CartViewModel = viewModel<CartViewModel>(
+        factory = CartViewModelFactory(db.cartDao())
+    )
+    // ② 拿到 MenuViewModel，用于加载菜单
+    val menuViewModel: MenuViewModel = viewModel<MenuViewModel>(
         factory = MenuViewModelFactory(db.foodDao(), db.restaurantDao())
     )
+    // ② 收集菜单数据
+    // 只在第一次 Composition 或 restaurantId 变化时调用一次
     val menuFlow = remember(restaurantId) {
-        viewModel.loadMenuByRestaurant(restaurantId)
+        menuViewModel.loadMenuByRestaurant(restaurantId)
     }
-    val menuData by menuFlow.collectAsState()
-    val restaurantName by viewModel.getRestaurantName(restaurantId).collectAsState()
+    val menuData by menuFlow.collectAsState(initial = emptyList())
+
+    val nameFlow = remember(restaurantId) {
+        menuViewModel.getRestaurantName(restaurantId)
+    }
+    val restaurantName by nameFlow.collectAsState(initial = "")
 
     val listState = rememberLazyListState()
     val selectedCategory = remember { mutableStateOf(menuData.firstOrNull()?.name?.uppercase() ?: "") }
@@ -79,7 +125,7 @@ fun MenuScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { navController.navigate(Screen.Cart.createRoute(restaurantId)) },
+                    onClick = onGoToCart,
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
                 ) {
@@ -118,9 +164,10 @@ fun MenuScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    state = listState
-                ) {
+                    state = listState,
+                    contentPadding = innerPadding,
+                    modifier = Modifier.fillMaxSize()
+                )  {
                     menuData.forEach { category ->
                         item {
                             Text(
@@ -129,8 +176,12 @@ fun MenuScreen(
                                 modifier = Modifier.padding(16.dp)
                             )
                         }
-                        items(category.items) { item ->
-                            MenuItemRow(item)
+                        items(category.items) { menuItem ->
+                            // ④ 这里把 onAdd 回调传给 MenuItemRow
+                            MenuItemRow(
+                                item  = menuItem,
+                                onAdd = { cartViewModel.addToCart(menuItem) }
+                            )
                         }
                     }
                 }
@@ -222,7 +273,10 @@ fun PickupInfoCard() {
 }
 
 @Composable
-fun MenuItemRow(item: MenuItem) {
+fun MenuItemRow(
+    item: MenuItem,
+    onAdd: () -> Unit     // 新增一个回调参数
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -259,12 +313,13 @@ fun MenuItemRow(item: MenuItem) {
                 )
             }
 
-            IconButton(onClick = { /* Add to cart */ }) {
+            IconButton(onClick = onAdd) {   // 调用传入的回调
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         }
     }
 }
+
 
 data class MenuItem(
     val name: String,
