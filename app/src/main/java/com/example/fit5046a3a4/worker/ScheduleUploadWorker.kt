@@ -6,6 +6,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import androidx.work.Constraints
+import androidx.work.NetworkType
+
+
 
 fun scheduleUploadWorker(context: Context) {
     val now = Calendar.getInstance()
@@ -18,9 +22,14 @@ fun scheduleUploadWorker(context: Context) {
 
     val initialDelay = midnight.timeInMillis - now.timeInMillis
 
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
     val request = PeriodicWorkRequestBuilder<UploadToFirebaseWorker>(15, TimeUnit.MINUTES)
         //.setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)  normal
         .setInitialDelay(0, TimeUnit.MILLISECONDS) // 立即测试
+        .setConstraints(constraints)
         .build()
 
 

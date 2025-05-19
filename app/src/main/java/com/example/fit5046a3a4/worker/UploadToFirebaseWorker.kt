@@ -21,6 +21,23 @@ class UploadToFirebaseWorker(
             val firebaseDb = FirebaseFirestore.getInstance()
             val batch = firebaseDb.batch()
 
+            // === 0. 清理旧的 category-分组下的 food_items ===
+            val categoriesSnapshot = firebaseDb
+                .collection("food_categories")
+                .get()
+                .await()
+            for (catDoc in categoriesSnapshot.documents) {
+                // 1) 删除每个 category 下的 food_items 子集合文档
+                val itemsSnapshot = firebaseDb
+                    .collection("food_categories")
+                    .document(catDoc.id)
+                    .collection("food_items")
+                    .get()
+                    .await()
+                for (itemDoc in itemsSnapshot.documents) {
+                    batch.delete(itemDoc.reference)
+                }
+            }
             // === 上传购物车条目 ===
             val cartItems = db.cartDao().getAllOnce() // 你需要实现 getAllOnce()
             cartItems.forEach { cartItem ->
@@ -53,19 +70,20 @@ class UploadToFirebaseWorker(
                 Log.d("UploadToFirebaseWorker", "Uploading restaurant: $restaurant")
             }
 
-            // === 上传食品/分类依次添加 ==
-            val categories = db.foodDao().getAllCategoriesOnce()
-            categories.forEach { category ->
-                val catRef = firebaseDb.collection("food_categories").document(category.id.toString())
-                batch.set(catRef, category)
-                Log.d("UploadToFirebaseWorker", "Uploading category: $category")
+            // === 上传菜品，按餐厅分组（不再上传全局分类） ===
+            val allItems = db.foodDao().getAllOnce()
+            val itemsByRestaurant = allItems.groupBy { it.restaurantId }
 
-                // 2. 每个类别下上传所有food_items
-                val foods = db.foodDao().getFoodsByCategoryOnce(category.id)
+            itemsByRestaurant.forEach { (rid, foods) ->
+                val restRef = firebaseDb
+                    .collection("restaurants")
+                    .document(rid.toString())
                 foods.forEach { food ->
-                    val foodRef = catRef.collection("food_items").document(food.id.toString())
+                    val foodRef = restRef
+                        .collection("food_items")
+                        .document(food.id.toString())
                     batch.set(foodRef, food)
-                    Log.d("UploadToFirebaseWorker", "Uploading food: $food")
+                    Log.d("UploadToFirebaseWorker", "Uploading food: $food under restaurant: $rid")
                 }
             }
 

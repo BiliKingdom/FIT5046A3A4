@@ -7,26 +7,41 @@ import com.example.fit5046a3a4.data.RestaurantDao
 import com.example.fit5046a3a4.screens.MenuCategory
 import com.example.fit5046a3a4.screens.MenuItem
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for loading restaurant menus.
+ *
+ * - loadMenuByRestaurant: retrieves global categories and filters items per restaurant.
+ * - getRestaurantName: retrieves a restaurant's name by ID.
+ */
 class MenuViewModel(
     private val foodDao: FoodDao,
     private val restaurantDao: RestaurantDao
 ) : ViewModel() {
 
+    /**
+     * Load menu categories and items for a specific restaurant.
+     *
+     * 1. Observe all global categories.
+     * 2. For each category, filter items by the given restaurantId.
+     * 3. Combine into a list of MenuCategory.
+     */
     fun loadMenuByRestaurant(restaurantId: Long): StateFlow<List<MenuCategory>> {
-        return foodDao.getCategoriesByRestaurant(restaurantId)
+        return foodDao.getAllCategories()
             .flatMapLatest { categories ->
                 combine(
                     categories.map { category ->
-                        foodDao.getItemsByCategory(category.id).map { items ->
+                        foodDao.getItemsByCategoryAndRestaurant(
+                            category.id,
+                            restaurantId
+                        ).map { items ->
                             MenuCategory(
                                 name = category.name,
-                                items = items.map {
+                                items = items.map { foodItem ->
                                     MenuItem(
-                                        name = it.name,
-                                        price = "$${"%.2f".format(it.price)}",
-                                        imageRes = it.imageRes
+                                        name = foodItem.name,
+                                        price = "$${"%.2f".format(foodItem.price)}",
+                                        imageRes = foodItem.imageRes
                                     )
                                 }
                             )
@@ -34,13 +49,23 @@ class MenuViewModel(
                     }
                 ) { it.toList() }
             }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
     }
 
+    /**
+     * Observe a restaurant's name by its ID.
+     */
     fun getRestaurantName(restaurantId: Long): StateFlow<String> {
         return restaurantDao.getRestaurantByIdFlow(restaurantId)
             .map { it?.name ?: "Unknown Restaurant" }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = ""
+            )
     }
 }
-

@@ -4,6 +4,38 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+
+// 在与你的 AppDatabase 同一个文件里（AppDatabase.kt 或 Migrations.kt）
+private val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // 1. 创建临时新表 (去掉 restaurantId)
+        db.execSQL("""
+      CREATE TABLE IF NOT EXISTS `food_categories_new` (
+        `id`   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        `name` TEXT    NOT NULL
+      )
+    """.trimIndent())
+
+        // 2. 从旧表拷贝 name（去重）
+        db.execSQL("""
+      INSERT OR IGNORE INTO `food_categories_new` (name)
+      SELECT DISTINCT name FROM `food_categories`
+    """.trimIndent())
+
+        // 3. 删除旧表，重命名新表
+        db.execSQL("DROP TABLE `food_categories`")
+        db.execSQL("ALTER TABLE `food_categories_new` RENAME TO `food_categories`")
+    }
+}
+
+
+
 
 @Database(
     entities = [
@@ -14,7 +46,7 @@ import androidx.room.RoomDatabase
         FoodCategoryEntity::class,
         FoodItemEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -27,18 +59,35 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun foodDao(): FoodDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
         fun get(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app-db"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build().also { INSTANCE = it }
+                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
+
+        private fun buildDatabase(context: Context): AppDatabase =
+            Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
+                // 只注册 5 → 6 的迁移
+                .addMigrations(
+                    MIGRATION_5_6
+                )
+                // 当数据库第一次创建时回调
+                .addCallback(object : Callback() {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        super.onCreate(db)
+                        // 在 IO 线程里插入默认类别
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val dao = get(context).foodDao()
+                            listOf("Main", "Drink", "Side", "Dessert").forEach { name ->
+                                dao.insertCategory(FoodCategoryEntity(name = name))
+                            }
+                        }
+                    }
+                })
+                // 如果有其他 Migration，请也 addMigrations(...)
+                .build()
+        }
     }
-}
 

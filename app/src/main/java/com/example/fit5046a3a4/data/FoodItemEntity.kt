@@ -10,5 +10,8 @@ data class FoodItemEntity(
     val description: String,
     val price: Double,
     val imageRes: Int,
-    val categoryId: Long
+    val categoryId: Long,
+    val restaurantId: Long
 )
+
+
