@@ -29,7 +29,6 @@ import com.example.fit5046a3a4.viewmodel.MenuViewModel
 import com.example.fit5046a3a4.viewmodel.MenuViewModelFactory
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
@@ -47,11 +46,7 @@ fun MenuScreen(
         viewModel.loadMenuByRestaurant(restaurantId)
     }
     val menuData by menuFlow.collectAsState()
-
     val restaurantName by viewModel.getRestaurantName(restaurantId).collectAsState()
-
-
-
 
     val listState = rememberLazyListState()
     val selectedCategory = remember { mutableStateOf(menuData.firstOrNull()?.name?.uppercase() ?: "") }
@@ -67,16 +62,12 @@ fun MenuScreen(
         }
     }
 
-
     WithBackground {
         Scaffold(
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(
-                            text = restaurantName,
-                            style = MaterialTheme.typography.titleLarge
-                        )
+                        Text(text = restaurantName, style = MaterialTheme.typography.titleLarge)
                     },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
@@ -186,6 +177,51 @@ fun CategoryTabBar(
 }
 
 @Composable
+fun PickupInfoCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Monash University 127.2 m",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Pickup time: 8:30 – 6:30 pm",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Button(
+                onClick = { /* View map action */ },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Text("View Map")
+            }
+        }
+    }
+}
+
+@Composable
 fun MenuItemRow(item: MenuItem) {
     Card(
         modifier = Modifier
@@ -207,7 +243,6 @@ fun MenuItemRow(item: MenuItem) {
                     .padding(end = 16.dp),
                 contentScale = ContentScale.Crop
             )
-
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -224,35 +259,9 @@ fun MenuItemRow(item: MenuItem) {
                 )
             }
 
-            IconButton(onClick = {}) {
+            IconButton(onClick = { /* Add to cart */ }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
-        }
-    }
-}
-
-@Composable
-fun PickupInfoCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Monash University 127.2 m",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Pickup time: 8:30 – 6:30 pm",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
