@@ -10,3 +10,7 @@ data class CampusEntity(
     val latitude: Double,
     val longitude: Double
 )
+
+
+
+

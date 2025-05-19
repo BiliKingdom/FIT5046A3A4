@@ -8,11 +8,16 @@ import androidx.room.Query
 @Dao
 interface FoodDao {
 
-    @Query("SELECT * FROM food_categories WHERE restaurantId = :restaurantId")
-    fun getCategoriesByRestaurant(restaurantId: Long): Flow<List<FoodCategoryEntity>>
+    // 全局取所有类别（不按餐厅筛）
+    @Query("SELECT * FROM food_categories")
+    fun getAllCategories(): Flow<List<FoodCategoryEntity>>
 
-    @Query("SELECT * FROM food_items WHERE categoryId = :categoryId")
-    fun getItemsByCategory(categoryId: Long): Flow<List<FoodItemEntity>>
+    // 取指定类别下所有菜品
+    @Query("SELECT * FROM food_items WHERE categoryId = :categoryId AND restaurantId = :restaurantId")
+    fun getItemsByCategoryAndRestaurant(
+        categoryId: Long,
+        restaurantId: Long
+    ): Flow<List<FoodItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: FoodCategoryEntity): Long
@@ -26,13 +31,10 @@ interface FoodDao {
     @Query("DELETE FROM food_items")
     suspend fun clearItems()
 
-    @Query("SELECT * FROM food_items")
-    suspend fun getAllOnce(): List<FoodItemEntity>
-
+    // 同步用——拿一次全量列表
     @Query("SELECT * FROM food_categories")
     suspend fun getAllCategoriesOnce(): List<FoodCategoryEntity>
 
-    @Query("SELECT * FROM food_items WHERE categoryId = :categoryId")
-    suspend fun getFoodsByCategoryOnce(categoryId: Long): List<FoodItemEntity>
-
+    @Query("SELECT * FROM food_items")
+    suspend fun getAllOnce(): List<FoodItemEntity>
 }
