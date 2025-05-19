@@ -38,13 +38,12 @@ fun HomeScreen(
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
-    var cloudCredit by remember { mutableStateOf(0.0) }
+    val cloudCredit by userViewModel.cloudCredit.collectAsState()
 
-    LaunchedEffect(Unit) {
-        UserInitializer.fetchUserCredits(
-            onSuccess = { cloudCredit = it },
-            onFailure = { e -> Log.e("HomeScreen", "Failed to fetch credit: ${e.message}") }
-        )
+    LaunchedEffect(user?.email) {
+        user?.email?.let { email ->
+            userViewModel.fetchUserCredits(email)
+        }
     }
 
 
@@ -61,14 +60,20 @@ fun HomeScreen(
 // 每当 campus 改变，加载天气数据
     LaunchedEffect(selectedCampus) {
         val (lat, lon) = campusCoordinates[selectedCampus]!!
+        Log.d("WeatherFetch", "Attempting to fetch weather for $selectedCampus at ($lat, $lon)")
+
         coroutineScope.launch {
             try {
-                weatherInfo = fetchWeather(lat, lon)
+                val result = fetchWeather(lat, lon)
+                Log.d("WeatherFetch", "Weather fetch success: $result")
+                weatherInfo = result
             } catch (e: Exception) {
+                Log.e("WeatherFetch", "Error fetching weather: ${e.message}", e)
                 weatherInfo = null
             }
         }
     }
+
 
 
 
