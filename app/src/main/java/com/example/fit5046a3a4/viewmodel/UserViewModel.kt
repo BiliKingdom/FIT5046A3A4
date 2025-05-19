@@ -11,6 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+
 
 @HiltViewModel
 class UserViewModel @Inject constructor(
@@ -20,6 +23,10 @@ class UserViewModel @Inject constructor(
     private val repository = UserRepository(AppDatabase.get(application).userDao())
 
     private val _userState = MutableStateFlow<UserEntity?>(null)
+
+    private val _cloudCredit = MutableStateFlow(0.0)
+    val cloudCredit: StateFlow<Double> = _cloudCredit
+
     val userState: StateFlow<UserEntity?> = _userState.asStateFlow()
 
     init {
@@ -44,6 +51,13 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun fetchUserCredits(email: String) {
+        viewModelScope.launch {
+            val credit = fetchUserDollars(email)
+            _cloudCredit.value = credit
+        }
+    }
+
     fun updateUser(user: UserEntity) {
         viewModelScope.launch {
             repository.updateUser(user)
@@ -54,6 +68,14 @@ class UserViewModel @Inject constructor(
 
     suspend fun getUserNow(email: String): UserEntity? {
         return repository.getUserByEmail(email)
+    }
+    //fetch dollars from firebase
+    suspend fun fetchUserDollars(email: String): Double {
+        val db = FirebaseFirestore.getInstance()
+        val usersRef = db.collection("users")
+        val querySnapshot = usersRef.whereEqualTo("email", email).get().await()
+        val doc = querySnapshot.documents.firstOrNull()
+        return doc?.getDouble("dollars") ?: 0.0
     }
 
     fun printAllUsers() {

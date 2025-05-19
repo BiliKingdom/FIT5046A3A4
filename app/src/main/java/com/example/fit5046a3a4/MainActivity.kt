@@ -15,11 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.example.fit5046a3a4.components.WithBackground
+import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.navigation.AppNavigation
 import com.example.fit5046a3a4.ui.theme.FIT5046A3A4Theme
 import com.example.fit5046a3a4.worker.scheduleUploadWorker
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
