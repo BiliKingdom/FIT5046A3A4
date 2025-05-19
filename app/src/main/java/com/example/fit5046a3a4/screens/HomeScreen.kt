@@ -23,6 +23,12 @@ import com.example.fit5046a3a4.navigation.Screen
 import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserInitializer
 import android.util.Log
+import androidx.compose.ui.text.font.FontWeight
+import coil.compose.rememberAsyncImagePainter
+import com.example.fit5046a3a4.data.WeatherResponse
+import com.example.fit5046a3a4.data.api.fetchWeather
+import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,8 +49,28 @@ fun HomeScreen(
 
 
     val campuses = listOf("Clayton", "Caulfield")
+    val campusCoordinates = mapOf(
+        "Clayton" to Pair(-37.911, 145.134),
+        "Caulfield" to Pair(-37.877, 145.043)
+    )
     var selectedCampus by remember { mutableStateOf("Clayton") }
     var expanded by remember { mutableStateOf(false) }
+    var weatherInfo by remember { mutableStateOf<WeatherResponse?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
+// 每当 campus 改变，加载天气数据
+    LaunchedEffect(selectedCampus) {
+        val (lat, lon) = campusCoordinates[selectedCampus]!!
+        coroutineScope.launch {
+            try {
+                weatherInfo = fetchWeather(lat, lon)
+            } catch (e: Exception) {
+                weatherInfo = null
+            }
+        }
+    }
+
+
 
     Scaffold(
         topBar = {
@@ -89,28 +115,50 @@ fun HomeScreen(
                 shape = MaterialTheme.shapes.medium
             ) {
                 Column {
+                    // ☁️ 天气图标 + 天气描述 + 温度
                     Row(
                         modifier = Modifier
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Cloud,
-                            contentDescription = "Weather Icon",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(36.dp)
-                        )
+                        if (weatherInfo != null) {
+                            val iconCode = weatherInfo!!.weather.firstOrNull()?.icon ?: "01d"
+                            val iconUrl = "https://openweathermap.org/img/w/$iconCode.png"
+
+                            Image(
+                                painter = rememberAsyncImagePainter(iconUrl),
+                                contentDescription = "Weather Icon",
+                                modifier = Modifier.size(36.dp)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Cloud,
+                                contentDescription = "Weather Icon",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+
                         Spacer(modifier = Modifier.width(16.dp))
+
                         Column {
-                            Text("Rain expected in $selectedCampus", style = MaterialTheme.typography.titleMedium)
                             Text(
-                                "Bring your umbrella and be careful as the road is slippery!",
+                                text = "Current Weather: ${
+                                    weatherInfo?.weather?.firstOrNull()?.main ?: "Loading..."
+                                }",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                            Text(
+                                text = "Temperature: ${
+                                    weatherInfo?.main?.temp?.let { "$it°C" } ?: "Loading..."
+                                }",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
+                    // 📍 校区选择器
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -133,8 +181,6 @@ fun HomeScreen(
                                     onClick = {
                                         selectedCampus = campus
                                         expanded = false
-                                        // ⭐ 预留地图API逻辑：你可以在这里调用地图更新方法
-                                        // updateMapLocation(campus)
                                     }
                                 )
                             }
@@ -142,6 +188,8 @@ fun HomeScreen(
                     }
                 }
             }
+
+
 
             // 🧾 Recent Orders
             Row(
