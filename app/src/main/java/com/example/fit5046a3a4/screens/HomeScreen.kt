@@ -32,13 +32,12 @@ fun HomeScreen(
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
-    var cloudCredit by remember { mutableStateOf(0.0) }
+    val cloudCredit by userViewModel.cloudCredit.collectAsState()
 
-    LaunchedEffect(Unit) {
-        UserInitializer.fetchUserCredits(
-            onSuccess = { cloudCredit = it },
-            onFailure = { e -> Log.e("HomeScreen", "Failed to fetch credit: ${e.message}") }
-        )
+    LaunchedEffect(user?.email) {
+        user?.email?.let { email ->
+            userViewModel.fetchUserCredits(email)
+        }
     }
 
 
