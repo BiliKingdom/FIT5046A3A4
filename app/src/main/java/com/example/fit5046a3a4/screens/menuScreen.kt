@@ -55,6 +55,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.viewmodel.CartViewModel
@@ -140,7 +142,7 @@ fun MenuScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                PickupInfoCard()
+                PickupInfoCard(navController = navController)
 
                 Surface(
                     tonalElevation = 4.dp,
@@ -191,6 +193,53 @@ fun MenuScreen(
 }
 
 @Composable
+fun PickupInfoCard(navController: NavHostController) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Monash University 127.2 m",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Pickup time: 8:30 – 6:30 pm",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            Button(
+                onClick = {
+                    navController.navigate(Screen.Map.route)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                ),
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Text("View Map")
+            }
+        }
+    }
+}
+
+@Composable
 fun CategoryTabBar(
     categories: List<String>,
     selectedCategory: String,
@@ -222,51 +271,6 @@ fun CategoryTabBar(
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Medium)
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun PickupInfoCard() {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "Monash University 127.2 m",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Pickup time: 8:30 – 6:30 pm",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Button(
-                onClick = { /* View map action */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
-                ),
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                Text("View Map")
             }
         }
     }
@@ -320,6 +324,7 @@ fun MenuItemRow(
     }
 }
 
+// --- Data Classes ---
 
 data class MenuItem(
     val name: String,

@@ -2,9 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.kapt") // ✅ kapt for Hilt & Room
-    id("com.google.gms.google-services") // ✅ Firebase
-    id("com.google.dagger.hilt.android") // ✅ Hilt
+    id("org.jetbrains.kotlin.kapt") // Hilt & Room
+    id("com.google.gms.google-services") // Firebase
+    id("com.google.dagger.hilt.android") // Hilt
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
@@ -46,10 +46,11 @@ android {
 }
 
 dependencies {
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    // ✅ Google Maps Compose 支持
+    implementation("com.google.maps.android:maps-compose:4.2.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 
     // Core
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -67,7 +68,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
-    // Accompanist (System Bar Controller)
+    // Accompanist
     implementation(libs.accompanist.systemuicontroller)
 
     // Room
@@ -88,26 +89,15 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
-
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-
-    // ✅ Hilt Core
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-
-    // ✅ Hilt for Compose
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
+    // Ktor + Coil
     implementation("io.ktor:ktor-client-core:2.3.4")
     implementation("io.ktor:ktor-client-cio:2.3.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.4")
@@ -116,10 +106,15 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil:2.4.0")
 
-
-
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
 
 kapt {
-    correctErrorTypes = true // ✅ for Hilt and Room compatibility
+    correctErrorTypes = true
 }
