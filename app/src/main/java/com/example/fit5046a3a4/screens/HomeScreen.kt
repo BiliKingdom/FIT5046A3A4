@@ -24,7 +24,7 @@ import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserInitializer
 import android.util.Log
 import androidx.compose.ui.text.font.FontWeight
-import coil.compose.rememberAsyncImagePainter
+import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.data.WeatherResponse
 import com.example.fit5046a3a4.data.api.fetchWeather
 import kotlinx.coroutines.launch
@@ -57,7 +57,6 @@ fun HomeScreen(
     var weatherInfo by remember { mutableStateOf<WeatherResponse?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-// 每当 campus 改变，加载天气数据
     LaunchedEffect(selectedCampus) {
         val (lat, lon) = campusCoordinates[selectedCampus]!!
         coroutineScope.launch {
@@ -114,29 +113,17 @@ fun HomeScreen(
                 shape = MaterialTheme.shapes.medium
             ) {
                 Column {
-                    // ☁️ 天气图标 + 天气描述 + 温度
                     Row(
                         modifier = Modifier
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (weatherInfo != null) {
-                            val iconCode = weatherInfo!!.weather.firstOrNull()?.icon ?: "01d"
-                            val iconUrl = "https://openweathermap.org/img/w/$iconCode.png"
-
-                            Image(
-                                painter = rememberAsyncImagePainter(iconUrl),
-                                contentDescription = "Weather Icon",
-                                modifier = Modifier.size(36.dp)
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Cloud,
-                                contentDescription = "Weather Icon",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(36.dp)
-                            )
-                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.weather),
+                            contentDescription = "Weather Icon",
+                            modifier = Modifier.size(48.dp),
+                            contentScale = ContentScale.Fit
+                        )
 
                         Spacer(modifier = Modifier.width(16.dp))
 
@@ -157,7 +144,8 @@ fun HomeScreen(
                         }
                     }
 
-                    // 📍 校区选择器
+
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -188,9 +176,7 @@ fun HomeScreen(
                 }
             }
 
-
-
-            // 🧾 Recent Orders
+            
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
