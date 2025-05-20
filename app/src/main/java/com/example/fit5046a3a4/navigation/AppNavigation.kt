@@ -104,8 +104,10 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                     //navController = navController,
                     restaurantId = restaurantId,
                     onBack = { navController.navigateUp() },
-                    onGoToCart = { navController.navigate(Screen.Cart.createRoute(restaurantId)) }
+                    onGoToCart = { navController.navigate(Screen.Cart.createRoute(restaurantId)) },
+                    onViewMap  = { navController.navigate(Screen.Map.route) }
                 )
+
             }
 
             // 购物车页（传入餐厅 ID）

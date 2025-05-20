@@ -71,7 +71,8 @@ import kotlinx.coroutines.launch
 fun MenuScreen(
     restaurantId: Long,
     onBack: () -> Unit = {},
-    onGoToCart: () -> Unit
+    onGoToCart: () -> Unit,
+    onViewMap: () -> Unit
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
@@ -142,7 +143,7 @@ fun MenuScreen(
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-                PickupInfoCard(navController = navController)
+                PickupInfoCard(onViewMap = onViewMap)
 
                 Surface(
                     tonalElevation = 4.dp,
@@ -193,7 +194,9 @@ fun MenuScreen(
 }
 
 @Composable
-fun PickupInfoCard(navController: NavHostController) {
+fun PickupInfoCard(onViewMap: () -> Unit    // ← 导航回调
+)
+{
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,9 +227,7 @@ fun PickupInfoCard(navController: NavHostController) {
             }
 
             Button(
-                onClick = {
-                    navController.navigate(Screen.Map.route)
-                },
+                onClick = onViewMap,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = Color.White
