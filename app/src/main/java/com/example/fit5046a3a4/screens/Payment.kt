@@ -18,6 +18,8 @@ import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.data.CartItemEntity
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.fit5046a3a4.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +32,15 @@ fun PaymentScreen(
     val cartViewModel: CartViewModel = viewModel(
         factory = CartViewModelFactory(db.cartDao())
     )
+    val userViewModel: UserViewModel = hiltViewModel()
+    val user by userViewModel.userState.collectAsState()
+    val cloudCredit by userViewModel.cloudCredit.collectAsState()
+
+    LaunchedEffect(user?.email) {
+        user?.email?.let { email ->
+            userViewModel.fetchUserCredits(email)
+        }
+    }
 
     val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
     val total = items.sumOf { it.price * it.quantity }
@@ -74,13 +85,19 @@ fun PaymentScreen(
 
                 Spacer(Modifier.height(16.dp))
                 Text("Total: $${"%.2f".format(total)}", style = MaterialTheme.typography.titleMedium)
-
+                Text(
+                    text = "Monash Dollars: \$${"%.2f".format(cloudCredit)}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Black,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+                Spacer(Modifier.height(8.dp))
                 Spacer(Modifier.height(32.dp))
                 Button(
                     onClick = { onPay() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Proceed to pay")
+                    Text("Confirm to pay")
                 }
             }
         }

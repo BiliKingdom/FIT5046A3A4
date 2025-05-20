@@ -177,7 +177,7 @@ fun CartScreen(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Text("Pay with Google Pay", style = MaterialTheme.typography.labelLarge)
+                        Text("Proceed to Pay", style = MaterialTheme.typography.labelLarge)
                     }
                 }
 
