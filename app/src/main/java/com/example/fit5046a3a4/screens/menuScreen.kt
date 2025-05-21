@@ -61,16 +61,18 @@ fun MenuScreen(
 
     val categoryIndexMap = remember(menuData) {
         mutableMapOf<String, Int>().apply {
-            var index = 1
+            var index = 0
             menuData.forEach { category ->
                 put(category.name.uppercase(), index)
                 index += category.items.size + 1
             }
         }
     }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     WithBackground {
         Scaffold(
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
                 TopAppBar(
                     title = {
@@ -128,11 +130,10 @@ fun MenuScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                //Spacer(modifier = Modifier.height(8.dp))
 
                 LazyColumn(
                     state = listState,
-                    contentPadding = innerPadding,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     menuData.forEach { category ->
@@ -146,7 +147,12 @@ fun MenuScreen(
                         items(category.items) { menuItem ->
                             MenuItemRow(
                                 item = menuItem,
-                                onAdd = { cartViewModel.addToCart(menuItem) },
+                                onAdd = {
+                                    cartViewModel.addToCart(menuItem)
+                                    coroutineScope.launch {
+                                        snackbarHostState.showSnackbar("Successfully added a product to cart !")
+                                    }
+                                },
                                 onClick = {
                                     navController.navigate(
                                         Screen.Product.createRoute(

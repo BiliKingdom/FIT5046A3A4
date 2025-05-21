@@ -32,7 +32,6 @@ import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
 //import com.example.fit5046a3a4.data.CartItemEntity
 
 
-// ✅ 自定义 CartItem 数据类
 data class CartItem(
     val name: String,
     val quantity: Int,
