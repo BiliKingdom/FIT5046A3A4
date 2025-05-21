@@ -69,6 +69,16 @@ fun MenuScreen(
         }
     }
     val snackbarHostState = remember { SnackbarHostState() }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(Unit) {
+        if (savedStateHandle?.get<Boolean>("added_to_cart") == true) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("Successfully added a product to cart!")
+            }
+            savedStateHandle.set("added_to_cart", false)
+        }
+    }
 
     WithBackground {
         Scaffold(

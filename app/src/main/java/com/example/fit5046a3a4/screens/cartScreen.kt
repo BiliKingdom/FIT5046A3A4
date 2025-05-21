@@ -20,13 +20,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-//import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.navigation.Screen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
 //import com.example.fit5046a3a4.data.CartItemEntity
