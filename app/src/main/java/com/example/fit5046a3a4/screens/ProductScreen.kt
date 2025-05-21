@@ -107,16 +107,13 @@ fun ProductScreen(
                     )
                 }
 
-                // ✅ Add to Cart Button
                 Button(
                     onClick = {
-                        repeat(quantity) {
-                            cartViewModel.addToCart(
-                                MenuItem(name, price, imageRes, description)
-                            )
-                        }
+                        cartViewModel.addToCart(
+                            MenuItem(name, price, imageRes, description),
+                            quantity = quantity
+                        )
 
-                        // ✅ 设置标志传回 MenuScreen
                         navController.previousBackStackEntry
                             ?.savedStateHandle
                             ?.set("added_to_cart", true)

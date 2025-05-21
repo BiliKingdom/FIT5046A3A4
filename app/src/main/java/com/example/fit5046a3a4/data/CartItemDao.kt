@@ -25,4 +25,11 @@ interface CartItemDao {
     @Query("SELECT * FROM cart_items")
     suspend fun getAllOnce(): List<CartItemEntity>
 
+    @Query("SELECT * FROM cart_items WHERE name = :name AND imageRes = :imageRes LIMIT 1")
+    suspend fun findByNameAndImage(name: String, imageRes: Int): CartItemEntity?
+
+    @Update
+    suspend fun update(item: CartItemEntity)
+
+
 }
