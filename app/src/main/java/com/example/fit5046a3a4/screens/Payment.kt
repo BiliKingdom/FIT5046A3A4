@@ -25,16 +25,9 @@ import com.example.fit5046a3a4.data.CartItemEntity
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.viewmodel.UserViewModel
-import com.example.fit5046a3a4.data.UserInitializer  // 假设 updateUserCredits 在这里
+import com.example.fit5046a3a4.data.UserInitializer
 
-
-// Firebase
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.Timestamp
-import com.google.firebase.ktx.Firebase
-
-// 时间 & 工具类
+// 时间工具
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,9 +39,7 @@ fun PaymentScreen(
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
-    val cartViewModel: CartViewModel = viewModel(
-        factory = CartViewModelFactory(db.cartDao())
-    )
+    val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(db.cartDao()))
     val userViewModel: UserViewModel = hiltViewModel()
     val user by userViewModel.userState.collectAsState()
     val cloudCredit by userViewModel.cloudCredit.collectAsState()
@@ -61,6 +52,7 @@ fun PaymentScreen(
 
     val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
     val total = items.sumOf { it.price * it.quantity }
+
     WithBackground {
         Scaffold(
             topBar = {
@@ -110,24 +102,22 @@ fun PaymentScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 Spacer(Modifier.height(32.dp))
+
                 Button(
                     onClick = {
-                        val user = Firebase.auth.currentUser
-                        val uid = user?.uid
-                        val email = user?.email
-
-                        if (uid != null && email != null && cloudCredit >= total) {
+                        val currentUser = user
+                        if (currentUser != null && cloudCredit >= total) {
                             val newCredit = cloudCredit - total
-
                             val orderId = "ORDER-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault()).format(Date())}"
 
-                            // ✅ 更新用户余额（在 UserInitializer.kt 中定义）
-                            UserInitializer.updateUserCredits(email, newCredit,
+                            // ✅ 更新用户余额并上传订单
+                            UserInitializer.updateUserCredits(
+                                id = currentUser.id,
+                                newCredit = newCredit,
                                 onSuccess = {
                                     UserInitializer.uploadOrderToFirebase(
                                         orderId = orderId,
-                                        userId = uid,
-                                        email = email,
+                                        user = currentUser,
                                         items = items,
                                         total = total,
                                         onSuccess = {
@@ -135,24 +125,23 @@ fun PaymentScreen(
                                             onPay()
                                         },
                                         onFailure = { e ->
-                                            println("order upload failed：${e.message}")
+                                            println("❌ Order upload failed: ${e.message}")
                                         }
                                     )
                                 },
                                 onFailure = { e ->
-                                    println("fail to pay：${e.message}")
+                                    println("❌ Failed to update credits: ${e.message}")
                                 }
                             )
                         } else {
-                            println("insufficient dollar")
+                            println("⚠️ Insufficient balance or user is null")
                         }
                     },
                     enabled = cloudCredit >= total,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Confirm to pay")
+                    Text("Confirm to Pay")
                 }
-
             }
         }
     }

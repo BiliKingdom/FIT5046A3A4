@@ -13,6 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.auth.FirebaseAuth
+
 
 
 @HiltViewModel
@@ -49,6 +51,10 @@ class UserViewModel @Inject constructor(
             _userState.value = user
             saveLastUserEmail(user.email)
         }
+    }
+
+    suspend fun addUserReturnId(user: UserEntity): Long {
+        return repository.addUserReturnId(user)
     }
 
     fun fetchUserCredits(email: String) {
@@ -115,4 +121,46 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+    fun addUserAndReturnId(user: UserEntity, onResult: (Long) -> Unit) {
+        viewModelScope.launch {
+            val id = repository.addUserReturnId(user)
+            val completeUser = user.copy(id = id)
+            _userState.value = completeUser
+            saveLastUserEmail(completeUser.email)
+            onResult(id)
+        }
+    }
+
+    // 在 UserViewModel.kt 里
+    fun syncUserFromFirebase(email: String, onComplete: (() -> Unit)? = null) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        FirebaseFirestore.getInstance().collection("users")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val doc = querySnapshot.documents.firstOrNull()
+                if (doc != null) {
+                    val id = doc.getLong("id")?.toLong() ?: 0L
+                    val username = doc.getString("username") ?: ""
+                    val dollars = doc.getDouble("dollars") ?: 0.0
+                    val points = (doc.getLong("points") ?: 0L).toInt()
+
+                    val user = UserEntity(
+                        id = id,
+                        username = username,
+                        email = email,
+                        password = "",
+                        dollars = dollars,
+                        points = points
+                    )
+                    viewModelScope.launch {
+                        repository.addUser(user)
+                        setUser(user)
+                        onComplete?.invoke()
+                    }
+                }
+            }
+
+    }
+
 }

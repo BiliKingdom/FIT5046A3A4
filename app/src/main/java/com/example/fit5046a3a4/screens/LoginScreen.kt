@@ -24,21 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
-import com.example.fit5046a3a4.data.AppDatabase
+import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserEntity
 import com.example.fit5046a3a4.data.UserInitializer
-import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import com.google.firebase.auth.ktx.auth
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,29 +67,16 @@ fun LoginScreen(
                         val emailFromGoogle = auth.currentUser?.email
                         val nameFromGoogle = account.displayName ?: "GoogleUser"
                         if (emailFromGoogle != null) {
-                            scope.launch {
-
-                                val db = AppDatabase.get(context)
-                                var user = db.userDao().getUserByEmail(emailFromGoogle)
-                                if (user == null) {
-                                    user = UserEntity(
-                                        username = nameFromGoogle,
-                                        email = emailFromGoogle,
-                                        password = ""
-                                    )
-                                    userViewModel.addUser(user)
-                                    Log.d("LoginScreen", " New user created for Google account: $emailFromGoogle")
-                                }
-
-                                UserInitializer.initializeFirestoreUserIfNew(emailFromGoogle, nameFromGoogle)
-
-                                withContext(Dispatchers.Main) {
-                                    userViewModel.setUser(user)
-                                    onNavigateToHome()
-                                }
+                            val user = UserEntity(
+                                username = nameFromGoogle,
+                                email = emailFromGoogle,
+                                password = "google_user"
+                            )
+                            UserInitializer.initializeFirestoreUserIfNew(user)
+                            userViewModel.syncUserFromFirebase(emailFromGoogle) {
+                                onNavigateToHome()
                             }
                         }
-
                     } else {
                         Log.e("LoginScreen", "Firebase Auth failed: ${authResult.exception}")
                     }
@@ -189,27 +171,14 @@ fun LoginScreen(
 
                         Firebase.auth.signInWithEmailAndPassword(email, password)
                             .addOnSuccessListener {
-                                val user = Firebase.auth.currentUser
                                 val username = email.substringBefore("@")
-
-                                UserInitializer.initializeFirestoreUserIfNew(email, username)
-
-                                scope.launch {
-                                    val db = AppDatabase.get(context)
-                                    val localUser = db.userDao().getUserByEmail(email)
-
-                                    if (localUser == null) {
-                                        val newUser = UserEntity(
-                                            username = username,
-                                            email = email,
-                                            password = password
-                                        )
-                                        userViewModel.addUser(newUser)
-                                        userViewModel.setUser(newUser)
-                                    } else {
-                                        userViewModel.setUser(localUser)
-                                    }
-
+                                val user = UserEntity(
+                                    username = username,
+                                    email = email,
+                                    password = password
+                                )
+                                UserInitializer.initializeFirestoreUserIfNew(user)
+                                userViewModel.syncUserFromFirebase(email) {
                                     onNavigateToHome()
                                 }
                             }
@@ -220,7 +189,6 @@ fun LoginScreen(
                                 isSubmitting = false
                             }
                     }
-
                 },
                 modifier = Modifier
                     .fillMaxWidth()

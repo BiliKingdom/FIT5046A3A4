@@ -1,63 +1,81 @@
 package com.example.fit5046a3a4.data
 
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.Timestamp
 
 object UserInitializer {
 
-    fun initializeFirestoreUserIfNew(email: String, username: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val userDoc = Firebase.firestore.collection("users").document(uid)
+    // ✅ 使用 Room 的自增 ID 作为 Firestore 文档 ID
+    fun initializeFirestoreUserIfNew(user: UserEntity) {
+        val docId = user.id.toString()
+        val userDoc = FirebaseFirestore.getInstance().collection("users").document(docId)
 
         userDoc.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
                 val newUser = mapOf(
-                    "email" to email,
-                    "username" to username,
-                    "dollars" to 1.0,
-                    "points" to 0
+                    "id" to user.id,
+                    "email" to user.email,
+                    "username" to user.username,
+                    "dollars" to user.dollars,
+                    "points" to user.points
                 )
                 userDoc.set(newUser).addOnSuccessListener {
-                    Log.d("UserInitializer", "User created in Firestore for $email")
+                    Log.d("UserInitializer", "✅ Created Firestore user with id=${user.id}")
                 }.addOnFailureListener { e ->
-                    Log.e("UserInitializer", "Failed to create user: ${e.message}")
+                    Log.e("UserInitializer", "❌ Failed to create user: ${e.message}")
                 }
             } else {
-                Log.d("UserInitializer", "User already exists in Firestore")
+                Log.d("UserInitializer", "📄 User already exists in Firestore")
             }
         }.addOnFailureListener { e ->
-            Log.e("UserInitializer", "Failed to load user doc: ${e.message}")
+            Log.e("UserInitializer", "🔥 Failed to load user doc: ${e.message}")
         }
     }
 
-    // ✅ 读取 Firestore 中的 credit (dollars)，重命名为 fetchUserCredits
     fun fetchUserCredits(
+        email: String,
         onSuccess: (Double) -> Unit,
         onFailure: (Exception) -> Unit = {}
     ) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val userDoc = Firebase.firestore.collection("users").document(uid)
-
-        userDoc.get()
-            .addOnSuccessListener { snapshot ->
-                val credits = snapshot.getDouble("dollars") ?: 0.0
-                Log.d("UserInitializer", "Fetched Firestore credits: $credits")
+        FirebaseFirestore.getInstance().collection("users")
+            .whereEqualTo("email", email)
+            .limit(1)
+            .get()
+            .addOnSuccessListener { query ->
+                val doc = query.documents.firstOrNull()
+                val credits = doc?.getDouble("dollars") ?: 0.0
+                Log.d("UserInitializer", "✅ Fetched Firestore credits: $credits")
                 onSuccess(credits)
             }
             .addOnFailureListener { e ->
-                Log.e("UserInitializer", "Failed to fetch Firestore credits: ${e.message}")
+                Log.e("UserInitializer", "❌ Failed to fetch Firestore credits: ${e.message}")
+                onFailure(e)
+            }
+    }
+
+    fun updateUserCredits(
+        id: Long,
+        newCredit: Double,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        FirebaseFirestore.getInstance().collection("users")
+            .document(id.toString())
+            .update("dollars", newCredit)
+            .addOnSuccessListener {
+                Log.d("UserInitializer", "✅ Updated user credits to $newCredit")
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                Log.e("UserInitializer", "❌ Failed to update user credits: ${e.message}")
                 onFailure(e)
             }
     }
 
     fun uploadOrderToFirebase(
         orderId: String,
-        userId: String,
-        email: String,
+        user: UserEntity,
         items: List<CartItemEntity>,
         total: Double,
         onSuccess: () -> Unit,
@@ -66,8 +84,8 @@ object UserInitializer {
         val db = FirebaseFirestore.getInstance()
         val orderData = hashMapOf(
             "orderId" to orderId,
-            "userId" to userId,
-            "email" to email,
+            "userId" to user.id.toString(),
+            "email" to user.email,
             "total" to total,
             "timestamp" to Timestamp.now(),
             "items" to items.map {
@@ -84,26 +102,5 @@ object UserInitializer {
             .set(orderData)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { onFailure(it) }
-    }
-    fun updateUserCredits(
-        email: String,
-        newCredit: Double,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val db = FirebaseFirestore.getInstance()
-
-        db.collection("users")
-            .document(uid)
-            .update("dollars", newCredit)
-            .addOnSuccessListener {
-                Log.d("UserInitializer", "✅ Updated user credits to $newCredit")
-                onSuccess()
-            }
-            .addOnFailureListener { e ->
-                Log.e("UserInitializer", "❌ Failed to update user credits: ${e.message}")
-                onFailure(e)
-            }
     }
 }

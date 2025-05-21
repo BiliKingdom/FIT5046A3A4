@@ -87,8 +87,7 @@ fun ProfileScreen(navController: NavController) {
                 } else {
                     Text("Username: ${currentUser?.username ?: ""}", style = MaterialTheme.typography.bodyLarge)
                     Text("Email: ${currentUser?.email ?: ""}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Monash Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
-                    Text("💵 Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
 
                 }
 

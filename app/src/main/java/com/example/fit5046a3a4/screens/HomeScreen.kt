@@ -108,7 +108,7 @@ fun HomeScreen(
             )
 
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Monash Points: ${user?.points ?: 0}", style = MaterialTheme.typography.bodyLarge)
+
             Text("Monash Dollars: \$${"%.2f".format(cloudCredit)}", style = MaterialTheme.typography.bodyLarge)
 
 

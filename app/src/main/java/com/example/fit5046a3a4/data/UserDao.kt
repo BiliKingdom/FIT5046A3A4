@@ -27,4 +27,5 @@ interface UserDao {
 
     @Query("SELECT * FROM users")
     suspend fun getAllOnce(): List<UserEntity>
+
 }
