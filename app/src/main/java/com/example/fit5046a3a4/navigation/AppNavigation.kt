@@ -1,5 +1,6 @@
 package com.example.fit5046a3a4.navigation
 
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -35,9 +36,11 @@ sealed class Screen(val route: String) {
         fun createRoute(restaurantId: Long) = "product/$restaurantId"
     }
 
-    // ✅ 使用 String 参数传递经纬度
-    object Map : Screen("map/{lat}/{lng}") {
-        fun createRoute(lat: Double, lng: Double) = "map/${lat}/${lng}"
+    // ✅ 地图界面：支持传递纬度、经度、餐厅名称、地址
+    object Map : Screen("map/{lat}/{lng}/{name}/{address}") {
+        fun createRoute(lat: Double, lng: Double, name: String, address: String): String {
+            return "map/$lat/$lng/${Uri.encode(name)}/${Uri.encode(address)}"
+        }
     }
 }
 
@@ -46,6 +49,7 @@ sealed class Screen(val route: String) {
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Screen.Login.route) {
 
+        // 登录
         composable(Screen.Login.route) {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
@@ -57,6 +61,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        // 注册
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onNavigateToLogin = { navController.navigateUp() },
@@ -68,6 +73,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        // 主导航区域（BottomNav）
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
 
             composable(BottomNavItem.Home.route) {
@@ -97,6 +103,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 SearchScreen(navController = navController)
             }
 
+            // 菜单页
             composable(
                 route = Screen.Menu.route,
                 arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
@@ -105,13 +112,16 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 MenuScreen(
                     restaurantId = restaurantId,
                     onBack = { navController.navigateUp() },
-                    onGoToCart = { navController.navigate(Screen.Cart.createRoute(restaurantId)) },
-                    onViewMap = { lat, lng ->
-                        navController.navigate(Screen.Map.createRoute(lat, lng))
+                    onGoToCart = {
+                        navController.navigate(Screen.Cart.createRoute(restaurantId))
+                    },
+                    onViewMap = { lat, lng, name, address ->
+                        navController.navigate(Screen.Map.createRoute(lat, lng, name, address))
                     }
                 )
             }
 
+            // 购物车页
             composable(
                 route = Screen.Cart.route,
                 arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
@@ -123,6 +133,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 )
             }
 
+            // 支付页
             composable(Screen.Payment.route) {
                 PaymentScreen(
                     onBack = { navController.navigateUp() },
@@ -132,17 +143,28 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 )
             }
 
-            // ✅ MapScreen 接收经纬度参数
+            // ✅ 地图页（含经纬度、名称、地址）
             composable(
                 route = Screen.Map.route,
                 arguments = listOf(
                     navArgument("lat") { type = NavType.StringType },
-                    navArgument("lng") { type = NavType.StringType }
+                    navArgument("lng") { type = NavType.StringType },
+                    navArgument("name") { type = NavType.StringType },
+                    navArgument("address") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val lat = backStackEntry.arguments?.getString("lat")?.toDoubleOrNull() ?: -37.9105
                 val lng = backStackEntry.arguments?.getString("lng")?.toDoubleOrNull() ?: 145.1340
-                MapScreen(navController = navController, lat = lat, lng = lng)
+                val name = backStackEntry.arguments?.getString("name") ?: "Restaurant"
+                val address = backStackEntry.arguments?.getString("address") ?: "Unknown Address"
+
+                MapScreen(
+                    navController = navController,
+                    lat = lat,
+                    lng = lng,
+                    name = name,
+                    address = address
+                )
             }
         }
     }

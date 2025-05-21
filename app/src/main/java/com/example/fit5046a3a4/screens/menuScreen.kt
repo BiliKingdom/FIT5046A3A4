@@ -34,7 +34,7 @@ fun MenuScreen(
     restaurantId: Long,
     onBack: () -> Unit = {},
     onGoToCart: () -> Unit,
-    onViewMap: (Double, Double) -> Unit // 修改：带入经纬度
+    onViewMap: (Double, Double, String, String) -> Unit // 经纬度 + 名称 + 地址
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
@@ -101,7 +101,7 @@ fun MenuScreen(
                 PickupInfoCard(
                     onViewMap = {
                         restaurantEntity?.let {
-                            onViewMap(it.latitude, it.longitude)
+                            onViewMap(it.latitude, it.longitude, it.name, it.address)
                         }
                     }
                 )
@@ -254,6 +254,8 @@ fun MenuItemRow(item: MenuItem, onAdd: () -> Unit) {
         }
     }
 }
+
+// --- Menu Models ---
 
 data class MenuItem(
     val name: String,
