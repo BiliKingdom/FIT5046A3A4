@@ -1,5 +1,6 @@
 package com.example.fit5046a3a4.screens
 
+// Compose & Material
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -12,14 +13,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+
+// ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
+// App logic
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.data.CartItemEntity
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.fit5046a3a4.viewmodel.UserViewModel
+import com.example.fit5046a3a4.data.UserInitializer  // 假设 updateUserCredits 在这里
+
+
+// Firebase
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
+import com.google.firebase.ktx.Firebase
+
+// 时间 & 工具类
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,11 +111,48 @@ fun PaymentScreen(
                 Spacer(Modifier.height(8.dp))
                 Spacer(Modifier.height(32.dp))
                 Button(
-                    onClick = { onPay() },
+                    onClick = {
+                        val user = Firebase.auth.currentUser
+                        val uid = user?.uid
+                        val email = user?.email
+
+                        if (uid != null && email != null && cloudCredit >= total) {
+                            val newCredit = cloudCredit - total
+
+                            val orderId = "ORDER-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault()).format(Date())}"
+
+                            // ✅ 更新用户余额（在 UserInitializer.kt 中定义）
+                            UserInitializer.updateUserCredits(email, newCredit,
+                                onSuccess = {
+                                    UserInitializer.uploadOrderToFirebase(
+                                        orderId = orderId,
+                                        userId = uid,
+                                        email = email,
+                                        items = items,
+                                        total = total,
+                                        onSuccess = {
+                                            cartViewModel.clear()
+                                            onPay()
+                                        },
+                                        onFailure = { e ->
+                                            println("order upload failed：${e.message}")
+                                        }
+                                    )
+                                },
+                                onFailure = { e ->
+                                    println("fail to pay：${e.message}")
+                                }
+                            )
+                        } else {
+                            println("insufficient dollar")
+                        }
+                    },
+                    enabled = cloudCredit >= total,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Confirm to pay")
                 }
+
             }
         }
     }
