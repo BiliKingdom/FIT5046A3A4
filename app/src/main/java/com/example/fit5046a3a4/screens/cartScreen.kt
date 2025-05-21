@@ -15,27 +15,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.BottomBar
 import com.example.fit5046a3a4.components.WithBackground
+import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.navigation.Screen
+import com.example.fit5046a3a4.viewmodel.CartViewModel
+import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fit5046a3a4.ui.viewmodel.CartViewModel
-//import com.example.fit5046a3a4.data.CartItemEntity
-
-
-data class CartItem(
-    val name: String,
-    val quantity: Int,
-    val price: Double,
-    val imageRes: Int
-)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,8 +37,11 @@ data class CartItem(
 fun CartScreen(
     navController: NavController,
     restaurantId: Long,
-    cartViewModel: CartViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val db = AppDatabase.get(context)
+    val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(db.cartDao()))
+
     WithBackground {
         Box(
             modifier = Modifier
@@ -65,7 +62,6 @@ fun CartScreen(
                         title = { Text("Your Cart", style = MaterialTheme.typography.titleLarge) },
                         navigationIcon = {
                             IconButton(onClick = {
-                                // 返回菜单页而不是 Order！
                                 navController.popBackStack(
                                     route = Screen.Menu.createRoute(restaurantId),
                                     inclusive = false
@@ -208,7 +204,6 @@ fun CartScreen(
         }
     }
 }
-
 
 @Composable
 fun CartItemRow(item: String, quantity: Int, imageRes: Int, price: String, onRemove: () -> Unit) {
