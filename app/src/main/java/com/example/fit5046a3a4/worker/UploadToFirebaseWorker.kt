@@ -21,72 +21,66 @@ class UploadToFirebaseWorker(
             val firebaseDb = FirebaseFirestore.getInstance()
             val batch = firebaseDb.batch()
 
-            // === 0. 清理旧的 category-分组下的 food_items ===
-            val categoriesSnapshot = firebaseDb
-                .collection("food_categories")
+            // === 0. 清理所有 restaurants 及其 food_items ===
+            val restaurantsSnap = firebaseDb
+                .collection("restaurants")
                 .get()
                 .await()
-            for (catDoc in categoriesSnapshot.documents) {
-                // 1) 删除每个 category 下的 food_items 子集合文档
-                val itemsSnapshot = firebaseDb
-                    .collection("food_categories")
-                    .document(catDoc.id)
+            for (restDoc in restaurantsSnap.documents) {
+                // 0.1 删除这个 restaurant 底下的 food_items 子集合所有文档
+                val itemsSnap = firebaseDb
+                    .collection("restaurants")
+                    .document(restDoc.id)
                     .collection("food_items")
                     .get()
                     .await()
-                for (itemDoc in itemsSnapshot.documents) {
+                for (itemDoc in itemsSnap.documents) {
                     batch.delete(itemDoc.reference)
                 }
+                // 0.2 删除 restaurant 文档本身
+                batch.delete(restDoc.reference)
             }
-            // === 上传购物车条目 ===
-            val cartItems = db.cartDao().getAllOnce() // 你需要实现 getAllOnce()
+
+            // === 1. 清理所有 food_categories 文档 ===
+            val categoriesSnap = firebaseDb
+                .collection("food_categories")
+                .get()
+                .await()
+            for (catDoc in categoriesSnap.documents) {
+                batch.delete(catDoc.reference)
+            }
+
+            // === 2. 上传购物车条目 ===
+            val cartItems = db.cartDao().getAllOnce()
             cartItems.forEach { cartItem ->
-                val docRef = firebaseDb.collection("cart_items").document(cartItem.id.toString())
-                batch.set(docRef, cartItem)
-                Log.d("UploadToFirebaseWorker", "Uploading cartItem: $cartItem")
+                val ref = firebaseDb
+                    .collection("cart_items")
+                    .document(cartItem.id.toString())
+                batch.set(ref, cartItem)
+                Log.d("UploadWorker", "Uploading cartItem: $cartItem")
             }
 
-            // === 上传用户 ===
-            val users = db.userDao().getAllOnce() // 你需要实现 getAllOnce()
+            // === 3. 上传用户 ===
+            val users = db.userDao().getAllOnce()
             users.forEach { user ->
-                val docRef = firebaseDb.collection("users").document(user.id.toString())
-                batch.set(docRef, user)
-                Log.d("UploadToFirebaseWorker", "Uploading user: $user")
+                val ref = firebaseDb
+                    .collection("users")
+                    .document(user.id.toString())
+                batch.set(ref, user)
+                Log.d("UploadWorker", "Uploading user: $user")
             }
 
-            // === 上传校区 ===
-            val campuses = db.campusDao().getAllOnce() // 你需要实现 getAllOnce()
+            // === 4. 上传校区 ===
+            val campuses = db.campusDao().getAllOnce()
             campuses.forEach { campus ->
-                val docRef = firebaseDb.collection("campuses").document(campus.id.toString())
-                batch.set(docRef, campus)
-                Log.d("UploadToFirebaseWorker", "Uploading campus: $campus")
+                val ref = firebaseDb
+                    .collection("campuses")
+                    .document(campus.id.toString())
+                batch.set(ref, campus)
+                Log.d("UploadWorker", "Uploading campus: $campus")
             }
 
-            // === 上传餐厅 ===
-            val restaurants = db.restaurantDao().getAllOnce() // 你需要实现 getAllOnce()
-            restaurants.forEach { restaurant ->
-                val docRef = firebaseDb.collection("restaurants").document(restaurant.id.toString())
-                batch.set(docRef, restaurant)
-                Log.d("UploadToFirebaseWorker", "Uploading restaurant: $restaurant")
-            }
-
-            // === 上传菜品，按餐厅分组（不再上传全局分类） ===
-            val allItems = db.foodDao().getAllOnce()
-            val itemsByRestaurant = allItems.groupBy { it.restaurantId }
-
-            itemsByRestaurant.forEach { (rid, foods) ->
-                val restRef = firebaseDb
-                    .collection("restaurants")
-                    .document(rid.toString())
-                foods.forEach { food ->
-                    val foodRef = restRef
-                        .collection("food_items")
-                        .document(food.id.toString())
-                    batch.set(foodRef, food)
-                    Log.d("UploadToFirebaseWorker", "Uploading food: $food under restaurant: $rid")
-                }
-            }
-
+            // 一次性提交所有删除+写入
             batch.commit().await()
             Result.success()
         } catch (e: Exception) {

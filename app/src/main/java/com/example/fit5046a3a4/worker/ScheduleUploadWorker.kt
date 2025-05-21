@@ -7,8 +7,9 @@ import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-
+import androidx.work.OneTimeWorkRequestBuilder
 
 
 fun scheduleUploadWorker(context: Context) {
@@ -31,6 +32,18 @@ fun scheduleUploadWorker(context: Context) {
         .setInitialDelay(0, TimeUnit.MILLISECONDS) // 立即测试
         .setConstraints(constraints)
         .build()
+
+    //立即执行的任务
+    val wm = WorkManager.getInstance(context)
+    val immediate = OneTimeWorkRequestBuilder<UploadToFirebaseWorker>()
+    .setConstraints(constraints)
+    .build()
+    wm.enqueueUniqueWork(
+    "upload_to_firebase_now",
+    ExistingWorkPolicy.REPLACE,
+    immediate
+    )
+
 
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
