@@ -24,16 +24,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.components.BrandLogo
-import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserEntity
 import com.example.fit5046a3a4.data.UserInitializer
+import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,16 +43,15 @@ fun LoginScreen(
     val context = LocalContext.current
     val auth = Firebase.auth
     val userViewModel: UserViewModel = viewModel()
-    val scope = rememberCoroutineScope()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isSubmitting by remember { mutableStateOf(false) }
-
     var passwordVisible by remember { mutableStateOf(false) }
+    var isSubmitting by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
 
+    // Google Sign-In launcher
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -87,6 +85,7 @@ fun LoginScreen(
         }
     }
 
+    // Google Sign-In client
     val googleSignInClient = remember {
         val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken("765683541411-fq762aa9oidafs85lbh9in4kgkkq8nl2.apps.googleusercontent.com")
@@ -169,7 +168,7 @@ fun LoginScreen(
                         isPasswordError = false
                         isSubmitting = true
 
-                        Firebase.auth.signInWithEmailAndPassword(email, password)
+                        auth.signInWithEmailAndPassword(email, password)
                             .addOnSuccessListener {
                                 val username = email.substringBefore("@")
                                 val user = UserEntity(
@@ -183,7 +182,7 @@ fun LoginScreen(
                                 }
                             }
                             .addOnFailureListener { e ->
-                                Log.e("LoginScreen", " login failed: ${e.message}")
+                                Log.e("LoginScreen", "Login failed: ${e.message}")
                                 isEmailError = true
                                 isPasswordError = true
                                 isSubmitting = false
@@ -197,10 +196,15 @@ fun LoginScreen(
                 Text("Login")
             }
 
+            // ✅ Google 登录按钮：每次弹出账号选择
             Button(
                 onClick = {
-                    val signInIntent = googleSignInClient.signInIntent
-                    launcher.launch(signInIntent)
+                    googleSignInClient.signOut().addOnCompleteListener {
+                        val intent = googleSignInClient.signInIntent.apply {
+                            putExtra("prompt", "select_account")
+                        }
+                        launcher.launch(intent)
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 modifier = Modifier
