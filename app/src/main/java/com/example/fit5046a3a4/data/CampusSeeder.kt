@@ -15,7 +15,6 @@ object CampusSeeder {
         val foodDao = db.foodDao()
 
         CoroutineScope(Dispatchers.IO).launch {
-            // 1. 清空旧数据
             campusDao.clearAll()
             restaurantDao.clearAll()
             foodDao.clearCategories()
@@ -69,6 +68,8 @@ object CampusSeeder {
                 )
             )
 
+
+
             val CkitchenId = restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "Caulfield Kitchen",
@@ -83,20 +84,21 @@ object CampusSeeder {
                 name to foodDao.insertCategory(FoodCategoryEntity(name = name))
             }.toMap()
 
-            // 5. 按餐厅插入菜品：Campus Central Café
+
+            // centralCafe
             foodDao.insertItem(
                 FoodItemEntity(
                     name = "Grilled Chicken Bowl",
                     description = "Tasty grilled chicken with rice",
                     price = 11.99,
-                    imageRes = R.drawable.burrito,
+                    imageRes = R.drawable.grilledbowl,
                     categoryId = categoryIds["Main"]!!,
                     restaurantId = centralCafeId
                 )
             )
             foodDao.insertItem(
                 FoodItemEntity(
-                    name = "Veggie Delight",
+                    name = "Mexico taco",
                     description = "Stir-fried vegetables and tofu",
                     price = 9.49,
                     imageRes = R.drawable.taco,
@@ -104,10 +106,32 @@ object CampusSeeder {
                     restaurantId = centralCafeId
                 )
             )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "spaghetti",
+                    description = "began to feed in the spaghetti, carefully separating the strands",
+                    price = 15.50,
+                    imageRes = R.drawable.spaghetti,
+                    categoryId = categoryIds["Main"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+
             foodDao.insertItem(
                 FoodItemEntity(
                     name = "Fresh Juice",
                     description = "Orange or apple juice",
+                    price = 5.00,
+                    imageRes = R.drawable.juice,
+                    categoryId = categoryIds["Drink"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Coke",
+                    description = "The best coke in the world",
                     price = 3.99,
                     imageRes = R.drawable.coke,
                     categoryId = categoryIds["Drink"]!!,
@@ -115,39 +139,147 @@ object CampusSeeder {
                 )
             )
 
-            // 6. 按餐厅插入菜品：LTB Café
             foodDao.insertItem(
                 FoodItemEntity(
-                    name = "Garlic Bread",
-                    description = "Crunchy and buttery garlic bread",
-                    price = 4.99,
+                    name = "Fries",
+                    description = "Crispy golden french fries.",
+                    price = 3.50,
+                    imageRes = R.drawable.chips,
+                    categoryId = categoryIds["Side"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Fried Chicken",
+                    description = "Crispy chicken with golden oil",
+                    price = 3.50,
+                    imageRes = R.drawable.fc,
+                    categoryId = categoryIds["Side"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Chocolate Cake",
+                    description = "Rich and moist chocolate layered cake.",
+                    price = 5.99,
+                    imageRes = R.drawable.chocolate,
+                    categoryId = categoryIds["Dessert"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Vanilla Ice Cream",
+                    description = "Creamy vanilla-flavored ice cream.",
+                    price = 4.50,
+                    imageRes = R.drawable.icecream,
+                    categoryId = categoryIds["Dessert"]!!,
+                    restaurantId = centralCafeId
+                )
+            )
+
+
+            // LTB Café
+            // Main
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Hamburger",
+                    description = "Classic grilled beef burger with lettuce and cheese.",
+                    price = 12.99,
+                    imageRes = R.drawable.burrito,
+                    categoryId = categoryIds["Main"]!!,
+                    restaurantId = ltbCafeId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "SuperRice",
+                    description = "Stir-fried rice with vegetables and chicken.",
+                    price = 9.99,
+                    imageRes = R.drawable.taco,
+                    categoryId = categoryIds["Main"]!!,
+                    restaurantId = ltbCafeId
+                )
+            )
+
+            // Side
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Chips",
+                    description = "Golden crispy chips served with sauce.",
+                    price = 3.50,
                     imageRes = R.drawable.chips,
                     categoryId = categoryIds["Side"]!!,
                     restaurantId = ltbCafeId
                 )
             )
+
             foodDao.insertItem(
                 FoodItemEntity(
-                    name = "Tomato Soup",
-                    description = "Warm and creamy tomato soup",
-                    price = 5.49,
+                    name = "Soup",
+                    description = "Delicious daily soup made fresh.",
+                    price = 4.00,
                     imageRes = R.drawable.soup,
                     categoryId = categoryIds["Side"]!!,
                     restaurantId = ltbCafeId
                 )
             )
+
+            // Drink
             foodDao.insertItem(
                 FoodItemEntity(
-                    name = "Chocolate Muffin",
-                    description = "Rich and moist muffin",
-                    price = 3.29,
+                    name = "Coke",
+                    description = "Refreshing chilled Coca-Cola.",
+                    price = 2.50,
+                    imageRes = R.drawable.coke,
+                    categoryId = categoryIds["Drink"]!!,
+                    restaurantId = ltbCafeId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Coffee",
+                    description = "Freshly brewed coffee served hot.",
+                    price = 2.80,
+                    imageRes = R.drawable.coffee,
+                    categoryId = categoryIds["Drink"]!!,
+                    restaurantId = ltbCafeId
+                )
+            )
+
+            // Dessert
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Cake",
+                    description = "Soft and sweet sponge cake with icing.",
+                    price = 5.99,
+                    imageRes = R.drawable.churros,
+                    categoryId = categoryIds["Dessert"]!!,
+                    restaurantId = ltbCafeId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Ice Cream",
+                    description = "Creamy vanilla ice cream served cold.",
+                    price = 4.50,
                     imageRes = R.drawable.icecream,
                     categoryId = categoryIds["Dessert"]!!,
                     restaurantId = ltbCafeId
                 )
             )
 
-            // 7. 按餐厅插入菜品：Grind Espresso Bar
+
+
+
+            // Grind Espresso Bar
             foodDao.insertItem(
                 FoodItemEntity(
                     name = "Polenta CHips",
@@ -168,47 +300,109 @@ object CampusSeeder {
                     restaurantId = GEBId
                 )
             )
-            // 8. 按餐厅插入菜品：Caulfield Kitchen
+            //Caulfield Kitchen
+            // Main
             foodDao.insertItem(
                 FoodItemEntity(
-                    name = "Beef Rice",
-                    description = "Sichuan Beef with vegans and rice",
-                    price = 18.8,
-                    imageRes = R.drawable.icecream,
+                    name = "Hamburger",
+                    description = "Classic grilled beef burger with lettuce and cheese.",
+                    price = 12.99,
+                    imageRes = R.drawable.burrito,
                     categoryId = categoryIds["Main"]!!,
                     restaurantId = CkitchenId
                 )
             )
 
-            // ======= 其他餐厅（不含菜单） =======
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "SuperRice",
+                    description = "Stir-fried rice with vegetables and chicken.",
+                    price = 9.99,
+                    imageRes = R.drawable.taco,
+                    categoryId = categoryIds["Main"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            // Side
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Chips",
+                    description = "Golden crispy chips served with sauce.",
+                    price = 3.50,
+                    imageRes = R.drawable.chips,
+                    categoryId = categoryIds["Side"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Soup",
+                    description = "Delicious daily soup made fresh.",
+                    price = 4.00,
+                    imageRes = R.drawable.soup,
+                    categoryId = categoryIds["Side"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            // Drink
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Coke",
+                    description = "Refreshing chilled Coca-Cola.",
+                    price = 2.50,
+                    imageRes = R.drawable.coke,
+                    categoryId = categoryIds["Drink"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Coffee",
+                    description = "Freshly brewed coffee served hot.",
+                    price = 2.80,
+                    imageRes = R.drawable.coffee,
+                    categoryId = categoryIds["Drink"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            // Dessert
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Cake",
+                    description = "Soft and sweet sponge cake with icing.",
+                    price = 5.99,
+                    imageRes = R.drawable.churros,
+                    categoryId = categoryIds["Dessert"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+            foodDao.insertItem(
+                FoodItemEntity(
+                    name = "Ice Cream",
+                    description = "Creamy vanilla ice cream served cold.",
+                    price = 4.50,
+                    imageRes = R.drawable.icecream,
+                    categoryId = categoryIds["Dessert"]!!,
+                    restaurantId = CkitchenId
+                )
+            )
+
+
             restaurantDao.insertRestaurant(
                 RestaurantEntity(3,"PappaRich Monash", "Shop G15/21 Chancellors Walk, Clayton Campus", -37.91152, 145.13399, claytonId)
             )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(4,"Wholefoods", "Level1/21Chancellors Walk,, Clayton Campus", -37.91177, 145.13290, claytonId)
-            )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(5,"PAPA'S Korean Chicken Restaurant", "199 Clayton Rd, Clayton Campus", -37.91470, 145.12229, claytonId)
-            )
+
 
             restaurantDao.insertRestaurant(
                 RestaurantEntity(7,"The Common Ground", "Building B, Caulfield", -37.8772, 145.0428, caulfieldId)
             )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(8,"Korean Express", "Building K, Caulfield", -37.8770, 145.0419, caulfieldId)
-            )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(9,"Bento & Sushi", "Level 1, Building A, Caulfield", -37.8768, 145.0435, caulfieldId)
-            )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(10,"Ziweiyuan", "903 Princes Hwy Service Rd, Caulfield East", -37.87584, 145.04643, caulfieldId)
-            )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(11,"Seng Hing Gourmet", "1 Derby Rd, Caulfield East", -37.87611, 145.04159, caulfieldId)
-            )
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(12,"The Glasshouse Caulfield", "31 Station St, Caulfield East", -37.87701, 145.04007, caulfieldId)
-            )
+
         }
     }
 }
