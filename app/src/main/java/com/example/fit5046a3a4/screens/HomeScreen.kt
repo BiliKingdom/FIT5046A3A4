@@ -28,6 +28,12 @@ import com.example.fit5046a3a4.R
 import com.example.fit5046a3a4.data.WeatherResponse
 import com.example.fit5046a3a4.data.api.fetchWeather
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a3a4.viewmodel.OrderHistoryViewModel
+import com.example.fit5046a3a4.data.FirestoreOrder
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,8 +43,11 @@ fun HomeScreen(
     onLogout: () -> Unit
 ) {
     val userViewModel: UserViewModel = hiltViewModel()
+    val orderViewModel: OrderHistoryViewModel = viewModel()
+    val orders = orderViewModel.orders
     val user by userViewModel.userState.collectAsState()
     val cloudCredit by userViewModel.cloudCredit.collectAsState()
+
 
     LaunchedEffect(user?.email) {
         user?.email?.let { email ->
@@ -190,7 +199,16 @@ fun HomeScreen(
             }
 
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(DummyData.recentOrders) { order ->
+                items(orders.take(5)) { order ->
+                    val date = order.timestamp.toDate()
+                    val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
+                    val timeStr = SimpleDateFormat("h:mm a", Locale.getDefault()).format(date)
+                    val summary = order.items.joinToString { item ->
+                        val name = item["name"] as? String ?: ""
+                        val qty = (item["quantity"] as? Long)?.toInt() ?: 0
+                        "$name x$qty"
+                    }
+
                     Card(
                         modifier = Modifier.width(260.dp),
                         shape = MaterialTheme.shapes.medium,
@@ -198,13 +216,15 @@ fun HomeScreen(
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Order #${order.id}", style = MaterialTheme.typography.titleSmall)
-                            Text("${order.date} | ${order.time}", style = MaterialTheme.typography.bodySmall)
-                            Text(order.summary, style = MaterialTheme.typography.bodyMedium)
-                            Text(order.amount, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+                            Text("Order #${order.orderId}", style = MaterialTheme.typography.titleSmall)
+                            Text("$dateStr | $timeStr", style = MaterialTheme.typography.bodySmall)
+                            Text(summary, style = MaterialTheme.typography.bodyMedium)
+                            Text("$${"%.2f".format(order.total)}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
 
                             Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = { /* TODO: Reorder */ }, modifier = Modifier.fillMaxWidth()) {
+                            Button(onClick = {
+                                // TODO: Reorder
+                            }, modifier = Modifier.fillMaxWidth()) {
                                 Text("Reorder", style = MaterialTheme.typography.labelLarge)
                             }
                         }

@@ -23,13 +23,6 @@ data class Restaurant(
 )
 
 object DummyData {
-    val recentOrders = listOf(
-        Order("2628", "11 April 2025", "4:37 PM", "$6.70", "Ground Beef Burrito (Mild)"),
-        Order("2627", "10 April 2025", "1:05 PM", "$12.00", "Chicken Bowl + Drink"),
-        Order("2626", "9 April 2025", "12:12 PM", "$8.90", "Veggie Taco Combo"),
-        Order("2625", "8 April 2025", "6:00 PM", "$15.00", "Family Meal"),
-        Order("2624", "7 April 2025", "11:30 AM", "$5.00", "Coffee")
-    )
 
     val promotions = listOf(
         Promotion("promo1", R.drawable.promo1),

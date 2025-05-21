@@ -14,10 +14,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.DummyData
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fit5046a3a4.viewmodel.OrderHistoryViewModel
+import com.example.fit5046a3a4.data.FirestoreOrder
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderHistoryScreen(navController: NavController) {
+    val viewModel: OrderHistoryViewModel = viewModel()
+    val orders = viewModel.orders
+
     WithBackground {
         Scaffold(
             containerColor = Color.Transparent,
@@ -40,7 +48,7 @@ fun OrderHistoryScreen(navController: NavController) {
                 )
             }
         ) { padding ->
-            if (DummyData.recentOrders.isEmpty()) {
+            if (orders.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -61,32 +69,28 @@ fun OrderHistoryScreen(navController: NavController) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(DummyData.recentOrders) { order ->
+                    items(orders) { order ->
+                        val date = order.timestamp.toDate()
+                        val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+                        val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(date)
+
+                        val summary = order.items.joinToString { item ->
+                            val name = item["name"] as? String ?: ""
+                            val qty = (item["quantity"] as? Long)?.toInt() ?: 0
+                            "$name x$qty"
+                        }
+
                         Card(
                             shape = MaterialTheme.shapes.medium,
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(modifier = Modifier.padding(20.dp)) {
-                                Text(
-                                    text = "Order #${order.id}",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+                                Text("Order #${order.orderId}", style = MaterialTheme.typography.titleMedium)
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "${order.date}  |  ${order.time}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Items: ${order.summary}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Total: ${order.amount}",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                )
+                                Text("$dateStr  |  $timeStr", style = MaterialTheme.typography.bodyMedium)
+                                Text("Items: $summary", style = MaterialTheme.typography.bodyMedium)
+                                Text("Total: $${"%.2f".format(order.total)}", style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary))
                             }
                         }
                     }
