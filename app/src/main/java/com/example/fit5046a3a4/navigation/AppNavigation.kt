@@ -21,6 +21,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object OrderHistory : Screen("order_history")
 
+
     object Menu : Screen("menu/{restaurantId}") {
         fun createRoute(restaurantId: Long) = "menu/$restaurantId"
     }
@@ -32,8 +33,10 @@ sealed class Screen(val route: String) {
     object Payment : Screen("payment")
     object Search : Screen("search")
 
-    object Product : Screen("product/{restaurantId}") {
-        fun createRoute(restaurantId: Long) = "product/$restaurantId"
+    object Product : Screen("product/{name}/{price}/{imageRes}/{description}") {
+        fun createRoute(name: String, price: String, imageRes: Int, description: String): String {
+            return "product/${Uri.encode(name)}/${Uri.encode(price)}/$imageRes/${Uri.encode(description)}"
+        }
     }
 
     // ✅ 地图界面：支持传递纬度、经度、餐厅名称、地址
@@ -110,6 +113,7 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             ) { backStackEntry ->
                 val restaurantId = backStackEntry.arguments!!.getLong("restaurantId")
                 MenuScreen(
+                    navController = navController,
                     restaurantId = restaurantId,
                     onBack = { navController.navigateUp() },
                     onGoToCart = {
@@ -118,6 +122,29 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                     onViewMap = { lat, lng, name, address ->
                         navController.navigate(Screen.Map.createRoute(lat, lng, name, address))
                     }
+                )
+            }
+
+            composable(
+                route = Screen.Product.route,
+                arguments = listOf(
+                    navArgument("name") { type = NavType.StringType },
+                    navArgument("price") { type = NavType.StringType },
+                    navArgument("imageRes") { type = NavType.IntType },
+                    navArgument("description") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val name = backStackEntry.arguments?.getString("name") ?: ""
+                val price = backStackEntry.arguments?.getString("price") ?: ""
+                val imageRes = backStackEntry.arguments?.getInt("imageRes") ?: 0
+                val description = backStackEntry.arguments?.getString("description") ?: ""
+
+                ProductScreen(
+                    navController = navController,
+                    name = name,
+                    price = price,
+                    imageRes = imageRes,
+                    description = description
                 )
             }
 

@@ -24,33 +24,39 @@ import com.example.fit5046a3a4.components.WithBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen() {
+fun ProductScreen(
+    navController: NavController,
+    name: String,
+    price: String,
+    imageRes: Int,
+    description: String
+) {
+
     WithBackground {
         Box(modifier = Modifier.fillMaxSize()) {
-
-
+            // Top Bar
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp, // 状态栏下方 + 微调
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp,
                         start = 16.dp,
                         end = 16.dp
                     )
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back"
-                )
-
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
                 Text(
                     text = "Product Detail",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
-
 
             Column(
                 modifier = Modifier
@@ -69,39 +75,29 @@ fun ProductScreen() {
                         .height(220.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.burrito),
-                        contentDescription = "Product",
+                        painter = painterResource(id = imageRes),
+                        contentDescription = name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
-
-                Text("Breakfast Burrito", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    "$8.20",
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
+                Text(price, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Text(
-                    text = "A delicious breakfast burrito made with scrambled eggs, bacon, cheese, and salsa wrapped in a warm tortilla.",
+                    text = description,
                     style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 QuantitySelector()
             }
 
-
             Button(
-                onClick = { /* Do something */ },
+                onClick = { /* TODO: Add to cart */ },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
@@ -118,6 +114,7 @@ fun ProductScreen() {
         }
     }
 }
+
 
 
 @Composable

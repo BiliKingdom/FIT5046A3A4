@@ -20,8 +20,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
+import com.example.fit5046a3a4.navigation.Screen
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.viewmodel.MenuViewModel
@@ -31,10 +33,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MenuScreen(
+    navController: NavHostController,
     restaurantId: Long,
     onBack: () -> Unit = {},
     onGoToCart: () -> Unit,
-    onViewMap: (Double, Double, String, String) -> Unit // 经纬度 + 名称 + 地址
+    onViewMap: (Double, Double, String, String) -> Unit
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
@@ -143,10 +146,21 @@ fun MenuScreen(
                         items(category.items) { menuItem ->
                             MenuItemRow(
                                 item = menuItem,
-                                onAdd = { cartViewModel.addToCart(menuItem) }
+                                onAdd = { cartViewModel.addToCart(menuItem) },
+                                onClick = {
+                                    navController.navigate(
+                                        Screen.Product.createRoute(
+                                            name = menuItem.name,
+                                            price = menuItem.price,
+                                            imageRes = menuItem.imageRes,
+                                            description = menuItem.description
+                                        )
+                                    )
+                                }
                             )
                         }
                     }
+
                 }
             }
         }
@@ -221,11 +235,13 @@ fun CategoryTabBar(
 }
 
 @Composable
-fun MenuItemRow(item: MenuItem, onAdd: () -> Unit) {
+fun MenuItemRow(item: MenuItem, onAdd: () -> Unit,onClick: () -> Unit) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -260,7 +276,8 @@ fun MenuItemRow(item: MenuItem, onAdd: () -> Unit) {
 data class MenuItem(
     val name: String,
     val price: String,
-    val imageRes: Int
+    val imageRes: Int,
+    val description: String
 )
 
 data class MenuCategory(

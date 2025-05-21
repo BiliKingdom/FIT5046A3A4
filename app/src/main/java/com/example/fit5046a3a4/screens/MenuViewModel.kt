@@ -32,7 +32,8 @@ class MenuViewModel(
                                     MenuItem(
                                         name = foodItem.name,
                                         price = "$${"%.2f".format(foodItem.price)}",
-                                        imageRes = foodItem.imageRes
+                                        imageRes = foodItem.imageRes,
+                                        description = foodItem.description
                                     )
                                 }
                             )

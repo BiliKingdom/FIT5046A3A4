@@ -68,6 +68,16 @@ object CampusSeeder {
                 )
             )
 
+            val PapperId = restaurantDao.insertRestaurant(
+                RestaurantEntity(
+                    name = "PappaRich Monash",
+                    address = "Shop G15/21 Chancellors Walk, Clayton Campus",
+                    latitude = -37.9111,
+                    longitude = 145.1337,
+                    campusId = claytonId
+                )
+            )
+
 
 
             val CkitchenId = restaurantDao.insertRestaurant(
@@ -392,12 +402,6 @@ object CampusSeeder {
                     restaurantId = CkitchenId
                 )
             )
-
-
-            restaurantDao.insertRestaurant(
-                RestaurantEntity(3,"PappaRich Monash", "Shop G15/21 Chancellors Walk, Clayton Campus", -37.91152, 145.13399, claytonId)
-            )
-
 
             restaurantDao.insertRestaurant(
                 RestaurantEntity(7,"The Common Ground", "Building B, Caulfield", -37.8772, 145.0428, caulfieldId)
