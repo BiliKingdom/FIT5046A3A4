@@ -21,25 +21,13 @@ class UploadToFirebaseWorker(
             val firebaseDb = FirebaseFirestore.getInstance()
             val batch = firebaseDb.batch()
 
-            // === 0. 清理所有 restaurants 及其 food_items ===
-            val restaurantsSnap = firebaseDb
-                .collection("restaurants")
-                .get()
-                .await()
-            for (restDoc in restaurantsSnap.documents) {
-                // 0.1 删除这个 restaurant 底下的 food_items 子集合所有文档
-                val itemsSnap = firebaseDb
-                    .collection("restaurants")
-                    .document(restDoc.id)
-                    .collection("food_items")
-                    .get()
-                    .await()
-                for (itemDoc in itemsSnap.documents) {
-                    batch.delete(itemDoc.reference)
-                }
-                // 0.2 删除 restaurant 文档本身
-                batch.delete(restDoc.reference)
+            // === 0-4. Clear the remote campuses data ===
+            val campusSnap = firebaseDb.collection("campuses").get().await()
+            for (doc in campusSnap.documents) {
+                batch.delete(doc.reference)
             }
+
+
 
             // === 1. 清理所有 food_categories 文档 ===
             val categoriesSnap = firebaseDb
@@ -80,7 +68,7 @@ class UploadToFirebaseWorker(
                 Log.d("UploadWorker", "Uploading campus: $campus")
             }
 
-            // 一次性提交所有删除+写入
+            // Submit all deletions and writes at once
             batch.commit().await()
             Result.success()
         } catch (e: Exception) {

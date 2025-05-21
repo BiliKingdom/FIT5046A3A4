@@ -23,5 +23,9 @@ interface CampusDao {
     @Query("SELECT * FROM campuses")
     suspend fun getAllOnce(): List<CampusEntity>
 
+    // === Reset the auto-increment id counter ===
+    @Query("DELETE FROM sqlite_sequence WHERE name = 'campuses'")
+    suspend fun resetIdSeq()
+
 
 }

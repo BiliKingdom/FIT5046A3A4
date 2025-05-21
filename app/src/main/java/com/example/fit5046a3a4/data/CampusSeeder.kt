@@ -16,6 +16,8 @@ object CampusSeeder {
 
         CoroutineScope(Dispatchers.IO).launch {
             campusDao.clearAll()
+            campusDao.resetIdSeq()
+
             restaurantDao.clearAll()
             foodDao.clearCategories()
             foodDao.clearItems()

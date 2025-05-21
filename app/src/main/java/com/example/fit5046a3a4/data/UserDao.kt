@@ -28,4 +28,7 @@ interface UserDao {
     @Query("SELECT * FROM users")
     suspend fun getAllOnce(): List<UserEntity>
 
+    //reset auto-increment id counter
+    @Query("DELETE FROM sqlite_sequence WHERE name = 'users'")
+    suspend fun resetIdSeq()
 }
