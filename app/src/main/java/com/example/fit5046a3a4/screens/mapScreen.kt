@@ -7,13 +7,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import com.google.maps.android.compose.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(navController: NavHostController) {
+fun MapScreen(
+    navController: NavHostController,
+    lat: Double,
+    lng: Double
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -31,10 +36,9 @@ fun MapScreen(navController: NavHostController) {
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // 设置相机初始位置为 Monash Clayton
             val cameraPositionState = rememberCameraPositionState {
                 position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
-                    LatLng(-37.9105, 145.1340), 15f
+                    com.google.android.gms.maps.model.LatLng(lat, lng), 15f
                 )
             }
 
@@ -45,9 +49,9 @@ fun MapScreen(navController: NavHostController) {
                 cameraPositionState = cameraPositionState
             ) {
                 Marker(
-                    state = MarkerState(position = LatLng(-37.9105, 145.1340)),
-                    title = "Monash University",
-                    snippet = "Clayton Campus"
+                    state = MarkerState(position = com.google.android.gms.maps.model.LatLng(lat, lng)),
+                    title = "Restaurant Location",
+                    snippet = "Selected Restaurant"
                 )
             }
         }

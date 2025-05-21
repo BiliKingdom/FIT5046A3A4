@@ -4,16 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fit5046a3a4.data.FoodDao
 import com.example.fit5046a3a4.data.RestaurantDao
+import com.example.fit5046a3a4.data.RestaurantEntity
 import com.example.fit5046a3a4.screens.MenuCategory
 import com.example.fit5046a3a4.screens.MenuItem
 import kotlinx.coroutines.flow.*
 
-/**
- * ViewModel for loading restaurant menus.
- *
- * - loadMenuByRestaurant: retrieves global categories and filters items per restaurant.
- * - getRestaurantName: retrieves a restaurant's name by ID.
- */
 class MenuViewModel(
     private val foodDao: FoodDao,
     private val restaurantDao: RestaurantDao
@@ -21,10 +16,6 @@ class MenuViewModel(
 
     /**
      * Load menu categories and items for a specific restaurant.
-     *
-     * 1. Observe all global categories.
-     * 2. For each category, filter items by the given restaurantId.
-     * 3. Combine into a list of MenuCategory.
      */
     fun loadMenuByRestaurant(restaurantId: Long): StateFlow<List<MenuCategory>> {
         return foodDao.getAllCategories()
@@ -57,7 +48,7 @@ class MenuViewModel(
     }
 
     /**
-     * Observe a restaurant's name by its ID.
+     * Observe restaurant name only.
      */
     fun getRestaurantName(restaurantId: Long): StateFlow<String> {
         return restaurantDao.getRestaurantByIdFlow(restaurantId)
@@ -66,6 +57,18 @@ class MenuViewModel(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = ""
+            )
+    }
+
+    /**
+     * Observe full RestaurantEntity (e.g. for latitude/longitude/map)
+     */
+    fun getRestaurantByIdFlow(restaurantId: Long): StateFlow<RestaurantEntity?> {
+        return restaurantDao.getRestaurantByIdFlow(restaurantId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null
             )
     }
 }
