@@ -112,7 +112,6 @@ fun HomeScreen(
             Text("Monash Dollars: \$${"%.2f".format(cloudCredit)}", style = MaterialTheme.typography.bodyLarge)
 
 
-            // ☁️ Weather card + Dropdown
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
