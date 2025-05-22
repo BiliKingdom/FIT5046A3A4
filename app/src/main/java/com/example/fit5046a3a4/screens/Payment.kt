@@ -1,8 +1,9 @@
 package com.example.fit5046a3a4.screens
 
-// Compose & Material
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -13,14 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-
-// ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-
-// App logic
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.data.CartItemEntity
@@ -28,7 +23,6 @@ import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserInitializer
-
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -125,7 +119,7 @@ fun PaymentScreen(
                                             total = total,
                                             onSuccess = {
                                                 cartViewModel.clear()
-                                                showPaymentSuccess = true
+                                                showPaymentSuccess = true   // 只弹窗，不直接跳转
                                             },
                                             onFailure = { e -> println("❌ Order upload failed: ${e.message}") }
                                         )
@@ -144,5 +138,25 @@ fun PaymentScreen(
                 }
             }
         }
+        // === 支付成功弹窗 ===
+        if (showPaymentSuccess) {
+            AlertDialog(
+                onDismissRequest = { /* 不可点外部关闭 */ },
+                title = { Text("Payment Completed") },
+                text = { Text("Your payment was successful!") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showPaymentSuccess = false
+                            onPay() // 现在才跳转回首页
+                        }
+                    ) {
+                        Text("Return to Home")
+                    }
+                }
+            )
+        }
     }
 }
+
+
