@@ -64,6 +64,11 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        composable("debug_firestore") {
+            FirestoreOrderDebugScreen()
+        }
+
+
         // 注册
         composable(Screen.SignUp.route) {
             SignUpScreen(

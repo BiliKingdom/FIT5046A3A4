@@ -52,11 +52,12 @@ fun HomeScreen(
     val cloudCredit by userViewModel.cloudCredit.collectAsState()
     val firebaseUserEmail = Firebase.auth.currentUser?.email
 
-    // 强制同步当前 firebase 账号和本地 user
+
     LaunchedEffect(firebaseUserEmail) {
         firebaseUserEmail?.let { email ->
             userViewModel.syncUserFromFirebase(email)
             userViewModel.fetchUserCredits(email)
+            orderViewModel.fetchOrdersByEmail(email)
         }
     }
 
