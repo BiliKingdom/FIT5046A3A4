@@ -22,18 +22,13 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.NetworkType
 import androidx.work.WorkManager
+import com.example.fit5046a3a4.worker.UploadToFirebaseWorker
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.data.AppDatabase
-import com.example.fit5046a3a4.worker.UploadToFirebaseWorker
-<<<<<<< HEAD
 import androidx.lifecycle.viewmodel.compose.viewModel
-
-
-=======
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
->>>>>>> 774b1e526c05f63b529748090147d7fd01114423
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,13 +44,9 @@ fun ProfileScreen(navController: NavController) {
         var isEditing by remember { mutableStateOf(false) }
         var username by remember { mutableStateOf(user?.username ?: "") }
 
-<<<<<<< HEAD
-        val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(AppDatabase.get(context).cartDao()))
-
-        LaunchedEffect(currentUser) {
-            currentUser?.let {
-=======
         val firebaseUserEmail = Firebase.auth.currentUser?.email
+
+        val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(AppDatabase.get(context).cartDao()))
 
         // 进入 ProfileScreen 时主动 fetch 云端 Monash Dollars
         LaunchedEffect(firebaseUserEmail) {
@@ -66,7 +57,6 @@ fun ProfileScreen(navController: NavController) {
 
         LaunchedEffect(user) {
             user?.let {
->>>>>>> 774b1e526c05f63b529748090147d7fd01114423
                 username = it.username
             }
         }

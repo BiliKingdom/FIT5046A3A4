@@ -27,7 +27,6 @@ import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.viewmodel.UserViewModel
 import com.example.fit5046a3a4.data.UserInitializer
 
-// 时间工具
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,7 +34,7 @@ import java.util.*
 @Composable
 fun PaymentScreen(
     onBack: () -> Unit,
-    onPay: () -> Unit
+    onPay: () -> Unit,
 ) {
     val context = LocalContext.current
     val db = AppDatabase.get(context)
@@ -122,7 +121,7 @@ fun PaymentScreen(
                                         total = total,
                                         onSuccess = {
                                             cartViewModel.clear()
-                                            onPay()
+                                            onPay() // 让父组件控制跳转逻辑
                                         },
                                         onFailure = { e ->
                                             println("❌ Order upload failed: ${e.message}")
