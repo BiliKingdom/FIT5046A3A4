@@ -31,8 +31,11 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fit5046a3a4.viewmodel.OrderHistoryViewModel
 import com.example.fit5046a3a4.data.FirestoreOrder
+import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.google.firebase.auth.ktx.auth
+
 
 
 
@@ -47,10 +50,12 @@ fun HomeScreen(
     val orders = orderViewModel.orders
     val user by userViewModel.userState.collectAsState()
     val cloudCredit by userViewModel.cloudCredit.collectAsState()
+    val firebaseUserEmail = Firebase.auth.currentUser?.email
 
-
-    LaunchedEffect(user?.email) {
-        user?.email?.let { email ->
+    // 强制同步当前 firebase 账号和本地 user
+    LaunchedEffect(firebaseUserEmail) {
+        firebaseUserEmail?.let { email ->
+            userViewModel.syncUserFromFirebase(email)
             userViewModel.fetchUserCredits(email)
         }
     }

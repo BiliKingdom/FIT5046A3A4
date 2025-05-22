@@ -51,11 +51,20 @@ class UploadToFirebaseWorker(
             // === 3. 上传用户 ===
             val users = db.userDao().getAllOnce()
             users.forEach { user ->
+                val userMap = mapOf(
+                    "id" to user.id,  // 可以保留
+                    "email" to user.email,
+                    "username" to user.username,
+                    "password" to user.password,
+                    "phone" to user.phone,
+                    "dollars" to user.dollars,
+                    "points" to user.points
+                )
                 val ref = firebaseDb
                     .collection("users")
-                    .document(user.id.toString())
-                batch.set(ref, user)
-                Log.d("UploadWorker", "Uploading user: $user")
+                    .document(user.email) // ✅ 用 email 作为主键
+                batch.set(ref, userMap)
+                Log.d("UploadWorker", "Uploading user: $userMap")
             }
 
             // === 4. 上传校区 ===

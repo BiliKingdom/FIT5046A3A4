@@ -26,9 +26,14 @@ import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.worker.UploadToFirebaseWorker
+<<<<<<< HEAD
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 
+=======
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+>>>>>>> 774b1e526c05f63b529748090147d7fd01114423
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,20 +41,32 @@ fun ProfileScreen(navController: NavController) {
     WithBackground {
         val userViewModel: UserViewModel = hiltViewModel()
         val user by userViewModel.userState.collectAsState()
+        val cloudCredit by userViewModel.cloudCredit.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
-
-        val currentUser = user
-        val context = LocalContext.current   // ← 放在 ProfileScreen 顶部
-
+        val context = LocalContext.current
 
         var isEditing by remember { mutableStateOf(false) }
-        var username by remember { mutableStateOf(currentUser?.username ?: "") }
+        var username by remember { mutableStateOf(user?.username ?: "") }
 
+<<<<<<< HEAD
         val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(AppDatabase.get(context).cartDao()))
 
         LaunchedEffect(currentUser) {
             currentUser?.let {
+=======
+        val firebaseUserEmail = Firebase.auth.currentUser?.email
+
+        // 进入 ProfileScreen 时主动 fetch 云端 Monash Dollars
+        LaunchedEffect(firebaseUserEmail) {
+            firebaseUserEmail?.let { email ->
+                userViewModel.fetchUserCredits(email)
+            }
+        }
+
+        LaunchedEffect(user) {
+            user?.let {
+>>>>>>> 774b1e526c05f63b529748090147d7fd01114423
                 username = it.username
             }
         }
@@ -92,18 +109,20 @@ fun ProfileScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text("Username: ${currentUser?.username ?: ""}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Email: ${currentUser?.email ?: ""}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Monash Dollars: \$${user?.dollars ?: "0.00"}", style = MaterialTheme.typography.bodyLarge)
-
+                    Text("Username: ${user?.username ?: ""}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Email: ${user?.email ?: ""}", style = MaterialTheme.typography.bodyLarge)
+                    // 👇 余额用云端同步的 cloudCredit 保证和 Home 一致
+                    Text(
+                        "Monash Dollars: \$${"%.2f".format(cloudCredit)}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ============== 新增：同步按钮 ==============
+                // 同步到云端按钮
                 Button(
                     onClick = {
-                        // 立即排一个 One-Time WorkRequest，同步到云端
                         val uploadNow = OneTimeWorkRequestBuilder<UploadToFirebaseWorker>()
                             .setConstraints(
                                 Constraints.Builder()
@@ -118,7 +137,6 @@ fun ProfileScreen(navController: NavController) {
                                 uploadNow
                             )
 
-                        // 给出反馈
                         scope.launch {
                             snackbarHostState.showSnackbar("⏫ Sync started…")
                         }
@@ -128,14 +146,13 @@ fun ProfileScreen(navController: NavController) {
                     Text("Sync to Cloud")
                 }
 
-
+                // 编辑/保存用户名按钮
                 Button(
                     onClick = {
+                        val currentUser = user
                         if (isEditing && currentUser != null) {
+                            userViewModel.updateUser(currentUser.copy(username = username))
                             scope.launch {
-                                userViewModel.updateUser(
-                                    currentUser.copy(username = username)
-                                )
                                 snackbarHostState.showSnackbar("✅ Username updated!")
                             }
                         }
@@ -146,6 +163,7 @@ fun ProfileScreen(navController: NavController) {
                     Text(if (isEditing) "Save Username" else "Edit Username")
                 }
 
+                // 登出按钮
                 OutlinedButton(
                     onClick = {
                         scope.launch {
