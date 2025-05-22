@@ -30,6 +30,12 @@ import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+// ✅ LazyColumn 和 items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+
+// ✅ alignment 和 arrangement
+import androidx.compose.foundation.layout.Arrangement
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +61,9 @@ fun CartScreen(
             var selectedMinute by remember { mutableStateOf(0) }
 
             val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
+            val total = items.sumOf { it.price * it.quantity }
+
+
 
             Scaffold(
                 topBar = {
@@ -76,14 +85,14 @@ fun CartScreen(
                 bottomBar = { BottomBar(navController) },
                 containerColor = Color.Transparent
             ) { padding ->
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .padding(padding)
                         .padding(16.dp)
                         .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    items.forEach { cart ->
+                    items(items) { cart ->
                         CartItemRow(
                             item = cart.name,
                             quantity = cart.quantity,
@@ -93,84 +102,87 @@ fun CartScreen(
                         )
                     }
 
-                    val total = items.sumOf { it.price * it.quantity }
-
-                    Text(
-                        text = "Summary: $${"%.2f".format(total)}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.End)
-                    )
-
-                    Text(
-                        text = "Choose your order type:",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-
-                    val options = listOf("Dine In", "Pick Up")
-                    Row {
-                        options.forEach { option ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .padding(end = 16.dp)
-                                    .selectable(
-                                        selected = (option == orderType),
-                                        onClick = { orderType = option },
-                                        role = Role.RadioButton
-                                    )
-                            ) {
-                                RadioButton(
-                                    selected = (option == orderType),
-                                    onClick = { orderType = option }
-                                )
-                                Text(
-                                    text = option,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    }
-
-                    if (orderType == "Pick Up") {
-                        OutlinedTextField(
-                            value = selectedDate.format(DateTimeFormatter.ISO_DATE),
-                            onValueChange = {},
-                            label = { Text("Pick Up Date", style = MaterialTheme.typography.bodyLarge) },
-                            readOnly = true,
-                            trailingIcon = {
-                                IconButton(onClick = { showDatePicker = true }) {
-                                    Icon(Icons.Default.CalendarToday, contentDescription = "Pick date")
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
+                    item {
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Text("Time:", style = MaterialTheme.typography.bodyLarge)
-                            DropdownMenuSelector("Hour", (0..23).toList(), selectedHour) { selectedHour = it }
-                            DropdownMenuSelector("Minute", listOf(0, 15, 30, 45), selectedMinute) { selectedMinute = it }
+                            Text(
+                                text = "Summary: $${"%.2f".format(total)}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
+
+                        Spacer(Modifier.height(8.dp))
 
                         Text(
-                            text = "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Choose your order type:",
+                            style = MaterialTheme.typography.titleMedium
                         )
-                    }
 
-                    Spacer(Modifier.height(12.dp))
+                        val options = listOf("Dine In", "Pick Up")
+                        Row {
+                            options.forEach { option ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(end = 16.dp)
+                                        .selectable(
+                                            selected = (option == orderType),
+                                            onClick = { orderType = option },
+                                            role = Role.RadioButton
+                                        )
+                                ) {
+                                    RadioButton(
+                                        selected = (option == orderType),
+                                        onClick = { orderType = option }
+                                    )
+                                    Text(text = option, style = MaterialTheme.typography.bodyLarge)
+                                }
+                            }
+                        }
 
-                    Button(
-                        onClick = { navController.navigate(Screen.Payment.route) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Text("Proceed to Pay", style = MaterialTheme.typography.labelLarge)
+                        if (orderType == "Pick Up") {
+                            OutlinedTextField(
+                                value = selectedDate.format(DateTimeFormatter.ISO_DATE),
+                                onValueChange = {},
+                                label = { Text("Pick Up Date", style = MaterialTheme.typography.bodyLarge) },
+                                readOnly = true,
+                                trailingIcon = {
+                                    IconButton(onClick = { showDatePicker = true }) {
+                                        Icon(Icons.Default.CalendarToday, contentDescription = "Pick date")
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Time:", style = MaterialTheme.typography.bodyLarge)
+                                DropdownMenuSelector("Hour", (0..23).toList(), selectedHour) { selectedHour = it }
+                                DropdownMenuSelector("Minute", listOf(0, 15, 30, 45), selectedMinute) { selectedMinute = it }
+                            }
+
+                            Text(
+                                text = "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Button(
+                            onClick = { navController.navigate(Screen.Payment.route) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                        ) {
+                            Text("Proceed to Pay", style = MaterialTheme.typography.labelLarge)
+                        }
                     }
                 }
 
