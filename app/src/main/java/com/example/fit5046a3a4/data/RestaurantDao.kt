@@ -8,8 +8,8 @@ import androidx.room.Query
 @Dao
 interface RestaurantDao {
 
-    @Query("SELECT * FROM restaurants WHERE campusId = :campusId")
-    fun getRestaurantsByCampus(campusId: Long): Flow<List<RestaurantEntity>>
+    @Query("SELECT * FROM restaurants WHERE campusName = :campusName")
+    fun getRestaurantsByCampus(campusName: String): Flow<List<RestaurantEntity>>
 
     @Query("SELECT * FROM restaurants WHERE id = :restaurantId")
     suspend fun getRestaurantById(restaurantId: Long): RestaurantEntity?

@@ -20,7 +20,7 @@ class OrderViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val campus = campusDao.getCampusByName(campusName)
             if (campus != null) {
-                restaurantDao.getRestaurantsByCampus(campus.id)
+                restaurantDao.getRestaurantsByCampus(campus.name)
                     .collect { list -> _restaurantList.value = list }
             }
         }

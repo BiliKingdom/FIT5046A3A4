@@ -11,12 +11,12 @@ import androidx.room.Index
     foreignKeys = [
         ForeignKey(
             entity = CampusEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["campusId"],
+            parentColumns = ["name"],
+            childColumns = ["campusName"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["campusId"])]   // foreign key indices
+    indices = [Index(value = ["campusName"])]   // foreign key indices
 )
 data class RestaurantEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -24,5 +24,5 @@ data class RestaurantEntity(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val campusId: Long
+    val campusName: String
 )

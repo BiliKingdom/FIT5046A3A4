@@ -30,6 +30,4 @@ interface CartItemDao {
 
     @Update
     suspend fun update(item: CartItemEntity)
-
-
 }

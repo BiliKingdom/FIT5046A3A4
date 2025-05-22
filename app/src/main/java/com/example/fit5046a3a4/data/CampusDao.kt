@@ -14,18 +14,14 @@ interface CampusDao {
     @Query("SELECT * FROM campuses WHERE name = :campusName LIMIT 1")
     suspend fun getCampusByName(campusName: String): CampusEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCampus(campus: CampusEntity): Long
-
     @Query("DELETE FROM campuses")
     suspend fun clearAll()
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCampus(campus: CampusEntity)
+
     @Query("SELECT * FROM campuses")
     suspend fun getAllOnce(): List<CampusEntity>
-
-    // === Reset the auto-increment id counter ===
-    @Query("DELETE FROM sqlite_sequence WHERE name = 'campuses'")
-    suspend fun resetIdSeq()
 
 
 }

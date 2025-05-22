@@ -16,18 +16,25 @@ object CampusSeeder {
 
         CoroutineScope(Dispatchers.IO).launch {
             campusDao.clearAll()
-            campusDao.resetIdSeq()
 
             restaurantDao.clearAll()
             foodDao.clearCategories()
             foodDao.clearItems()
 
             // 2. 插入校区
-            val claytonId = campusDao.insertCampus(
-                CampusEntity(name = "Clayton", latitude = -37.911, longitude = 145.134)
+            campusDao.insertCampus(
+                CampusEntity(
+                    name = "Clayton",
+                    latitude = -37.911,
+                    longitude = 145.134
+                )
             )
-            val caulfieldId = campusDao.insertCampus(
-                CampusEntity(name = "Caulfield", latitude = -37.877, longitude = 145.043)
+            campusDao.insertCampus(
+                CampusEntity(
+                    name = "Caulfield",
+                    latitude = -37.877,
+                    longitude = 145.043
+                )
             )
 
             // 3. 插入餐厅
@@ -37,7 +44,7 @@ object CampusSeeder {
                     address = "Building 10, Clayton Campus",
                     latitude = -37.9113,
                     longitude = 145.1342,
-                    campusId = claytonId
+                    campusName = "Clayton"
                 )
             )
             val ltbCafeId = restaurantDao.insertRestaurant(
@@ -46,7 +53,7 @@ object CampusSeeder {
                     address = "LTB Ground Floor, Clayton",
                     latitude = -37.9119,
                     longitude = 145.135,
-                    campusId = claytonId
+                    campusName = "Clayton"
                 )
             )
 
@@ -56,7 +63,7 @@ object CampusSeeder {
                     address = "Building 12, West Wing, Clayton",
                     latitude = -37.9108,
                     longitude = 145.1325,
-                    campusId = claytonId
+                    campusName = "Clayton"
                 )
             )
 
@@ -66,7 +73,7 @@ object CampusSeeder {
                     address = "Holt Building, Level 1, Clayton Campus",
                     latitude = -37.9116,
                     longitude = 145.1338,
-                    campusId = claytonId
+                    campusName = "Clayton"
                 )
             )
 
@@ -76,7 +83,7 @@ object CampusSeeder {
                     address = "Shop G15/21 Chancellors Walk, Clayton Campus",
                     latitude = -37.9111,
                     longitude = 145.1337,
-                    campusId = claytonId
+                    campusName = "Clayton"
                 )
             )
 
@@ -88,7 +95,7 @@ object CampusSeeder {
                     address = "Level 2, Building H, Caulfield",
                     latitude = -37.8765,
                     longitude = 145.0450,
-                    campusId = caulfieldId
+                    campusName = "Caulfield"
                 )
             )
             // 4. 全局插入四大分类，并保存 categoryId
@@ -406,7 +413,7 @@ object CampusSeeder {
             )
 
             restaurantDao.insertRestaurant(
-                RestaurantEntity(7,"The Common Ground", "Building B, Caulfield", -37.8772, 145.0428, caulfieldId)
+                RestaurantEntity(7,"The Common Ground", "Building B, Caulfield", -37.8772, 145.0428, "Caulfield")
             )
 
         }

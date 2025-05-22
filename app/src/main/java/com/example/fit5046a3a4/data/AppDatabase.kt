@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 
 // 在与你的 AppDatabase 同一个文件里（AppDatabase.kt 或 Migrations.kt）
-private val MIGRATION_5_6 = object : Migration(5, 6) {
+private val MIGRATION_6_7 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // 1. 创建临时新表 (去掉 restaurantId)
         db.execSQL("""
@@ -46,7 +46,7 @@ private val MIGRATION_5_6 = object : Migration(5, 6) {
         FoodCategoryEntity::class,
         FoodItemEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -69,15 +69,13 @@ abstract class AppDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context): AppDatabase =
             Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
-                // 只注册 5 → 6 的迁移
-                .addMigrations(
-                    MIGRATION_5_6
-                )
-                // 当数据库第一次创建时回调
+                .addMigrations(MIGRATION_6_7)
+                // 开发测试阶段：找不到迁移就抹库重建
+                .fallbackToDestructiveMigration()
+                // 当数据库第一次创建时回调，插入默认类别
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        // 在 IO 线程里插入默认类别
                         CoroutineScope(Dispatchers.IO).launch {
                             val dao = get(context).foodDao()
                             listOf("Main", "Drink", "Side", "Dessert").forEach { name ->
@@ -86,8 +84,7 @@ abstract class AppDatabase : RoomDatabase() {
                         }
                     }
                 })
-                // 如果有其他 Migration，请也 addMigrations(...)
-                .build()
+            .build()
         }
     }
 

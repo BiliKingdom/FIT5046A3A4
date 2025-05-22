@@ -27,18 +27,21 @@ class UploadToFirebaseWorker(
                 batch.delete(doc.reference)
             }
 
+            // === 0-2. Clear the remote cart_item data ===
+            val remoteCartSnap = firebaseDb.collection("cart_items").get().await()
+            remoteCartSnap.documents.forEach { batch.delete(it.reference) }
 
-
-            // === 1. 清理所有 food_categories 文档 ===
-            val categoriesSnap = firebaseDb
-                .collection("food_categories")
-                .get()
-                .await()
-            for (catDoc in categoriesSnap.documents) {
-                batch.delete(catDoc.reference)
+            // === 1. upload campuses ===
+            val campuses = db.campusDao().getAllOnce()
+            campuses.forEach { campus ->
+                val ref = firebaseDb
+                    .collection("campuses")
+                    .document(campus.name)
+                batch.set(ref, campus)
+                Log.d("UploadWorker", "Uploading campus: $campus")
             }
 
-            // === 2. 上传购物车条目 ===
+            // === 2. upload cart_item ===
             val cartItems = db.cartDao().getAllOnce()
             cartItems.forEach { cartItem ->
                 val ref = firebaseDb
@@ -48,7 +51,7 @@ class UploadToFirebaseWorker(
                 Log.d("UploadWorker", "Uploading cartItem: $cartItem")
             }
 
-            // === 3. 上传用户 ===
+            // === 3. upload user ===
             val users = db.userDao().getAllOnce()
             users.forEach { user ->
                 val userMap = mapOf(
@@ -62,19 +65,9 @@ class UploadToFirebaseWorker(
                 )
                 val ref = firebaseDb
                     .collection("users")
-                    .document(user.email) // ✅ 用 email 作为主键
+                    .document(user.email) // ✅  email as primary key
                 batch.set(ref, userMap)
                 Log.d("UploadWorker", "Uploading user: $userMap")
-            }
-
-            // === 4. 上传校区 ===
-            val campuses = db.campusDao().getAllOnce()
-            campuses.forEach { campus ->
-                val ref = firebaseDb
-                    .collection("campuses")
-                    .document(campus.id.toString())
-                batch.set(ref, campus)
-                Log.d("UploadWorker", "Uploading campus: $campus")
             }
 
             // Submit all deletions and writes at once

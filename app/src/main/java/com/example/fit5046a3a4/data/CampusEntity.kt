@@ -5,12 +5,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "campuses")
 data class CampusEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
+    @PrimaryKey val name: String,
     val latitude: Double,
     val longitude: Double
 )
-
 
 
 
