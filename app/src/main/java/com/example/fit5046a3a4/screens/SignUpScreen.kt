@@ -145,7 +145,7 @@ fun SignUpScreen(
                                             username = displayName,
                                             email = email,
                                             password = password,
-                                            dollars = 1.0,
+                                            dollars = 0.0,
                                             points = 0
                                         )
                                         scope.launch {
