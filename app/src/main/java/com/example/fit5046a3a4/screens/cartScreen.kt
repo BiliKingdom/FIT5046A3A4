@@ -155,15 +155,36 @@ fun CartScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
 
+                            val now = java.time.LocalDateTime.now()
+                            val selectedDateTime = remember(selectedDate, selectedHour, selectedMinute) {
+                                java.time.LocalDateTime.of(selectedDate, java.time.LocalTime.of(selectedHour, selectedMinute))
+                            }
+                            val minValidTime = now.plusMinutes(15)
+                            val isValidPickupTime = selectedDateTime.isAfter(minValidTime)
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Text("Time:", style = MaterialTheme.typography.bodyLarge)
-                                DropdownMenuSelector("Hour", (0..23).toList(), selectedHour) { selectedHour = it }
-                                DropdownMenuSelector("Minute", listOf(0, 15, 30, 45), selectedMinute) { selectedMinute = it }
+                                DropdownMenuSelector("Hour", (0..23).toList(), selectedHour) {
+                                    selectedHour = it
+                                }
+                                DropdownMenuSelector("Minute", listOf(0, 15, 30, 45), selectedMinute) {
+                                    selectedMinute = it
+                                }
                             }
+
+                            Text(
+                                text = if (!isValidPickupTime)
+                                    "⚠ Pickup time must be at least 15 minutes from now"
+                                else
+                                    "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (!isValidPickupTime) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
 
                             Text(
                                 text = "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
