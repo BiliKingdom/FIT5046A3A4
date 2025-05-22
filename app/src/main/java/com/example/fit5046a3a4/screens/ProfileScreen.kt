@@ -22,7 +22,12 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.NetworkType
 import androidx.work.WorkManager
+import com.example.fit5046a3a4.viewmodel.CartViewModel
+import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
+import com.example.fit5046a3a4.data.AppDatabase
 import com.example.fit5046a3a4.worker.UploadToFirebaseWorker
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +45,8 @@ fun ProfileScreen(navController: NavController) {
 
         var isEditing by remember { mutableStateOf(false) }
         var username by remember { mutableStateOf(currentUser?.username ?: "") }
+
+        val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(AppDatabase.get(context).cartDao()))
 
         LaunchedEffect(currentUser) {
             currentUser?.let {
@@ -143,7 +150,8 @@ fun ProfileScreen(navController: NavController) {
                     onClick = {
                         scope.launch {
                             userViewModel.clearUser()
-                            snackbarHostState.showSnackbar("👋 Logged out successfully!")
+                            cartViewModel.clear()
+                            snackbarHostState.showSnackbar("Logged out successfully!")
                         }
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }
