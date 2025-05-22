@@ -112,7 +112,7 @@ fun PaymentScreen(
 
                             // ✅ 更新用户余额并上传订单
                             UserInitializer.updateUserCredits(
-                                id = currentUser.id,
+                                email = currentUser.email,
                                 newCredit = newCredit,
                                 onSuccess = {
                                     UserInitializer.uploadOrderToFirebase(

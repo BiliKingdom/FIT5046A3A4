@@ -154,7 +154,7 @@ fun SignUpScreen(
 
                                             // 上传到 Firebase，使用自增 ID
                                             Firebase.firestore.collection("users")
-                                                .document(userId.toString())
+                                                .document(email)
                                                 .set(
                                                     mapOf(
                                                         "id" to userId,

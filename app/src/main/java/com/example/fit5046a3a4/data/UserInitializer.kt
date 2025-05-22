@@ -8,8 +8,8 @@ object UserInitializer {
 
     // ✅ 使用 Room 的自增 ID 作为 Firestore 文档 ID
     fun initializeFirestoreUserIfNew(user: UserEntity) {
-        val docId = user.id.toString()
-        val userDoc = FirebaseFirestore.getInstance().collection("users").document(docId)
+        val email = user.email
+        val userDoc = FirebaseFirestore.getInstance().collection("users").document(email)
 
         userDoc.get().addOnSuccessListener { snapshot ->
             if (!snapshot.exists()) {
@@ -55,13 +55,13 @@ object UserInitializer {
     }
 
     fun updateUserCredits(
-        id: Long,
+        email: String,
         newCredit: Double,
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
         FirebaseFirestore.getInstance().collection("users")
-            .document(id.toString())
+            .document(email)
             .update("dollars", newCredit)
             .addOnSuccessListener {
                 Log.d("UserInitializer", "✅ Updated user credits to $newCredit")

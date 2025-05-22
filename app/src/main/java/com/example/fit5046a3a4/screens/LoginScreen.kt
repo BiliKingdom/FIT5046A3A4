@@ -71,6 +71,7 @@ fun LoginScreen(
                                 password = "google_user"
                             )
                             UserInitializer.initializeFirestoreUserIfNew(user)
+                            userViewModel.clearUser()
                             userViewModel.syncUserFromFirebase(emailFromGoogle) {
                                 onNavigateToHome()
                             }
@@ -170,6 +171,7 @@ fun LoginScreen(
 
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnSuccessListener {
+                                userViewModel.clearUser()
                                 val username = email.substringBefore("@")
                                 val user = UserEntity(
                                     username = username,
