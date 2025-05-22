@@ -55,8 +55,6 @@ class UploadToFirebaseWorker(
                     "id" to user.id,  // 可以保留
                     "email" to user.email,
                     "username" to user.username,
-                    "password" to user.password,
-                    "phone" to user.phone,
                     "dollars" to user.dollars,
                     "points" to user.points
                 )
