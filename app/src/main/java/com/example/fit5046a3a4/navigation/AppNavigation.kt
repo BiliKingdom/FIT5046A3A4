@@ -165,7 +165,10 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 PaymentScreen(
                     onBack = { navController.navigateUp() },
                     onPay = {
-                        navController.popBackStack(Screen.Home.route, inclusive = false)
+                        navController.navigate(BottomNavItem.Home.route) {
+                            popUpTo("main") { inclusive = false }
+                            launchSingleTop = true
+                        }
                     }
                 )
             }

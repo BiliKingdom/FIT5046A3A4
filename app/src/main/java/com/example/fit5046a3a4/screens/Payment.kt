@@ -36,6 +36,7 @@ fun PaymentScreen(
     onBack: () -> Unit,
     onPay: () -> Unit,
 ) {
+    var showPaymentSuccess by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val db = AppDatabase.get(context)
     val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(db.cartDao()))
@@ -121,7 +122,7 @@ fun PaymentScreen(
                                         total = total,
                                         onSuccess = {
                                             cartViewModel.clear()
-                                            onPay() // 让父组件控制跳转逻辑
+                                            showPaymentSuccess = true
                                         },
                                         onFailure = { e ->
                                             println("❌ Order upload failed: ${e.message}")
@@ -142,6 +143,23 @@ fun PaymentScreen(
                     Text("Confirm to Pay")
                 }
             }
+        }
+        if (showPaymentSuccess) {
+            AlertDialog(
+                onDismissRequest = { /* 不可点击外部关闭 */ },
+                title = { Text("Payment Completed") },
+                text = { Text("Your payment was successful!") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showPaymentSuccess = false
+                            onPay() // 跳首页
+                        }
+                    ) {
+                        Text("Return to Home")
+                    }
+                }
+            )
         }
     }
 }
