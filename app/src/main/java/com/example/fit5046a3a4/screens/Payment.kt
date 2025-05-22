@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 // ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,15 +68,18 @@ fun PaymentScreen(
                 )
             }
         ) { padding ->
-            Column(
-                Modifier
+            LazyColumn(
+                modifier = Modifier
                     .padding(padding)
                     .padding(16.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text("Your Order:", style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(8.dp))
+                item {
+                    Text("Your Order:", style = MaterialTheme.typography.titleLarge)
+                }
 
-                items.forEach { item: CartItemEntity ->
+                items(items) { item: CartItemEntity ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -92,74 +97,52 @@ fun PaymentScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
-                Text("Total: $${"%.2f".format(total)}", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = "Monash Dollars: \$${"%.2f".format(cloudCredit)}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Black,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-                Spacer(Modifier.height(8.dp))
-                Spacer(Modifier.height(32.dp))
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Text("Total: $${"%.2f".format(total)}", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "Monash Dollars: \$${"%.2f".format(cloudCredit)}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black
+                    )
+                    Spacer(Modifier.height(32.dp))
 
-                Button(
-                    onClick = {
-                        val currentUser = user
-                        if (currentUser != null && cloudCredit >= total) {
-                            val newCredit = cloudCredit - total
-                            val orderId = "ORDER-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault()).format(Date())}"
-
-                            // ✅ 更新用户余额并上传订单
-                            UserInitializer.updateUserCredits(
-                                email = currentUser.email,
-                                newCredit = newCredit,
-                                onSuccess = {
-                                    UserInitializer.uploadOrderToFirebase(
-                                        orderId = orderId,
-                                        user = currentUser,
-                                        items = items,
-                                        total = total,
-                                        onSuccess = {
-                                            cartViewModel.clear()
-                                            showPaymentSuccess = true
-                                        },
-                                        onFailure = { e ->
-                                            println("❌ Order upload failed: ${e.message}")
-                                        }
-                                    )
-                                },
-                                onFailure = { e ->
-                                    println("❌ Failed to update credits: ${e.message}")
-                                }
-                            )
-                        } else {
-                            println("⚠️ Insufficient balance or user is null")
-                        }
-                    },
-                    enabled = cloudCredit >= total,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Confirm to Pay")
-                }
-            }
-        }
-        if (showPaymentSuccess) {
-            AlertDialog(
-                onDismissRequest = { /* 不可点击外部关闭 */ },
-                title = { Text("Payment Completed") },
-                text = { Text("Your payment was successful!") },
-                confirmButton = {
                     Button(
                         onClick = {
-                            showPaymentSuccess = false
-                            onPay() // 跳首页
-                        }
+                            val currentUser = user
+                            if (currentUser != null && cloudCredit >= total) {
+                                val newCredit = cloudCredit - total
+                                val orderId = "ORDER-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault()).format(Date())}"
+
+                                UserInitializer.updateUserCredits(
+                                    email = currentUser.email,
+                                    newCredit = newCredit,
+                                    onSuccess = {
+                                        UserInitializer.uploadOrderToFirebase(
+                                            orderId = orderId,
+                                            user = currentUser,
+                                            items = items,
+                                            total = total,
+                                            onSuccess = {
+                                                cartViewModel.clear()
+                                                showPaymentSuccess = true
+                                            },
+                                            onFailure = { e -> println("❌ Order upload failed: ${e.message}") }
+                                        )
+                                    },
+                                    onFailure = { e -> println("❌ Failed to update credits: ${e.message}") }
+                                )
+                            } else {
+                                println("⚠️ Insufficient balance or user is null")
+                            }
+                        },
+                        enabled = cloudCredit >= total,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Return to Home")
+                        Text("Confirm to Pay")
                     }
                 }
-            )
+            }
         }
     }
 }
