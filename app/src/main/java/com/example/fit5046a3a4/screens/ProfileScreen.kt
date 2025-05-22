@@ -141,11 +141,16 @@ fun ProfileScreen(navController: NavController) {
                     onClick = {
                         val currentUser = user
                         if (isEditing && currentUser != null) {
-                            userViewModel.updateUser(currentUser.copy(username = username))
+                            val updatedUser = currentUser.copy(username = username)
+
+                            userViewModel.updateUser(updatedUser) // 本地 Room 数据库
+                            userViewModel.updateUserInFirebase(updatedUser) // 🔄 Firestore 云同步
+
                             scope.launch {
                                 snackbarHostState.showSnackbar("✅ Username updated!")
                             }
                         }
+
                         isEditing = !isEditing
                     },
                     modifier = Modifier.fillMaxWidth()

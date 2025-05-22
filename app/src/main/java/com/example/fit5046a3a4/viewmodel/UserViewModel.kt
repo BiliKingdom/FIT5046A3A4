@@ -72,6 +72,26 @@ class UserViewModel @Inject constructor(
         }
     }
 
+    fun updateUserInFirebase(user: UserEntity, onComplete: (() -> Unit)? = null) {
+        val userDoc = FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(user.email)
+
+        val updatedData = mapOf(
+            "username" to user.username
+        )
+
+        userDoc.update(updatedData)
+            .addOnSuccessListener {
+                Log.d("UserViewModel", "✅ Username updated in Firestore")
+                onComplete?.invoke()
+            }
+            .addOnFailureListener { e ->
+                Log.e("UserViewModel", "❌ Failed to update username: ${e.message}")
+            }
+    }
+
+
     suspend fun getUserNow(email: String): UserEntity? {
         return repository.getUserByEmail(email)
     }
