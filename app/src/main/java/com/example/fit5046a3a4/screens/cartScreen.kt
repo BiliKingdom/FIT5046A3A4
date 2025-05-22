@@ -186,11 +186,6 @@ fun CartScreen(
                             )
 
 
-                            Text(
-                                text = "Pickup at: ${selectedDate} ${"%02d".format(selectedHour)}:${"%02d".format(selectedMinute)}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
                         }
 
                         Spacer(Modifier.height(12.dp))
@@ -215,11 +210,29 @@ fun CartScreen(
                     }
                 }
 
+// ✅ 提前在上方声明并记忆状态
+                val datePickerState = rememberDatePickerState(
+                    initialSelectedDateMillis = selectedDate
+                        .atStartOfDay()
+                        .atZone(java.time.ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+                )
+
+
                 if (showDatePicker) {
                     DatePickerDialog(
                         onDismissRequest = { showDatePicker = false },
                         confirmButton = {
-                            TextButton(onClick = { showDatePicker = false }) {
+                            TextButton(onClick = {
+                                val millis = datePickerState.selectedDateMillis
+                                if (millis != null) {
+                                    selectedDate = java.time.Instant.ofEpochMilli(millis)
+                                        .atZone(java.time.ZoneId.systemDefault())
+                                        .toLocalDate()
+                                }
+                                showDatePicker = false
+                            }) {
                                 Text("Confirm")
                             }
                         },
@@ -229,18 +242,10 @@ fun CartScreen(
                             }
                         }
                     ) {
-                        DatePicker(
-                            state = rememberDatePickerState(
-                                initialSelectedDateMillis = selectedDate
-                                    .atStartOfDay()
-                                    .atZone(java.time.ZoneId.systemDefault())
-                                    .toInstant()
-                                    .toEpochMilli()
-                            ),
-                            showModeToggle = false
-                        )
+                        DatePicker(state = datePickerState, showModeToggle = false)
                     }
                 }
+
             }
         }
     }
