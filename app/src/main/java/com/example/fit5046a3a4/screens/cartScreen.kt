@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,12 +32,7 @@ import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-// ✅ LazyColumn 和 items
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-
-// ✅ alignment 和 arrangement
-import androidx.compose.foundation.layout.Arrangement
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +44,9 @@ fun CartScreen(
     val context = LocalContext.current
     val db = AppDatabase.get(context)
     val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(db.cartDao()))
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     WithBackground {
         Box(
@@ -62,8 +62,6 @@ fun CartScreen(
 
             val items by cartViewModel.cartItems.collectAsState(initial = emptyList())
             val total = items.sumOf { it.price * it.quantity }
-
-
 
             Scaffold(
                 topBar = {
@@ -83,7 +81,8 @@ fun CartScreen(
                     )
                 },
                 bottomBar = { BottomBar(navController) },
-                containerColor = Color.Transparent
+                containerColor = Color.Transparent,
+                snackbarHost = { SnackbarHost(snackbarHostState) }
             ) { padding ->
                 LazyColumn(
                     modifier = Modifier
@@ -176,10 +175,19 @@ fun CartScreen(
                         Spacer(Modifier.height(12.dp))
 
                         Button(
-                            onClick = { navController.navigate(Screen.Payment.route) },
+                            onClick = {
+                                if (items.isEmpty()) {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("Your cart is empty. Please add items before proceeding.")
+                                    }
+                                } else {
+                                    navController.navigate(Screen.Payment.route)
+                                }
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(48.dp)
+                                .height(48.dp),
+                            enabled = items.isNotEmpty()
                         ) {
                             Text("Proceed to Pay", style = MaterialTheme.typography.labelLarge)
                         }
