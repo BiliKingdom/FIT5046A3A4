@@ -152,7 +152,6 @@ fun SignUpScreen(
                                             val userId = userViewModel.addUserReturnId(newUser)
                                             val fullUser = newUser.copy(id = userId)
 
-                                            // 上传到 Firebase，使用自增 ID
                                             Firebase.firestore.collection("users")
                                                 .document(email)
                                                 .set(

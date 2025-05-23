@@ -33,16 +33,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ 初始化 Campus 和 Restaurant 菜单等数据
         com.example.fit5046a3a4.data.CampusSeeder.seed(applicationContext)
-
-        // ✅ ⚠测试时使用：启动时清空用户数据库（上线前请注释掉）
 
          CoroutineScope(Dispatchers.IO).launch {
           AppDatabase.get(applicationContext).userDao().clearUsers()
          }
 
-        // ✅ 安排每天午夜自动上传Room数据到Firebase
         scheduleUploadWorker(applicationContext)
 
         enableEdgeToEdge()

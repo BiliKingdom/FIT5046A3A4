@@ -39,7 +39,6 @@ sealed class Screen(val route: String) {
         }
     }
 
-    // ✅ 地图界面：支持传递纬度、经度、餐厅名称、地址
     object Map : Screen("map/{lat}/{lng}/{name}/{address}") {
         fun createRoute(lat: Double, lng: Double, name: String, address: String): String {
             return "map/$lat/$lng/${Uri.encode(name)}/${Uri.encode(address)}"
@@ -51,8 +50,6 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Screen.Login.route) {
-
-        // 登录
         composable(Screen.Login.route) {
             LoginScreen(
                 onNavigateToSignUp = { navController.navigate(Screen.SignUp.route) },
@@ -69,7 +66,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
         }
 
 
-        // 注册
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 onNavigateToLogin = { navController.navigateUp() },
@@ -81,7 +77,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // 主导航区域（BottomNav）
         navigation(startDestination = BottomNavItem.Home.route, route = "main") {
 
             composable(BottomNavItem.Home.route) {
@@ -111,7 +106,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 SearchScreen(navController = navController)
             }
 
-            // 菜单页
             composable(
                 route = Screen.Menu.route,
                 arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
@@ -153,7 +147,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 )
             }
 
-            // 购物车页
             composable(
                 route = Screen.Cart.route,
                 arguments = listOf(navArgument("restaurantId") { type = NavType.LongType })
@@ -165,7 +158,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 )
             }
 
-            // 支付页
             composable(Screen.Payment.route) {
                 PaymentScreen(
                     onBack = { navController.navigateUp() },
@@ -178,7 +170,6 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 )
             }
 
-            // ✅ 地图页（含经纬度、名称、地址）
             composable(
                 route = Screen.Map.route,
                 arguments = listOf(

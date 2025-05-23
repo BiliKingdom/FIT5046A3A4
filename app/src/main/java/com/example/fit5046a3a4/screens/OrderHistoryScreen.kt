@@ -26,10 +26,8 @@ fun OrderHistoryScreen(navController: NavController) {
     val viewModel: OrderHistoryViewModel = viewModel()
     val orders = viewModel.orders
 
-    // ✅ 缓存 Firebase 当前用户的邮箱，确保更新时能触发 LaunchedEffect
     val firebaseEmailState = rememberUpdatedState(Firebase.auth.currentUser?.email)
 
-    // ✅ 根据邮箱从 Firestore 获取订单（一次性触发）
     LaunchedEffect(firebaseEmailState.value) {
         firebaseEmailState.value?.let {
             viewModel.fetchOrdersByEmail(it)

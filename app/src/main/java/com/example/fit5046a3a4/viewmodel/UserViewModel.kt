@@ -121,7 +121,6 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    /** 🔒 SharedPreferences 管理用户持久化登录 **/
     private fun saveLastUserEmail(email: String) {
         val prefs = getApplication<Application>().getSharedPreferences("user_prefs", 0)
         prefs.edit().putString("last_user_email", email).apply()
@@ -151,7 +150,6 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    // 在 UserViewModel.kt 里
     fun syncUserFromFirebase(email: String, onComplete: (() -> Unit)? = null) {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         FirebaseFirestore.getInstance().collection("users")

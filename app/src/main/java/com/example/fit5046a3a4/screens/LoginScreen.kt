@@ -198,7 +198,6 @@ fun LoginScreen(
                 Text("Login")
             }
 
-            // ✅ Google 登录按钮：每次弹出账号选择
             Button(
                 onClick = {
                     googleSignInClient.signOut().addOnCompleteListener {

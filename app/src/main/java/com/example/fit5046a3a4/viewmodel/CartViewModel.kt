@@ -13,17 +13,14 @@ class CartViewModel(
     private val cartDao: CartItemDao
 ) : ViewModel() {
 
-    // 所有购物车项目
     val cartItems: Flow<List<CartItemEntity>> = cartDao.getAll()
 
-    // 添加已有的 CartItemEntity
     fun add(item: CartItemEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             cartDao.insert(item)
         }
     }
 
-    // 通过菜单项添加进购物车（若已存在则叠加数量）
     fun addToCart(item: MenuItem, quantity: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
             val existingItem = cartDao.findByNameAndImage(item.name, item.imageRes)
@@ -42,14 +39,12 @@ class CartViewModel(
         }
     }
 
-    // 删除指定项目
     fun remove(item: CartItemEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             cartDao.delete(item)
         }
     }
 
-    // 清空购物车
     fun clear() {
         viewModelScope.launch(Dispatchers.IO) {
             cartDao.clearAll()

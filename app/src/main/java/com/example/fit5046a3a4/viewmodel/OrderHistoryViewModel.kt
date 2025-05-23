@@ -11,7 +11,6 @@ class OrderHistoryViewModel : ViewModel() {
     private val _orders = mutableStateListOf<FirestoreOrder>()
     val orders: List<FirestoreOrder> = _orders
 
-    // ✅ 调用此函数并传入当前用户邮箱，以从 Firestore 加载对应订单
     fun fetchOrdersByEmail(userEmail: String) {
         FirebaseFirestore.getInstance()
             .collection("orders")

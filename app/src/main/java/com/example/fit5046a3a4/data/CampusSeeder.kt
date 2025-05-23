@@ -21,7 +21,6 @@ object CampusSeeder {
             foodDao.clearCategories()
             foodDao.clearItems()
 
-            // 2. 插入校区
             campusDao.insertCampus(
                 CampusEntity(
                     name = "Clayton",
@@ -37,7 +36,6 @@ object CampusSeeder {
                 )
             )
 
-            // 3. 插入餐厅
             val centralCafeId = restaurantDao.insertRestaurant(
                 RestaurantEntity(
                     name = "Campus Central Café",
@@ -98,7 +96,7 @@ object CampusSeeder {
                     campusName = "Caulfield"
                 )
             )
-            // 4. 全局插入四大分类，并保存 categoryId
+
             val categoryIds = listOf("Main", "Drink", "Side", "Dessert").map { name ->
                 name to foodDao.insertCategory(FoodCategoryEntity(name = name))
             }.toMap()

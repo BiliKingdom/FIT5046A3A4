@@ -119,7 +119,7 @@ fun PaymentScreen(
                                             total = total,
                                             onSuccess = {
                                                 cartViewModel.clear()
-                                                showPaymentSuccess = true   // 只弹窗，不直接跳转
+                                                showPaymentSuccess = true
                                             },
                                             onFailure = { e -> println("❌ Order upload failed: ${e.message}") }
                                         )
@@ -138,17 +138,17 @@ fun PaymentScreen(
                 }
             }
         }
-        // === 支付成功弹窗 ===
+
         if (showPaymentSuccess) {
             AlertDialog(
-                onDismissRequest = { /* 不可点外部关闭 */ },
+                onDismissRequest = {},
                 title = { Text("Payment Completed") },
                 text = { Text("Your payment was successful!") },
                 confirmButton = {
                     Button(
                         onClick = {
                             showPaymentSuccess = false
-                            onPay() // 现在才跳转回首页
+                            onPay()
                         }
                     ) {
                         Text("Return to Home")

@@ -5,8 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
 
 object UserInitializer {
-
-    // ✅ 使用 Room 的自增 ID 作为 Firestore 文档 ID
     fun initializeFirestoreUserIfNew(user: UserEntity) {
         val email = user.email
         val userDoc = FirebaseFirestore.getInstance().collection("users").document(email)

@@ -1,7 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fit5046a3a4">
 
-    <!-- Google Maps 所需权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,7 +20,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBWiLjg-XfwssQE1w9PE47wojjvauD28Y8" />
 
-        <!-- ✅ Firebase 支持 -->
+        <!-- ✅ Firebase -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

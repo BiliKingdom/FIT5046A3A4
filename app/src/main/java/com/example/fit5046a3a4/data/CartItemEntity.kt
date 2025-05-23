@@ -9,5 +9,5 @@ data class CartItemEntity(
     val name: String,
     val quantity: Int,
     val imageRes: Int,
-    val price: Double          // 用 Double 方便汇总
+    val price: Double
 )

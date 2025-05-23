@@ -70,9 +70,7 @@ abstract class AppDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context): AppDatabase =
             Room.databaseBuilder(context, AppDatabase::class.java, "app.db")
                 .addMigrations(MIGRATION_6_7)
-                // 开发测试阶段：找不到迁移就抹库重建
                 .fallbackToDestructiveMigration()
-                // 当数据库第一次创建时回调，插入默认类别
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
