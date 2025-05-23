@@ -176,7 +176,9 @@ fun MenuScreen(
                             )
                         }
                     }
-
+                    item {
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
                 }
             }
         }
@@ -201,7 +203,7 @@ fun PickupInfoCard(onViewMap: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Monash University 127.2 m", style = MaterialTheme.typography.bodyMedium)
+                Text("Monash University", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Pickup time: 8:30 – 6:30 pm", style = MaterialTheme.typography.bodyMedium)
             }
