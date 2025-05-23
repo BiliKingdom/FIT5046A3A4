@@ -258,7 +258,6 @@ fun HomeScreen(
                     }
                 }
             } else {
-                // 空状态占位卡片
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()

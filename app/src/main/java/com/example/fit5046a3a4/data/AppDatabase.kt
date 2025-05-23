@@ -11,10 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-// 在与你的 AppDatabase 同一个文件里（AppDatabase.kt 或 Migrations.kt）
 private val MIGRATION_6_7 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // 1. 创建临时新表 (去掉 restaurantId)
         db.execSQL("""
       CREATE TABLE IF NOT EXISTS `food_categories_new` (
         `id`   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -22,13 +20,11 @@ private val MIGRATION_6_7 = object : Migration(5, 6) {
       )
     """.trimIndent())
 
-        // 2. 从旧表拷贝 name（去重）
         db.execSQL("""
       INSERT OR IGNORE INTO `food_categories_new` (name)
       SELECT DISTINCT name FROM `food_categories`
     """.trimIndent())
 
-        // 3. 删除旧表，重命名新表
         db.execSQL("DROP TABLE `food_categories`")
         db.execSQL("ALTER TABLE `food_categories_new` RENAME TO `food_categories`")
     }

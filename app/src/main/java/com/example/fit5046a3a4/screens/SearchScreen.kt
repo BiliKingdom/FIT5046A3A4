@@ -137,11 +137,11 @@ fun SearchScreen(navController: NavController) {
                                             )
                                             Spacer(Modifier.height(4.dp))
                                             Text(
-                                                "📍 ${restaurant.address}",
+                                                " ${restaurant.address}",
                                                 style = MaterialTheme.typography.bodyMedium
                                             )
                                             Text(
-                                                "🕑 Distance: ${restaurant.distanceKm} km",
+                                                " Distance: ${restaurant.distanceKm} km",
                                                 style = MaterialTheme.typography.bodySmall
                                             )
                                         }

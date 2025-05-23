@@ -121,13 +121,13 @@ fun PaymentScreen(
                                                 cartViewModel.clear()
                                                 showPaymentSuccess = true
                                             },
-                                            onFailure = { e -> println("❌ Order upload failed: ${e.message}") }
+                                            onFailure = { e -> println(" Order upload failed: ${e.message}") }
                                         )
                                     },
-                                    onFailure = { e -> println("❌ Failed to update credits: ${e.message}") }
+                                    onFailure = { e -> println(" Failed to update credits: ${e.message}") }
                                 )
                             } else {
-                                println("⚠️ Insufficient balance or user is null")
+                                println(" Insufficient balance or user is null")
                             }
                         },
                         enabled = cloudCredit >= total,

@@ -19,15 +19,15 @@ object UserInitializer {
                     "points" to user.points
                 )
                 userDoc.set(newUser).addOnSuccessListener {
-                    Log.d("UserInitializer", "✅ Created Firestore user with id=${user.id}")
+                    Log.d("UserInitializer", "Created Firestore user with id=${user.id}")
                 }.addOnFailureListener { e ->
-                    Log.e("UserInitializer", "❌ Failed to create user: ${e.message}")
+                    Log.e("UserInitializer", " Failed to create user: ${e.message}")
                 }
             } else {
-                Log.d("UserInitializer", "📄 User already exists in Firestore")
+                Log.d("UserInitializer", " User already exists in Firestore")
             }
         }.addOnFailureListener { e ->
-            Log.e("UserInitializer", "🔥 Failed to load user doc: ${e.message}")
+            Log.e("UserInitializer", " Failed to load user doc: ${e.message}")
         }
     }
 
@@ -43,11 +43,11 @@ object UserInitializer {
             .addOnSuccessListener { query ->
                 val doc = query.documents.firstOrNull()
                 val credits = doc?.getDouble("dollars") ?: 0.0
-                Log.d("UserInitializer", "✅ Fetched Firestore credits: $credits")
+                Log.d("UserInitializer", "Fetched Firestore credits: $credits")
                 onSuccess(credits)
             }
             .addOnFailureListener { e ->
-                Log.e("UserInitializer", "❌ Failed to fetch Firestore credits: ${e.message}")
+                Log.e("UserInitializer", "Failed to fetch Firestore credits: ${e.message}")
                 onFailure(e)
             }
     }
@@ -62,11 +62,11 @@ object UserInitializer {
             .document(email)
             .update("dollars", newCredit)
             .addOnSuccessListener {
-                Log.d("UserInitializer", "✅ Updated user credits to $newCredit")
+                Log.d("UserInitializer", "Updated user credits to $newCredit")
                 onSuccess()
             }
             .addOnFailureListener { e ->
-                Log.e("UserInitializer", "❌ Failed to update user credits: ${e.message}")
+                Log.e("UserInitializer", "Failed to update user credits: ${e.message}")
                 onFailure(e)
             }
     }

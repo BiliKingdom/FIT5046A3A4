@@ -128,7 +128,7 @@ fun ProfileScreen(navController: NavController) {
                             )
 
                         scope.launch {
-                            snackbarHostState.showSnackbar("⏫ Sync started…")
+                            snackbarHostState.showSnackbar(" Sync started…")
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -147,7 +147,7 @@ fun ProfileScreen(navController: NavController) {
                             userViewModel.updateUserInFirebase(updatedUser)
 
                             scope.launch {
-                                snackbarHostState.showSnackbar("✅ Username updated!")
+                                snackbarHostState.showSnackbar(" Username updated!")
                             }
                         }
 

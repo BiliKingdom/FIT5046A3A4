@@ -83,11 +83,11 @@ class UserViewModel @Inject constructor(
 
         userDoc.update(updatedData)
             .addOnSuccessListener {
-                Log.d("UserViewModel", "✅ Username updated in Firestore")
+                Log.d("UserViewModel", " Username updated in Firestore")
                 onComplete?.invoke()
             }
             .addOnFailureListener { e ->
-                Log.e("UserViewModel", "❌ Failed to update username: ${e.message}")
+                Log.e("UserViewModel", " Failed to update username: ${e.message}")
             }
     }
 

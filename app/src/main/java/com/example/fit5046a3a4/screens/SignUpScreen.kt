@@ -169,7 +169,7 @@ fun SignUpScreen(
                                                     onSignUpComplete()
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    Log.e("SignUpScreen", "🔥 Firestore failed: ${e.message}")
+                                                    Log.e("SignUpScreen", " Firestore failed: ${e.message}")
                                                     isSubmitting = false
                                                 }
                                         }
