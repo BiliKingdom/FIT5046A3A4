@@ -215,21 +215,41 @@ fun HomeScreen(
                     }
 
                     Card(
-                        modifier = Modifier.width(260.dp),
+                        modifier = Modifier
+                            .width(260.dp)
+                            .height(180.dp),
                         shape = MaterialTheme.shapes.medium,
                         elevation = CardDefaults.cardElevation(6.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Order #${order.orderId}", style = MaterialTheme.typography.titleSmall)
-                            Text("$dateStr | $timeStr", style = MaterialTheme.typography.bodySmall)
-                            Text(summary, style = MaterialTheme.typography.bodyMedium)
-                            Text("$${"%.2f".format(order.total)}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("Order #${order.orderId}", style = MaterialTheme.typography.titleSmall)
+                                Text("$dateStr | $timeStr", style = MaterialTheme.typography.bodySmall)
+                                Text(
+                                    summary,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 2,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    "$${"%.2f".format(order.total)}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
 
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = {
-                                // TODO: Reorder
-                            }, modifier = Modifier.fillMaxWidth()) {
+                            Button(
+                                onClick = {
+                                    // TODO: Reorder
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text("Reorder", style = MaterialTheme.typography.labelLarge)
                             }
                         }
