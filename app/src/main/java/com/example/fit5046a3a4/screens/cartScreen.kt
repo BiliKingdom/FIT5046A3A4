@@ -45,6 +45,8 @@ fun CartScreen(
     val db = AppDatabase.get(context)
     val cartViewModel: CartViewModel = viewModel(factory = CartViewModelFactory(db.cartDao()))
 
+
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -141,6 +143,12 @@ fun CartScreen(
                             }
                         }
 
+                        val now = java.time.LocalDateTime.now()
+                        val selectedDateTime = java.time.LocalDateTime.of(selectedDate, java.time.LocalTime.of(selectedHour, selectedMinute))
+                        val minValidTime = now.plusMinutes(15)
+                        val isValidPickupTime = selectedDateTime.isAfter(minValidTime)
+
+
                         if (orderType == "Pick Up") {
                             OutlinedTextField(
                                 value = selectedDate.format(DateTimeFormatter.ISO_DATE),
@@ -155,12 +163,6 @@ fun CartScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            val now = java.time.LocalDateTime.now()
-                            val selectedDateTime = remember(selectedDate, selectedHour, selectedMinute) {
-                                java.time.LocalDateTime.of(selectedDate, java.time.LocalTime.of(selectedHour, selectedMinute))
-                            }
-                            val minValidTime = now.plusMinutes(15)
-                            val isValidPickupTime = selectedDateTime.isAfter(minValidTime)
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -190,23 +192,21 @@ fun CartScreen(
 
                         Spacer(Modifier.height(12.dp))
 
+                        val isButtonEnabled = items.isNotEmpty() && (orderType != "Pick Up" || isValidPickupTime)
+
                         Button(
                             onClick = {
-                                if (items.isEmpty()) {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar("Your cart is empty. Please add items before proceeding.")
-                                    }
-                                } else {
-                                    navController.navigate(Screen.Payment.route)
-                                }
+                                if (!isButtonEnabled) return@Button
+                                navController.navigate(Screen.Payment.route)
                             },
+                            enabled = isButtonEnabled,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(48.dp),
-                            enabled = items.isNotEmpty()
+                                .height(48.dp)
                         ) {
                             Text("Proceed to Pay", style = MaterialTheme.typography.labelLarge)
                         }
+
                     }
                 }
 

@@ -19,7 +19,7 @@ fun scheduleUploadWorker(context: Context) {
     midnight.set(Calendar.MINUTE, 0)
     midnight.set(Calendar.SECOND, 0)
     midnight.set(Calendar.MILLISECOND, 0)
-    midnight.add(Calendar.DAY_OF_MONTH, 1) // 明天的午夜
+    midnight.add(Calendar.DAY_OF_MONTH, 1)
 
     val initialDelay = midnight.timeInMillis - now.timeInMillis
 
@@ -28,12 +28,11 @@ fun scheduleUploadWorker(context: Context) {
         .build()
 
     val request = PeriodicWorkRequestBuilder<UploadToFirebaseWorker>(15, TimeUnit.MINUTES)
-        //.setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)  normal
-        .setInitialDelay(0, TimeUnit.MILLISECONDS) // 立即测试
+        .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
         .setConstraints(constraints)
         .build()
 
-    //立即执行的任务
+
     val wm = WorkManager.getInstance(context)
     val immediate = OneTimeWorkRequestBuilder<UploadToFirebaseWorker>()
     .setConstraints(constraints)
