@@ -203,59 +203,85 @@ fun HomeScreen(
                 }
             }
 
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(orders.take(5)) { order ->
-                    val date = order.timestamp.toDate()
-                    val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
-                    val timeStr = SimpleDateFormat("h:mm a", Locale.getDefault()).format(date)
-                    val summary = order.items.joinToString { item ->
-                        val name = item["name"] as? String ?: ""
-                        val qty = (item["quantity"] as? Long)?.toInt() ?: 0
-                        "$name x$qty"
-                    }
+            if (orders.isNotEmpty()) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(orders.take(5)) { order ->
+                        val date = order.timestamp.toDate()
+                        val dateStr = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(date)
+                        val timeStr = SimpleDateFormat("h:mm a", Locale.getDefault()).format(date)
+                        val summary = order.items.joinToString { item ->
+                            val name = item["name"] as? String ?: ""
+                            val qty = (item["quantity"] as? Long)?.toInt() ?: 0
+                            "$name x$qty"
+                        }
 
-                    Card(
-                        modifier = Modifier
-                            .width(260.dp)
-                            .height(180.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        elevation = CardDefaults.cardElevation(6.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White)
-                    ) {
-                        Column(
+                        Card(
                             modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceBetween
+                                .width(260.dp)
+                                .height(180.dp),
+                            shape = MaterialTheme.shapes.medium,
+                            elevation = CardDefaults.cardElevation(6.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
-                            Column {
-                                Text("Order #${order.orderId}", style = MaterialTheme.typography.titleSmall)
-                                Text("$dateStr | $timeStr", style = MaterialTheme.typography.bodySmall)
-                                Text(
-                                    summary,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 2,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    "$${"%.2f".format(order.total)}",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-
-                            Button(
-                                onClick = {
-                                    // TODO: Reorder
-                                },
-                                modifier = Modifier.fillMaxWidth()
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Reorder", style = MaterialTheme.typography.labelLarge)
+                                Column {
+                                    Text("Order #${order.orderId}", style = MaterialTheme.typography.titleSmall)
+                                    Text("$dateStr | $timeStr", style = MaterialTheme.typography.bodySmall)
+                                    Text(
+                                        summary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        maxLines = 2,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        "$${"%.2f".format(order.total)}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                Button(
+                                    onClick = {
+                                        // TODO: Reorder
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Reorder", style = MaterialTheme.typography.labelLarge)
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                // 空状态占位卡片
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp)
+                        .padding(vertical = 8.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "You haven't placed any orders yet!",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
+                    }
+                }
             }
+
+
+
 
             Spacer(Modifier.height(32.dp))
             Text("Promotions", style = MaterialTheme.typography.titleMedium)
