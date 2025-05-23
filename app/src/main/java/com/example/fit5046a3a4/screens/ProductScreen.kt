@@ -20,11 +20,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.fit5046a3a4.components.WithBackground
 import com.example.fit5046a3a4.data.AppDatabase
-import com.example.fit5046a3a4.screens.MenuItem
 import com.example.fit5046a3a4.viewmodel.CartViewModel
 import com.example.fit5046a3a4.viewmodel.CartViewModelFactory
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

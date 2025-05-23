@@ -14,9 +14,7 @@ class MenuViewModel(
     private val restaurantDao: RestaurantDao
 ) : ViewModel() {
 
-    /**
-     * Load menu categories and items for a specific restaurant.
-     */
+
     fun loadMenuByRestaurant(restaurantId: Long): StateFlow<List<MenuCategory>> {
         return foodDao.getAllCategories()
             .flatMapLatest { categories ->
@@ -48,9 +46,7 @@ class MenuViewModel(
             )
     }
 
-    /**
-     * Observe restaurant name only.
-     */
+
     fun getRestaurantName(restaurantId: Long): StateFlow<String> {
         return restaurantDao.getRestaurantByIdFlow(restaurantId)
             .map { it?.name ?: "Unknown Restaurant" }
@@ -61,9 +57,7 @@ class MenuViewModel(
             )
     }
 
-    /**
-     * Observe full RestaurantEntity (e.g. for latitude/longitude/map)
-     */
+
     fun getRestaurantByIdFlow(restaurantId: Long): StateFlow<RestaurantEntity?> {
         return restaurantDao.getRestaurantByIdFlow(restaurantId)
             .stateIn(

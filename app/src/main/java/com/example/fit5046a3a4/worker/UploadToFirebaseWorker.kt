@@ -21,17 +21,17 @@ class UploadToFirebaseWorker(
             val firebaseDb = FirebaseFirestore.getInstance()
             val batch = firebaseDb.batch()
 
-            // === 0-4. Clear the remote campuses data ===
+            //Clear the remote campuses data
             val campusSnap = firebaseDb.collection("campuses").get().await()
             for (doc in campusSnap.documents) {
                 batch.delete(doc.reference)
             }
 
-            // === 0-2. Clear the remote cart_item data ===
+            // Clear the remote cart_item data
             val remoteCartSnap = firebaseDb.collection("cart_items").get().await()
             remoteCartSnap.documents.forEach { batch.delete(it.reference) }
 
-            // === 1. upload campuses ===
+            // upload campuses
             val campuses = db.campusDao().getAllOnce()
             campuses.forEach { campus ->
                 val ref = firebaseDb
@@ -41,7 +41,7 @@ class UploadToFirebaseWorker(
                 Log.d("UploadWorker", "Uploading campus: $campus")
             }
 
-            // === 2. upload cart_item ===
+            // upload cart_item
             val cartItems = db.cartDao().getAllOnce()
             cartItems.forEach { cartItem ->
                 val ref = firebaseDb
@@ -51,11 +51,11 @@ class UploadToFirebaseWorker(
                 Log.d("UploadWorker", "Uploading cartItem: $cartItem")
             }
 
-            // === 3. upload user ===
+            // upload user
             val users = db.userDao().getAllOnce()
             users.forEach { user ->
                 val userMap = mapOf(
-                    "id" to user.id,  // 可以保留
+                    "id" to user.id,
                     "email" to user.email,
                     "username" to user.username,
                     "dollars" to user.dollars,
@@ -63,7 +63,7 @@ class UploadToFirebaseWorker(
                 )
                 val ref = firebaseDb
                     .collection("users")
-                    .document(user.email) // ✅  email as primary key
+                    .document(user.email)
                 batch.set(ref, userMap)
                 Log.d("UploadWorker", "Uploading user: $userMap")
             }

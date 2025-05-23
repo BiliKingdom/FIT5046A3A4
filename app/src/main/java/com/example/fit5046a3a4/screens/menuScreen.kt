@@ -289,8 +289,6 @@ fun MenuItemRow(item: MenuItem, onAdd: () -> Unit,onClick: () -> Unit) {
     }
 }
 
-// --- Menu Models ---
-
 data class MenuItem(
     val name: String,
     val price: String,
