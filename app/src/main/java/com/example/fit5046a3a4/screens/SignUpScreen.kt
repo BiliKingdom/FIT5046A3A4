@@ -20,9 +20,9 @@ import com.example.fit5046a3a4.components.GradientButton
 import com.example.fit5046a3a4.components.StyledTextField
 import com.example.fit5046a3a4.data.UserEntity
 import com.example.fit5046a3a4.viewmodel.UserViewModel
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +47,7 @@ fun SignUpScreen(
     var isPasswordError by remember { mutableStateOf(false) }
     var isConfirmPasswordError by remember { mutableStateOf(false) }
 
+    var emailAlreadyRegisteredError by remember { mutableStateOf(false) }
     var isSubmitting by remember { mutableStateOf(false) }
 
     val auth = Firebase.auth
@@ -78,7 +79,10 @@ fun SignUpScreen(
 
                 StyledTextField(
                     value = username,
-                    onValueChange = { username = it; isUsernameError = false },
+                    onValueChange = {
+                        username = it
+                        isUsernameError = false
+                    },
                     label = "Username",
                     isError = isUsernameError,
                     errorMessage = if (isUsernameError) "Enter username" else null,
@@ -87,16 +91,27 @@ fun SignUpScreen(
 
                 StyledTextField(
                     value = email,
-                    onValueChange = { email = it; isEmailError = false },
+                    onValueChange = {
+                        email = it
+                        isEmailError = false
+                        emailAlreadyRegisteredError = false
+                    },
                     label = "Email",
-                    isError = isEmailError,
-                    errorMessage = if (isEmailError) "Invalid email" else null,
+                    isError = isEmailError || emailAlreadyRegisteredError,
+                    errorMessage = when {
+                        emailAlreadyRegisteredError -> "This email address is already registered"
+                        isEmailError -> "Invalid email"
+                        else -> null
+                    },
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 StyledTextField(
                     value = password,
-                    onValueChange = { password = it; isPasswordError = false },
+                    onValueChange = {
+                        password = it
+                        isPasswordError = false
+                    },
                     label = "Password",
                     isError = isPasswordError,
                     errorMessage = if (isPasswordError) "Too short (min 8 chars)" else null,
@@ -114,7 +129,10 @@ fun SignUpScreen(
 
                 StyledTextField(
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it; isConfirmPasswordError = false },
+                    onValueChange = {
+                        confirmPassword = it
+                        isConfirmPasswordError = false
+                    },
                     label = "Confirm Password",
                     isError = isConfirmPasswordError,
                     errorMessage = if (isConfirmPasswordError) "Passwords do not match" else null,
@@ -169,7 +187,7 @@ fun SignUpScreen(
                                                     onSignUpComplete()
                                                 }
                                                 .addOnFailureListener { e ->
-                                                    Log.e("SignUpScreen", " Firestore failed: ${e.message}")
+                                                    Log.e("SignUpScreen", "Firestore failed: ${e.message}")
                                                     isSubmitting = false
                                                 }
                                         }
@@ -177,6 +195,9 @@ fun SignUpScreen(
                                     .addOnFailureListener { e ->
                                         Log.e("SignUpScreen", "Firebase signup failed: ${e.message}")
                                         isSubmitting = false
+                                        if (e.message?.contains("email address is already in use") == true) {
+                                            emailAlreadyRegisteredError = true
+                                        }
                                     }
                             }
                         }
